@@ -1,0 +1,58 @@
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">表单宽度</span>
+            <input name="setting[width]" value='{$width|default="100"}' pattern="^\d+$" autocomplete="off" placeholder="请输入表单宽度" class="layui-input">
+            <span class="color-desc">表单长度(单位百分比)</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="10"}' pattern="^\d+$" autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
+        </label>
+    </div>
+    <div class="layui-col-xs6">
+        <label class="relative block">
+            <span class="color-green font-w7">默认值</span>
+            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
+            <span class="color-desc">表单默认值</span>
+        </label>
+    </div>
+</div>
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段类型</span><br />
+            {php}$default = !isset($chartype)?'':$chartype;{/php}
+            {$type|raw|htmlspecialchars_decode|rendFieldOptions=$default}
+        </label>
+    </div>
+    <div class="layui-col-xs3" id="number_precision" style="display: none">
+        <label class="relative block">
+            <span class="color-green font-w7">精度值</span>
+            <input type="text" name="setting[precision]" value='{$precision|default=""}' pattern="^\d+$" autocomplete="off" placeholder="请输入字段精度值" class="layui-input">
+            <span class="color-desc">保留多少位小数点</span>
+        </label>
+    </div>
+</div>
+<script>
+    layui.use(['layer', 'jquery'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery;
+        layui.form.render();
+
+        //监听字段类型选择变化
+        form.on('select(fieldtype_filter)',function (data) {
+            if(data.value == 'real' || data.value == 'double' || data.value == 'float' || data.value == 'decimal' || data.value == 'numeric'){
+                if(!$('#number_precision').is(':visible')){
+                    $('#number_precision').show();
+                }
+            }else{
+                $("input[name='setting[precision]']").val('');
+                $('#number_precision').hide();
+            }
+        })
+    });
+</script>

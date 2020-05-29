@@ -1,0 +1,33 @@
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">表单宽度</span>
+            <input type="text" name="setting[width]" value='{$width|default="100"}' pattern="^\d+$" autocomplete="off" placeholder="请输入表单宽度" class="layui-input">
+            <span class="color-desc">表单长度(单位百分比)</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">表单高度</span>
+            <input type="text" name="setting[height]" value='{$height|default="200"}' autocomplete="off" required placeholder="请输入表单表单高度" class="layui-input">
+            <span class="color-desc">表单高度(单位px)</span>
+        </label>
+    </div>
+    {php}$default = !isset($chartype)?'':$chartype;{/php}
+    {$type|raw|htmlspecialchars_decode|rendFieldOptions=$default}
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">默认值</span>
+            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
+            <span class="color-desc">表单默认值</span>
+        </label>
+    </div>
+</div>
+
+<script>
+    layui.use(['layer', 'jquery'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery;
+        layui.form.render();
+    });
+</script>

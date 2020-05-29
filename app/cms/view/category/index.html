@@ -1,0 +1,112 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-open='{:url("add")}' data-title="添加栏目" class='layui-btn layui-btn-sm layui-btn-primary'>添加栏目</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <table class="layui-table margin-top-10" lay-skin="line" id="tree-table"></table>
+    </div>
+</div>
+{/block}
+
+{block name='style'}
+<style>
+.layui-tab-content{ min-height: 700px;}
+</style>
+{/block}
+
+{block name='script'}
+<script>
+    var authAdd = '{:auth("add")}',authEdit = '{:auth("edit")}',authDisabled = '{:auth("disabled")}',authRemove = '{:auth("remove")}';
+    layui.config({
+        base: "__ROOT__/static/plugs/layui/mods/"
+    })
+    layui.use(['jquery','form', 'treeTable'], function(){
+        var treeTable = layui.treeTable;
+        treeTable.render({
+            elem: '#tree-table',
+            data: {$data|raw},
+            icon_key: 'name',
+            is_checkbox: false,
+            end: function(e){
+                form.render();
+            },
+            cols: [
+                {
+                    key: 'sort',
+                    title: '<button type="button" data-reload class="layui-btn layui-btn-xs">刷 新</button>',
+                    width: '100px',
+                    css_class: 'list-table-sort-td',
+                    template: function(item){
+                        return '<label><input data-action-blur="{:request()->url()}" data-value="id#'+item.id+';action#sort;sort#{value}" data-loading="false" value="'+item.sort+'" class="list-sort-input"></label>';
+                    }
+                },
+                {
+                    key: 'name',
+                    title: '栏目名称',
+                    width: '100px',
+                    template: function(item){
+                        if(item.level == 0){
+                            return '<span style="color:red;">'+item.name+'</span>';
+                        }else if(item.level == 1){
+                            return '<span style="color:green;">'+item.name+'</span>';
+                        }else if(item.level >= 2){
+                            return '<span style="color:#1E9FFF;">'+item.name+'</span>';
+                        }
+                    }
+                },
+                {
+                    key: 'description',
+                    title: '描述',
+                    width: '200px',
+                },
+                {
+                    key: 'modelname',
+                    title: '所属模型',
+                    width: '100px',
+                    align: 'center',
+                },
+                {
+                    key: 'status',
+                    title: '状态',
+                    width: '100px',
+                    align: 'center',
+                    template: function(item){
+                        if(item.status == 0){
+                            return '<span style="color:red;">禁用</span>';
+                        }else if(item.status == 1){
+                            return '<span style="color:green;">启用</span>';
+                        }
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    template: function(item){
+                        var op = '';
+                        if(parseInt(authAdd)){
+                            op += '<a data-dbclick class="layui-btn layui-btn-warm layui-btn-sm" data-title="添加子分类"  data-open=\'{:url("add")}?pid='+item.id+'\'>添加子分类</a>';
+                        }
+                        if(parseInt(authEdit)){
+                            op += '<a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑" data-open=\'{:url("edit")}?pid='+item.pid+'&id='+item.id+'\'>编 辑</a>';
+                        }
+                        if(parseInt(authDisabled)){
+                            op += '<a data-dbclick class="layui-btn layui-btn-normal layui-btn-sm" data-title="隐藏分类" data-modal=\'{:url("disabled")}?id='+item.id+'\'>隐 藏</a>';
+                        }
+                        if(parseInt(authRemove)){
+                            op += '<a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此栏目吗？" data-action="{:url(\'remove\')}" data-value="id#'+item.id+'" data-csrf="{:systoken(\'remove\')}">删 除</a>';
+                        }
+                        return op;
+                    }
+                }
+            ]
+        });
+
+    });
+</script>
+{/block}

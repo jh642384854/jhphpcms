@@ -1,0 +1,77 @@
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="3"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段类型</span><br />
+            {php}$default = !isset($chartype)?'':$chartype;{/php}
+            {$type|raw|htmlspecialchars_decode|rendFieldOptions=$default}
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width: 80px; line-height: 38px;">评分主题色：</div>
+            <div class="layui-input-inline" style="width: 120px;">
+                <input type="text" name="setting[theme]" value='{$theme|default="#1c97f5"}' readonly placeholder="请选择滑块主题色" class="layui-input" id="default_silder_color_val">
+            </div>
+            <div class="layui-inline" style="left: -11px;">
+                <div id="silder_select"></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">JS回调函数</span>
+            <input type="text" name="setting[callback]" value='{$callback|default="getRateVal"}'  autocomplete="off" required placeholder="请输入JS回调函数" class="layui-input">
+            <span class="color-desc">用于获取滑块值</span>
+        </label>
+    </div>
+</div>
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块默认值</span>
+            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
+            <span class="color-desc">表单默认值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">评分星星个数</span>
+            <input type="text" name="setting[starts]" value='{$starts|default="5"}' autocomplete="off" placeholder="请输入评分星星个数" class="layui-input">
+            <span class="color-desc">设置评分显示的星星个数</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">是否允许半星评价</span><br />
+            {foreach :config('constant.YesOrNo') as $k=>$v}
+            <!--{if (!isset($ishalf) and $k eq '0') or (isset($ishalf) and $ishalf eq $k)}-->
+            <input type="radio" name="setting[ishalf]" checked value="{$k}" title="{$v}">
+            <!--{else}-->
+            <input type="radio" name="setting[ishalf]" value="{$k}" title="{$v}">
+            <!--{/if}-->
+            {/foreach}
+            <br />
+            <span class="color-desc">设定组件是否可以选择半星</span>
+        </label>
+    </div>
+</div>
+<script>
+    layui.use(['slider','colorpicker'], function () {
+        layui.form.render();
+        var colorpicker = layui.colorpicker;
+        colorpicker.render({
+            elem: '#silder_select'
+            ,color: '{$theme|default="#1c97f5"}'
+            ,done: function(color){
+                $('#default_silder_color_val').val(color);
+            }
+        });
+    });
+</script>

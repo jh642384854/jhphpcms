@@ -1,0 +1,71 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs2 text-center">
+                <input type="hidden" name="thumb" value="{$vo.thumb|default=''}">
+                <script>$('[name=thumb]').uploadOneImage()</script>
+            </div>
+            <div class="layui-col-xs5">
+                <label class="block relative">
+                    <span class="color-green font-w7">广告标题</span>
+                    <span class="color-desc margin-left-5">Title</span>
+                    <input name="name" value='{$vo.name|default=""}' required pattern="^.{2,}$" placeholder="请输入广告标题" class="layui-input">
+                    <span class="help-block">必选，请填写广告标题</span>
+                </label>
+            </div>
+            <div class="layui-col-xs5">
+                <label class="block relative">
+                    <span class="color-green font-w7">广告URL</span>
+                    <span class="color-desc margin-left-5">URL</span>
+                    <input name="url" value='{$vo.url|default=""}' required pattern="[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?" placeholder="请输入广告URL" class="layui-input">
+                    <span class="help-block">必选，请填写正确的URL地址</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs6">
+                <label class="relative block">
+                    <span class="color-green font-w7">广告位</span>
+                    <span class="color-desc margin-left-5">Advertising</span>
+                    <select name='cid' class='layui-select' lay-search required>
+                        {foreach $advCates as $advCate}
+                        {eq name='advCate.id' value='$vo.cid|default=0'}
+                        <option selected value='{$advCate.id}'>{$advCate.name}</option>
+                        {else}
+                        <option value='{$advCate.id}'>{$advCate.name}</option>
+                        {/eq}
+                        {/foreach}
+                    </select>
+                    <span class="color-desc">必须，请选择广告位</span>
+                </label>
+            </div>
+            <div class="layui-col-xs6">
+                <label class="relative block">
+                    <span class="color-green font-w7">排序</span>
+                    <span class="color-desc margin-left-5">Sort</span>
+                    <input name="sort" autocomplete="off" pattern="^[\d]$" value='{$vo.sort|default=""}' placeholder="请输入排序" class="layui-input">
+                    <span class="color-desc">可选，请填写广告排序值</span>
+                </label>
+            </div>
+        </div>
+
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">广告描述</span><span class="color-desc">Description</span>
+            <textarea placeholder="请输入广告描述" class="layui-textarea" name="description">{$vo.description|default=""}</textarea>
+        </label>
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}

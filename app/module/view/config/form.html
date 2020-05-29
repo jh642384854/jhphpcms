@@ -1,0 +1,70 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off" lay-filter="diy_config">
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-form-item">
+            <label class="layui-form-label">Key(变量名)</label>
+            <div class="layui-input-block">
+                <input type="text" name="key" value='{$vo.key|default=""}' required placeholder="请输入变量Key" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">变量值类型</label>
+            <div class="layui-input-block">
+                {foreach ['single'=>'单值','many'=>'多值'] as $k=>$v}
+                <input type="radio" name="value_type" value="{$k}" title="{$v}" required lay-filter="data-value-type">
+                {/foreach}
+            </div>
+        </div>
+        <div class="tap_content">
+            <div class="layui-anim layui-anim-fadein" data-value-type="single">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">值内容</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="single_value" value='{$vo.single_value|default=""}' required placeholder="请输入值内容" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-anim layui-anim-fadein" data-value-type="many">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">值内容</label>
+                    <div class="layui-input-block">
+                        <textarea name='many_value' class="layui-textarea" required placeholder="请输入值内容">{$vo.many_value|default=""}</textarea>
+                        <p>
+                            提示：每行一个值
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <textarea name='description' class="layui-textarea">{$vo.description|default=""}</textarea>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+
+{block name='script'}
+<script>
+    require(['jquery.autocompleter'], function () {
+
+    });
+    $(function () {
+        this.type = "{$vo.value_type|default='single'}";
+        layui.form.render(), layui.form.val('diy_config', {"value_type": this.type});
+        layui.form.on('radio(data-value-type)', apply), apply.call(this, {value: this.type});
+        function apply(data) {
+            $('[data-value-type="' + data.value + '"]').show().siblings('[data-value-type]').hide();
+        }
+    });
+</script>
+{/block}

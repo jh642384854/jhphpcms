@@ -1,0 +1,77 @@
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="3"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段类型</span><br />
+            {php}$default = !isset($chartype)?'':$chartype;{/php}
+            {$type|raw|htmlspecialchars_decode|rendFieldOptions=$default}
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width: 80px; line-height: 38px;">滑块主题色：</div>
+            <div class="layui-input-inline" style="width: 120px;">
+                <input type="text" name="setting[theme]" value='{$theme|default="#1c97f5"}' readonly placeholder="请选择滑块主题色" class="layui-input" id="default_silder_color_val">
+            </div>
+            <div class="layui-inline" style="left: -11px;">
+                <div id="silder_select"></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">JS回调函数</span>
+            <input type="text" name="setting[callback]" value='{$callback|default="getSilderVal"}'  autocomplete="off" required placeholder="请输入JS回调函数" class="layui-input">
+            <span class="color-desc">用于获取滑块值</span>
+        </label>
+    </div>
+</div>
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块默认值</span>
+            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
+            <span class="color-desc">表单默认值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块步长值</span>
+            <input type="text" name="setting[step]" value='{$step|default="1"}' autocomplete="off" placeholder="请输入滑块步长值" class="layui-input">
+            <span class="color-desc">滑块步长值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块最小值</span>
+            <input type="text" name="setting[min]" value='{$min|default="1"}' autocomplete="off" placeholder="请输入滑块最小值" class="layui-input">
+            <span class="color-desc">滑块最小值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块最大值</span>
+            <input type="text" name="setting[max]" value='{$max|default="100"}' autocomplete="off" placeholder="请输入滑块最大值" class="layui-input">
+            <span class="color-desc">滑块最大值</span>
+        </label>
+    </div>
+</div>
+<script>
+    layui.use(['slider','colorpicker'], function () {
+        layui.form.render();
+        var colorpicker = layui.colorpicker;
+        colorpicker.render({
+            elem: '#silder_select'
+            ,color: '{$theme|default="#1c97f5"}'
+            ,done: function(color){
+                $('#default_silder_color_val').val(color);
+            }
+        });
+    });
+</script>

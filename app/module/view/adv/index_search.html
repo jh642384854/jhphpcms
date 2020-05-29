@@ -1,0 +1,49 @@
+<fieldset>
+
+    <legend>条件搜索</legend>
+
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">所属广告位</label>
+            <div class="layui-input-inline">
+                <select name='cid' class='layui-select' lay-search>
+                <option value="">请选择广告位</option>
+                {foreach $advCates as $advCate}
+                {if  $advCate.id eq input('get.cid')}
+                <option selected value='{$advCate.id}'>{$advCate.name}</option>
+                {else}
+                <option value='{$advCate.id}'>{$advCate.name}</option>
+                {/if}
+                {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">广告名称</label>
+            <div class="layui-input-inline">
+                <input name="name" value="{:input('get.name')}" placeholder="请输入广告名称" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">广告URL</label>
+            <div class="layui-input-inline">
+                <input name="url" value="{:input('get.url')}" placeholder="请输入广告URL" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">创建时间</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="create_at" value="{:input('get.create_at')}" placeholder="请选择创建时间" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+        </div>
+    </form>
+
+</fieldset>
+
+<script>form.render()</script>

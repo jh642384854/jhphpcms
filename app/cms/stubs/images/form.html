@@ -1,0 +1,60 @@
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">表单宽度</span>
+            <input name="setting[width]" value='{$width|default="100"}' pattern="^\d+$" autocomplete="off" placeholder="请输入表单宽度" class="layui-input">
+            <span class="color-desc">表单长度(单位百分比)</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="255"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段类型</span><br />
+            {php}$default = !isset($chartype)?'':$chartype;{/php}
+            {$type|raw|htmlspecialchars_decode|rendFieldOptions=$default}
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">默认值</span>
+            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
+            <span class="color-desc">表单默认值</span>
+        </label>
+    </div>
+</div>
+<div class="layui-row layui-col-space15">
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">表单样式</span>
+            <input name="setting[css]" value='{$css|default="layui-input"}'  pattern="^[A-Za-z0-9_-]+$" placeholder="请输入表单样式名称" class="layui-input">
+            <span class="color-desc">css样式的class名称</span>
+        </label>
+    </div>
+    <div class="layui-col-xs6">
+        <label class="relative block">
+            <span class="color-green font-w7">允许上传的文件格式</span>
+            <input name="setting[upload_allowext]" value='{$upload_allowext|default=config("constant.attachmentType")["img"]["suffix"]}' placeholder="请输入表单样式名称" class="layui-input">
+            <span class="color-desc">多种格式以英文逗号分割</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">允许上传的文件个数</span>
+            <input name="setting[upload_numbers]" value='{$upload_numbers|default=10}' pattern="^\d+$" placeholder="请输入表单样式名称" class="layui-input">
+            <span class="color-desc">允许同时上传文件个数</span>
+        </label>
+    </div>
+</div>
+<script>
+    layui.use(['layer', 'jquery'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery;
+        layui.form.render();
+    });
+</script>

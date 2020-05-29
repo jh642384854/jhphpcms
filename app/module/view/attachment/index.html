@@ -1,0 +1,138 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+
+<!--{if auth("delete")}-->
+<a data-confirm="确定要删除这些附件吗？" data-action='{:url("delete")}' data-rule="id#{key}" data-csrf="{:systoken('delete')}" class='layui-btn layui-btn-sm layui-btn-danger'>批量删除</a>
+<!--{/if}-->
+
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <ul class="layui-tab-title">
+        <li data-open="{:url('index')}" {if $type eq 'all'}class="layui-this"{/if}>全部</li>
+        {foreach :config('constant.attachmentType') as $k=>$v}
+        {if isset($type) and $type eq $k}
+        <li data-open="{:url('index')}?type={$k}" class="layui-this">{$v['name']}</li>
+        {else}
+        <li data-open="{:url('index')}?type={$k}">{$v['name']}</li>
+        {/if}
+        {/foreach}
+    </ul>
+    <div class="layui-tab-content think-box-shadow">
+        {include file='attachment/index_search'}
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-check-td think-checkbox'>
+                    <label><input data-auto-none data-check-target='.list-check-box' type='checkbox'></label>
+                </th>
+                <th class='text-left nowrap' width="180px">文件名</th>
+                <th class='text-left nowrap' width="150px">文件路径</th>
+                <th class='text-left nowrap'>文件大小</th>
+                <th>类型</th>
+                <th>上传时间</th>
+                <th>文件MD5</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr data-dbclick>
+                <td class='list-table-check-td think-checkbox'>
+                    <label><input class="list-check-box" value='{$vo.id}' type='checkbox'></label>
+                </td>
+                <td class='text-left nowrap'>
+                   <i class="attach_icon {$vo.icon}"></i> {$vo.filename}
+                   {if $vo.status eq -1}
+                    <span class="layui-badge">附件异常</span>
+                   {/if}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.filepath}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.filesize|format_bytes}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.fileext}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.uploadtime|format_datetime}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.filemd5}
+                </td>
+                <td class='text-left nowrap'>
+                    {if $vo.type eq 'img'}
+                    <a class="layui-btn layui-btn-sm layui-btn-normal preview_img" data-previewurl="{$vo.filepath}" data-title="预览图片">预 览</a>
+                    {/if}
+                    <!--{if auth("down") && $vo.status eq 1}--> <!--href='{:url("down")}?id={$vo.id}'-->
+                    <a class="layui-btn layui-btn-sm downattach" data-title="下载附件" data-value="{$vo.id}" >下 载</a>
+                    <!--{/if}-->
+                    <!--{if auth("delete")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除该附件吗？" data-action="{:url('delete')}" data-value="id#{$vo.id};is_deleted#0" data-csrf="{:systoken('delete')}">删 除</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+{/block}
+
+{block name="style"}
+<style>
+.attach_icon{
+    font-size: 20px;
+    margin-right: 5px;
+}
+.layui-badge{margin-left: 5px;}
+.preview_img_block{text-align: center; width: 500px;}
+.preview_img_block img {
+    max-width: 450px;
+    height: auto;
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+}
+</style>
+{/block}
+
+{block name='script'}
+<script>
+    $('.preview_img').click(function () {
+        layer.open({
+            type: 1,
+            title:'图片预览',
+            area: ['500px', '400px'],
+            content: '<div class="preview_img_block"><img src="'+$(this).data('previewurl')+'"></div>'
+        });
+    })
+    $('.downattach').click(function () {
+        var obj = $(this);
+        var id = $(this).attr('data-value');
+        $.ajax({
+            url:'{:url("down")}',
+            data:{id:id},
+            method:'GET',
+            success:function(res){
+                if(res.code == 1){
+                    window.location.href='{:url("down")}?id='+id+'&op=down';
+                }else{
+                    $.msg.error(res.info);
+                    obj.remove();
+                }
+            }
+        })
+    })
+</script>
+{/block}

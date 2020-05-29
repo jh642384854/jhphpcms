@@ -1,0 +1,56 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-modal="{:url('add')}" data-title="新增配置" class='layui-btn layui-btn-sm layui-btn-primary'>新增配置</button>
+<!--{/if}-->
+{/block}
+
+{block name='content'}
+
+<div class="think-box-shadow">
+    <table class="layui-table margin-top-10" lay-skin="line">
+        {notempty name='list'}
+        <thead>
+        <tr>
+            <th width="200px">key</th>
+            <th width="200px">value</th>
+            <th width="300px">描述</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        {/notempty}
+        <tbody>
+        {foreach $list as $key=>$vo}
+        <tr>
+            <td>{$vo.key}</td>
+            <td>{$vo.value|nl2br|raw|htmlspecialchars_decode}</td>
+            <td>{$vo.description}</td>
+            <td>
+                <!--{if auth("edit")}-->
+                <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑配置" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                <!--{/if}-->
+                <!--{if auth("del")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要永久删除此配置吗？" data-action="{:url('del')}" data-value="id#{$vo.id}" data-csrf="{:systoken('del')}">删 除</a>
+                <!--{/if}-->
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+</div>
+
+{/block}
+
+{block name='script'}
+<script>
+
+</script>
+{/block}
+
+{block name="style"}
+<style>
+
+</style>
+{/block}

@@ -1,0 +1,90 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">模型名称</label>
+            <div class="layui-input-block">
+                <input name="name" value='{$vo.name|default=""}' required placeholder="请输入模型名称" class="layui-input">
+                <p class="help-block">必填，请填写模型名称（如：文章模型），建议字符不要太长，一般4-6个汉字</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">模型描述</label>
+            <div class="layui-input-block">
+                <input name="description" value='{$vo.description|default=""}' placeholder="请输入模型描述" class="layui-input">
+                <p class="help-block">选填，请填写模型描述</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">模型表名称</label>
+            <div class="layui-input-block">
+                <input name="tablename" value='{$vo.tablename|default=""}' pattern="^[A-Za-z0-9]+$" required placeholder="请输入模型表名称" class="layui-input">
+                <p class="help-block">必填，请填写模型表名称，建议字符不要太长，一般4-20个英文字符</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label label-required-next">栏目页模版</label>
+            <div class="layui-input-block">
+                <select name='category_template' class='layui-select' required lay-search>
+                    {foreach $categoryTpls as $key => $categoryTpl}
+                    {eq name='key' value='$vo.category_template|default="category.html"'}
+                    <option selected value='{$key}'>{$categoryTpl}</option>
+                    {else}
+                    <option value='{$key}'>{$categoryTpl}</option>
+                    {/eq}
+                    {/foreach}
+                </select>
+                <p class="help-block">必选，请选择栏目页模版</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label label-required-next">列表页模版</label>
+            <div class="layui-input-block">
+                <select name='list_template' class='layui-select' required lay-search>
+                    {foreach $listTpls as $key => $listTpl}
+                    {eq name='key' value='$vo.list_template|default="list.html"'}
+                    <option selected value='{$key}'>{$listTpl}</option>
+                    {else}
+                    <option value='{$key}'>{$listTpl}</option>
+                    {/eq}
+                    {/foreach}
+                </select>
+                <p class="help-block">必选，请选择列表页模版</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label label-required-next">内容页模版</label>
+            <div class="layui-input-block">
+                <select name='show_template' class='layui-select' required lay-search>
+                    {foreach $showTpls as $key => $showTpl}
+                    {eq name='key' value='$vo.show_template|default="show.html"'}
+                    <option selected value='{$key}'>{$showTpl}</option>
+                    {else}
+                    <option value='{$key}'>{$showTpl}</option>
+                    {/eq}
+                    {/foreach}
+                </select>
+                <p class="help-block">必选，请选择内容页模版</p>
+            </div>
+        </div>
+
+
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}
