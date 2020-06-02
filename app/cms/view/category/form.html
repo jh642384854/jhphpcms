@@ -31,7 +31,7 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label label-required-next">栏目模型</label>
                                 <div class="layui-input-block">
-                                    <select  class="layui-input" name="modelid" required>
+                                    <select  class="layui-input" name="modelid" required {notempty name='vo.id'}disabled{/notempty}>
                                         <option value="">请选择栏目模型</option>
                                         {foreach $models as $key => $model}
                                         {eq name='model.id' value='$vo.modelid|default=""'}
@@ -143,11 +143,11 @@
                         <label class="layui-form-label label-required-next">栏目页模版</label>
                         <div class="layui-input-block">
                             <select name='category_template' class='layui-select' required lay-search>
-                                {foreach $categoryTpls as $key => $categoryTpl}
-                                {eq name='key' value='$vo.category_template|default="category.html"'}
-                                <option selected value='{$key}'>{$categoryTpl}</option>
+                                {foreach $categoryTpls as $categoryTpl}
+                                {eq name='categoryTpl' value='$vo.category_template|default="category.html"'}
+                                <option selected value='{$categoryTpl}'>{$categoryTpl}</option>
                                 {else}
-                                <option value='{$key}'>{$categoryTpl}</option>
+                                <option value='{$categoryTpl}'>{$categoryTpl}</option>
                                 {/eq}
                                 {/foreach}
                             </select>
@@ -159,11 +159,11 @@
                         <label class="layui-form-label label-required-next">列表页模版</label>
                         <div class="layui-input-block">
                             <select name='list_template' class='layui-select' required lay-search>
-                                {foreach $listTpls as $key => $listTpl}
-                                {eq name='key' value='$vo.list_template|default="list.html"'}
-                                <option selected value='{$key}'>{$listTpl}</option>
+                                {foreach $listTpls as $listTpl}
+                                {eq name='listTpl' value='$vo.list_template|default="list.html"'}
+                                <option selected value='{$listTpl}'>{$listTpl}</option>
                                 {else}
-                                <option value='{$key}'>{$listTpl}</option>
+                                <option value='{$listTpl}'>{$listTpl}</option>
                                 {/eq}
                                 {/foreach}
                             </select>
@@ -176,10 +176,10 @@
                         <div class="layui-input-block">
                             <select name='show_template' class='layui-select' required lay-search>
                                 {foreach $showTpls as $key => $showTpl}
-                                {eq name='key' value='$vo.show_template|default="show.html"'}
-                                <option selected value='{$key}'>{$showTpl}</option>
+                                {eq name='showTpl' value='$vo.show_template|default="show.html"'}
+                                <option selected value='{$showTpl}'>{$showTpl}</option>
                                 {else}
-                                <option value='{$key}'>{$showTpl}</option>
+                                <option value='{$showTpl}'>{$showTpl}</option>
                                 {/eq}
                                 {/foreach}
                             </select>

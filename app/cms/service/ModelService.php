@@ -26,11 +26,31 @@ class ModelService extends Service
     }
 
     /**
-     * 得到所有的模型
-     * @return mixed
+     * 缓存所有的模型数据
      */
-    public function getAllModels()
+    public function cacheAllModels()
     {
-        return $this->model->where(['status'=>1])->select();
+        $models = $this->model->order('id ASC')->select();
+        $newModels = [];
+        if (count($models) > 0) {
+            foreach ($models as $model) {
+                $newModels[$model['id']] = $model;
+            }
+        }
+        cache(config('cache.usekey.model.key', 'AllModel'), $newModels);
+        return $newModels;
+    }
+
+    /**
+     * 从缓存中得到所有的模型
+     * @return array|\Illuminate\Cache\CacheManager|mixed
+     */
+    public function getAllModelsFromCache()
+    {
+        $data = cache(config('cache.usekey.model.key', 'AllModel'));
+        if(empty($data)){
+            $data = $this->cacheAllModels();
+        }
+        return $data;
     }
 }

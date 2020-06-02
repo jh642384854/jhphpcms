@@ -1,0 +1,29 @@
+<fieldset>
+    <legend>条件搜索</legend>
+    <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">文章标题</label>
+            <div class="layui-input-inline">
+                <input name="name" value="{:input('get.name')}" placeholder="请输入广告名称" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item layui-inline">
+            <label class="layui-form-label">创建时间</label>
+            <div class="layui-input-inline">
+                <input data-date-range name="create_at" value="{:input('get.create_at')}" placeholder="请选择创建时间" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-inline">
+            <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+            <!--{if auth("export")}-->
+            {if count($list) gt 0}
+            <span lay-submit lay-filter="gofilter" class="layui-btn layui-btn-primary export_button"><i class="layui-icon">&#xe65b;</i> 导 出</span>
+            {/if}
+            <!--{/if}-->
+        </div>
+    </form>
+
+</fieldset>

@@ -36,6 +36,20 @@
             <span class="color-desc">css样式的class名称</span>
         </label>
     </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字符长度最小取值范围</span>
+            <input name="setting[min]" value='{$min|default="0"}'  pattern="^[0-9]+$" placeholder="请输入字符长度取值范围最小值" class="layui-input">
+            <span class="color-desc">字符长度最小取值范围</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字符长度最大取值范围</span>
+            <input name="setting[max]" value='{$max|default=""}'  pattern="^[0-9]+$" placeholder="请输入字符长度取值范围最大值" class="layui-input">
+            <span class="color-desc">字符长度最大取值范围</span>
+        </label>
+    </div>
 </div>
 <script>
     layui.use(['layer', 'jquery'], function () {

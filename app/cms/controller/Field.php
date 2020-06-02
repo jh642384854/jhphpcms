@@ -114,7 +114,7 @@ class Field extends Controller
                     $setting = json_decode($data['setting'],true);
                     $fieldInfo = [
                         'name' => $data['field'],
-                        'type' => $data['chartype'],
+                        'type' => $setting['chartype'],
                         'length' => $setting['length'],
                         'commment' => $data['title'],
                     ];
@@ -172,16 +172,4 @@ class Field extends Controller
         }
     }
 
-    public function jhtest()
-    {
-        $fieldInfo = [
-            'name' => 'new_catid',
-            'type' => 'int',
-            'length' => 10,
-            'commment' => '注释',
-        ];
-        $tabService = TableStructService::instance();
-        $res = $tabService->addField('jjd_model',$fieldInfo);
-        dump($res);
-    }
 }

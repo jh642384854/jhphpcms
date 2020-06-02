@@ -71,7 +71,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">字段提示</label>
             <div class="layui-input-block">
-                <input name="tips" value='{$vo.tips|default=""}'  placeholder="请输入表字段提示" class="layui-input">
+                <input name="setting[tips]" value='{$vo.setting.tips|default=""}'  placeholder="请输入表字段提示" class="layui-input">
                 <p class="help-block">选填，显示在字段别名下方作为表单输入提示</p>
             </div>
         </div>
@@ -104,7 +104,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">数据校验未通过的提示信息</label>
             <div class="layui-input-block">
-                <input name="errortips" value='{$vo.errortips|default=""}'  placeholder="请输入表字段提示" class="layui-input">
+                <input name="setting[errortips]" value='{$vo.setting.errortips|default=""}'  placeholder="请输入表字段提示" class="layui-input">
                 <p class="help-block">选填，数据校验失败后的提示信息</p>
             </div>
         </div>

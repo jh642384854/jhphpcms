@@ -67,9 +67,7 @@ class Plugs extends Controller
     {
         try {
             if (AdminService::instance()->isSuper()) {
-                $data = SystemService::instance()->getRuntime();
-                $this->app->console->call('clear');
-                SystemService::instance()->setRuntime($data['app_map'], $data['app_run']);
+                SystemService::instance()->clearRuntime();
                 $this->success('清理网站缓存成功！');
             } else {
                 $this->error('只有超级管理员才能操作！');

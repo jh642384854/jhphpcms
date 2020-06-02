@@ -1,6 +1,9 @@
 {extend name="../../admin/view/main"}
 
 {block name="button"}
+<!--{if auth("upcache")}-->
+<button data-load='{:url("upcache")}' data-title="更新栏目缓存" class='layui-btn layui-btn-sm layui-btn-primary'>更新栏目缓存</button>
+<!--{/if}-->
 <!--{if auth("add")}-->
 <button data-open='{:url("add")}' data-title="添加栏目" class='layui-btn layui-btn-sm layui-btn-primary'>添加栏目</button>
 <!--{/if}-->
@@ -33,6 +36,7 @@
             data: {$data|raw},
             icon_key: 'name',
             is_checkbox: false,
+            parent_key:'parent_id',
             end: function(e){
                 form.render();
             },
@@ -78,9 +82,9 @@
                     align: 'center',
                     template: function(item){
                         if(item.status == 0){
-                            return '<span style="color:red;">禁用</span>';
+                            return '<span style="color:red;">隐藏</span>';
                         }else if(item.status == 1){
-                            return '<span style="color:green;">启用</span>';
+                            return '<span style="color:green;">显示</span>';
                         }
                     }
                 },
@@ -96,9 +100,15 @@
                             op += '<a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑" data-open=\'{:url("edit")}?pid='+item.pid+'&id='+item.id+'\'>编 辑</a>';
                         }
                         if(parseInt(authDisabled)){
-                            op += '<a data-dbclick class="layui-btn layui-btn-normal layui-btn-sm" data-title="隐藏分类" data-modal=\'{:url("disabled")}?id='+item.id+'\'>隐 藏</a>';
+                            var text = '隐 藏';
+                            var btn_class = 'layui-btn-primary';
+                            if(item.status == 0){
+                                text = '显 示';
+                                btn_class = 'layui-btn-normal';
+                            }
+                            op += '<a data-dbclick class="layui-btn '+btn_class+' layui-btn-sm" data-title="隐藏分类" data-modal=\'{:url("status")}?id='+item.id+'\'>'+text+'</a>';
                         }
-                        if(parseInt(authRemove)){
+                        if(parseInt(authRemove) && !item.haschild){
                             op += '<a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此栏目吗？" data-action="{:url(\'remove\')}" data-value="id#'+item.id+'" data-csrf="{:systoken(\'remove\')}">删 除</a>';
                         }
                         return op;

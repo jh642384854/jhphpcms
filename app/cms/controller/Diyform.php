@@ -10,6 +10,11 @@ use think\admin\Controller;
  */
 class Diyform extends Controller
 {
+    /**
+     * 自定义表单
+     * @auth true
+     * @menu true
+     */
     public function index()
     {
         $this->title='自定义表单';
