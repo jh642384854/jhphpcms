@@ -26,7 +26,7 @@ function rendFieldOptions($type, $default = '')
         $default = $data[0];
     }
     if (count($data) > 2) {
-        $str = '<select name="chartype" class="layui-select" lay-filter="fieldtype_filter"  lay-search required>';
+        $str = '<select name="setting[chartype]" class="layui-select" lay-filter="fieldtype_filter"  lay-search required>';
     } else {
         $str = '';
     }

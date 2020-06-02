@@ -86,19 +86,19 @@ return [
         ],
         'select' => [
             'name' => '单选下拉框',
-            'field_list' => ['varchar', 'char', 'int']
+            'field_list' => ['varchar', 'char', 'int', 'tinyint']
         ],
-        'selects' => [
+/*        'selects' => [
             'name' => '多选下拉框',
-            'field_list' => ['varchar', 'char']
-        ],
+            'field_list' => ['varchar', 'char', 'tinyint']
+        ],*/
         'radio' => [
             'name' => '单选按钮',
-            'field_list' => ['varchar', 'char', 'int']
+            'field_list' => ['varchar', 'char', 'int', 'tinyint']
         ],
         'checkbox' => [
             'name' => '复选按钮',
-            'field_list' => ['varchar', 'char', 'int']
+            'field_list' => ['varchar', 'char']
         ],
         'image' => [
             'name' => '单图片',
@@ -143,6 +143,10 @@ return [
     ],
     //模型字段内置的正则表达式
     'modelPattern' => [
+        'text' => [
+            'name' => '普通字符',
+            'rule' => '/^[\w]+$/'
+        ],
         'number' => [
             'name' => '数字',
             'rule' => '/^[0-9.-]+$/'

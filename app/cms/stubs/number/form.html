@@ -8,19 +8,13 @@
     </div>
     <div class="layui-col-xs3">
         <label class="relative block">
-            <span class="color-green font-w7">字段长度</span>
-            <input type="text" name="setting[length]" value='{$length|default="10"}' pattern="^\d+$" autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
-            <span class="color-desc">字段长度</span>
-        </label>
-    </div>
-    <div class="layui-col-xs6">
-        <label class="relative block">
-            <span class="color-green font-w7">默认值</span>
-            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
-            <span class="color-desc">表单默认值</span>
+            <span class="color-green font-w7">表单样式</span>
+            <input name="setting[css]" value='{$css|default=""}'  pattern="^[A-Za-z0-9_-]+$" placeholder="请输入表单样式名称" class="layui-input">
+            <span class="color-desc">css样式的class名称</span>
         </label>
     </div>
 </div>
+{if !$isupdate}
 <div class="layui-row layui-col-space15">
     <div class="layui-col-xs3">
         <label class="relative block">
@@ -36,7 +30,22 @@
             <span class="color-desc">保留多少位小数点</span>
         </label>
     </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="10"}' pattern="^\d+$" autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">默认值</span>
+            <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default="0"}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">
+            <span class="color-desc">表单默认值</span>
+        </label>
+    </div>
 </div>
+{/if}
 <script>
     layui.use(['layer', 'jquery'], function () {
         var layer = layui.layer,

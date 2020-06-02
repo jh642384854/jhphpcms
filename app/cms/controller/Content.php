@@ -52,14 +52,39 @@ class Content extends Controller
     {
         $form = new \form\Form();
         //text类型
-        $id = 123;
+        /*$id = 123;
+        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
+        $textStr = $form->text($field['field'],'',$field['setting']);
+        echo $textStr;*/
+
+        //textarea类型
+        /*
+        $id = 125;
         $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
 
-        $textStr = $form->text($field['field'],'',$field['setting']);
+        $textStr = $form->textarea($field['field'],'465',$field['setting']);
         echo $textStr;
+        */
+        //数值类型  暂时就沿用text类型
+
+        //select类型(简单版，支持多选)
+        /*
+        $id = 128;
+        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
+
+        $textStr = $form->select($field['field'],3,$field['setting']);
+        echo $textStr;
+        */
+        //checkbox类型
+/*
+        $id = 129;
+        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
+
+        $textStr = $form->checkbox($field['field'],3,$field['setting']);
+        echo $textStr;*/
 
 
-
+        $this->fetch();
     }
 
     protected function _form_filter()
