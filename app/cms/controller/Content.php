@@ -38,7 +38,7 @@ class Content extends Controller
         $query = $this->_query($this->defaultModel['tablename'])->like('title');
         $query->equal('catid')->dateBetween('create_at');
         // 列表排序并显示
-        $query->order('sort desc,id desc')->page();
+        $query->order('id desc')->page();
     }
 
     public function add()
@@ -50,41 +50,24 @@ class Content extends Controller
 
     public function jhtest()
     {
-        $form = new \form\Form();
-        //text类型
-        /*$id = 123;
-        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
-        $textStr = $form->text($field['field'],'',$field['setting']);
-        echo $textStr;*/
-
-        //textarea类型
-        /*
-        $id = 125;
-        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
-
-        $textStr = $form->textarea($field['field'],'465',$field['setting']);
-        echo $textStr;
-        */
-        //数值类型  暂时就沿用text类型
-
-        //select类型(简单版，支持多选)
-        /*
-        $id = 128;
-        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
-
-        $textStr = $form->select($field['field'],3,$field['setting']);
-        echo $textStr;
-        */
-        //checkbox类型
-/*
-        $id = 129;
-        $field = $this->app->db->name('cms_model_field')->where(['id'=>$id])->find();
-
-        $textStr = $form->checkbox($field['field'],3,$field['setting']);
-        echo $textStr;*/
-
-
+        $modelid = 6;
+        $modelFields = $this->app->db->name('cms_model_field')->where(['modelid'=>$modelid])->select();
+        $form = new \form\Form($modelFields);
+        $defaultData = [
+            'news_title' => 465,
+            'keywords' => '关键字1,关键字2'
+        ];
+        $this->formData = $form->get($defaultData);
+        $this->formValidator = $form->formValidator;
+        $this->dependJS = $form->dependJS;
         $this->fetch();
+
+/*        $form = new \form\Form([]);
+        $setting = '{"tips":"\u8bf7\u9009\u62e9\u65e5\u671f\u8303\u56f4","width":"100","css":"layui-input","datetime_min_max_isopen":"1","datetime_min":"2020-06-01","datetime_max":"2020-06-30","chartype":"varchar","length":"50"}';
+        $res = $form->daterange('select_field','',$setting);
+        //echo $res;
+        echo $form->dependJS;*/
+
     }
 
     protected function _form_filter()

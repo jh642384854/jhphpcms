@@ -828,11 +828,11 @@ $(function () {
             type: 1, title: false, area: ['560px', '315px'], anim: 2, shadeClose: false, end: function () {
                 doAjax = false;
             }, content: '' +
-                '<div class="padding-30 padding-bottom-0" style="width:500px" data-queue-load="' + code + '">' +
-                '   <div class="layui-elip nowrap" data-message-title></div>' +
-                '   <div class="margin-top-15 layui-progress layui-progress-big" lay-showPercent="yes"><div class="layui-progress-bar transition" lay-percent="0.00%"></div></div>' +
-                '   <div class="margin-top-15"><textarea class="layui-textarea layui-bg-black border-0" disabled style="resize:none;overflow:hidden;height:190px"></textarea></div>' +
-                '</div>'
+            '<div class="padding-30 padding-bottom-0" style="width:500px" data-queue-load="' + code + '">' +
+            '   <div class="layui-elip nowrap" data-message-title></div>' +
+            '   <div class="margin-top-15 layui-progress layui-progress-big" lay-showPercent="yes"><div class="layui-progress-bar transition" lay-percent="0.00%"></div></div>' +
+            '   <div class="margin-top-15"><textarea class="layui-textarea layui-bg-black border-0" disabled style="resize:none;overflow:hidden;height:190px"></textarea></div>' +
+            '</div>'
         });
         (function loadprocess(code, that) {
             that = this, this.$box = $('[data-queue-load=' + code + ']');

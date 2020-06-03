@@ -1,23 +1,77 @@
 <div class="layui-row layui-col-space15">
     <div class="layui-col-xs3">
         <label class="relative block">
-            <span class="color-green font-w7">表单宽度</span>
-            <input name="setting[width]" value='{$width|default="100"}' pattern="^\d+$" autocomplete="off" placeholder="请输入表单宽度" class="layui-input">
-            <span class="color-desc">表单长度(单位百分比)</span>
+            <span class="color-green font-w7">选择配置来源</span>
+            <select name="setting[options_from]" class="layui-select" lay-filter="selectData_filter" lay-search required>
+                {foreach :config('constant.selectFieldDataSource') as $key => $config}
+                {eq name='key' value='$options_from|default="diyconfig"'}
+                <option selected value='{$key}'>{$config}</option>
+                {else}
+                <option value='{$key}'>{$config}</option>
+                {/eq}
+                {/foreach}
+            </select>
+            <span class="color-desc">选择数据来源</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3 select_field_source" id="diyconfig_source">
+        <label class="relative block">
+            <span class="color-green font-w7">系统通用配置</span>
+            <select class="layui-select" lay-filter="localconfig_filter"  lay-search required>
+                <option value="">请选择配置项</option>
+                {foreach $localConfig as $key => $config}
+                <option value='{$config.value}'>{$config.description}</option>
+                {/foreach}
+            </select>
+            <span class="color-desc">模块管理->通用配置管理</span>
+        </label>
+    </div>
+    <div class="layui-col-xs3 select_field_source" id="moduledata_source" style="display: none">
+        <label class="relative block">
+            <span class="color-green font-w7">系统模块数据</span>
+            <select name="setting[options_module]" class="layui-select"  lay-search required>
+                <option value="">请选择模块</option>
+                {foreach :config('constant.selectDataModule') as $key => $val}
+                <option value='{$key}'>{$val}</option>
+                {/foreach}
+            </select>
+            <span class="color-desc">系统模块数据</span>
         </label>
     </div>
     <div class="layui-col-xs3">
         <label class="relative block">
-            <span class="color-green font-w7">字段长度</span>
-            <input type="text" name="setting[length]" value='{$length|default="255"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
-            <span class="color-desc">字段长度</span>
+            <span class="color-green font-w7">选项列表</span>
+            <textarea name="setting[options]" id="mutil_options" placeholder="请输入内容" class="layui-textarea">{$options|default="选项名称1:选项值1"}</textarea>
+            <span class="color-desc">选项列表</span>
         </label>
     </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">是否必选</span><br/>
+            {foreach :config('constant.YesOrNo') as $k=>$v}
+            <!--{if (!isset($min) and $k eq '1') or (isset($min) and $min eq $k)}-->
+            <input type="radio" name="setting[min]" checked value="{$k}" title="{$v}">
+            <!--{else}-->
+            <input type="radio" name="setting[min]" value="{$k}" title="{$v}">
+            <!--{/if}-->
+            {/foreach}
+        </label>
+    </div>
+</div>
+{if !$isupdate}
+<div class="layui-row layui-col-space15">
     <div class="layui-col-xs3">
         <label class="relative block">
             <span class="color-green font-w7">字段类型</span><br />
             {php}$default = !isset($chartype)?'':$chartype;{/php}
             {$type|raw|htmlspecialchars_decode|rendFieldOptions=$default}
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="255"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
         </label>
     </div>
     <div class="layui-col-xs3">
@@ -28,39 +82,21 @@
         </label>
     </div>
 </div>
-<div class="layui-row layui-col-space15">
-    <div class="layui-col-xs3">
-        <label class="relative block">
-            <span class="color-green font-w7">表单样式</span>
-            <input name="setting[css]" value='{$css|default="layui-input"}'  pattern="^[A-Za-z0-9_-]+$" placeholder="请输入表单样式名称" class="layui-input">
-            <span class="color-desc">css样式的class名称</span>
-        </label>
-    </div>
-    <div class="layui-col-xs6">
-        <label class="relative block">
-            <span class="color-green font-w7">选项列表</span>
-            <textarea name="setting[options]" id="mutil_options" placeholder="请输入内容" class="layui-textarea">{$options|default="选项名称1:选项值1"}</textarea>
-            <span class="color-desc">选项列表</span>
-        </label>
-    </div>
-    <div class="layui-col-xs3">
-        <label class="relative block">
-            <span class="color-green font-w7">选择已有配置</span>
-            <select class="layui-select" lay-filter="localconfig_filter"  lay-search required>
-                {foreach $localConfig as $key => $config}
-                <option value='{$config.value}'>{$config.description}</option>
-                {/foreach}
-            </select>
-            <span class="color-desc">模块管理->通用配置管理</span>
-        </label>
-    </div>
-</div>
+{/if}
 <script>
     layui.use(['layer', 'jquery'], function () {
         var layer = layui.layer,
             $ = layui.jquery;
 
         layui.form.render();
+
+        form.on('select(selectData_filter)', function(data){
+            if(data.value == 'moduledata'){
+                $("#mutil_options").val('');
+            }
+            $('.select_field_source').hide();
+            $('#'+data.value+'_source').show();
+        });
 
         form.on('select(localconfig_filter)', function(data){
             $("#mutil_options").val(data.value)

@@ -1,32 +1,25 @@
 {extend name="../../admin/view/main"}
 {block name="content"}
 <div class="layui-tab layui-tab-card think-bg-white">
-    <select name="city" xm-select="select1">
-        <option value="1" disabled="disabled">北京</option>
-        <option value="2" selected="selected">上海</option>
-        <option value="3">广州</option>
-        <option value="4" selected="selected">深圳</option>
-        <option value="5">天津</option>
-    </select>
-
-    <select name="city" xm-select="select2">
-        <option value="1" disabled="disabled">北京</option>
-        <option value="2">上海</option>
-        <option value="3" selected="selected">广州</option>
-        <option value="4">深圳</option>
-        <option value="5" selected="selected">天津</option>
-    </select>
-    <div class="layui-form-item">
-        <label class="layui-form-label">复选框</label>
-        <div class="layui-input-block">
-            <input type="checkbox" name="like[write]" title="写作">
-            <input type="checkbox" name="like[read]" title="阅读">
-            <input type="checkbox" name="like[daze]" title="发呆">
+    <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+        <div class="layui-card-body">
+            {foreach $formData['base'] as $key=>$vo}
+            <div class="layui-form-item">
+                <label class="layui-form-label">{$vo.title}</label>
+                <div class="layui-input-block">
+                    {$vo.form|raw}
+                    <!--<p class="help-block">必填，请填写表字段名称，建议字符不要太长，一般4-20个英文字符</p>-->
+                </div>
+            </div>
+            {/foreach}
+            <div class="hr-line-dashed"></div>
+            {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+            <div class="layui-form-item text-center">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveData">保存数据</button>
+                <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+            </div>
         </div>
-    </div>
-    <div class="">
-        <input type="checkbox" name="checkbox_field[]" value="2" title="lol_bus" lay-filter="checkbox_field_filter" lay-skin="primary"><input checked="" type="checkbox" name="checkbox_field[]" value="3" title="synthesize" lay-filter="checkbox_field_filter" lay-skin="primary"><input type="checkbox" name="checkbox_field[]" value="4" title="speed_game" lay-filter="checkbox_field_filter" lay-skin="primary"><input type="checkbox" name="checkbox_field[]" value="1" title="onebuy_bus" lay-filter="checkbox_field_filter" lay-skin="primary"><input type="checkbox" name="checkbox_field[]" value="5" title="qad_bus" lay-filter="checkbox_field_filter" lay-skin="primary"><input type="checkbox" name="checkbox_field[]" value="6" title="lolAD_bus" lay-filter="checkbox_field_filter" lay-skin="primary"><input type="checkbox" name="checkbox_field[]" value="7" title="devil_bus" lay-filter="checkbox_field_filter" lay-skin="primary">
-    </div>
+    </form>
 </div>
 {/block}
 {block name='style'}
@@ -40,9 +33,59 @@
     }).extend({
         formSelects: 'formSelects-v4'
     });
-    layui.use(['jquery','form', 'formSelects'], function(){
+    layui.use(['jquery', 'form','laydate', 'formSelects'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            laydate = layui.laydate,
+            form = layui.form;
 
+        {$dependJS|raw}
+
+        form.on('submit(saveData)', function (data) {
+            {$formValidator|raw}
+            //拦截layui自带的提交
+            console.log(formData);
+            return false;
+        })
     });
+
+    function checkForm(){
+        //输入框
+        var nameVal = $.vali.trim($('#name').val());
+        if(nameVal === ''){
+            $.msg.error("请至少选择一个");
+            return false;
+        }
+        var namePattern = /^\d+$/;
+        if(!namePattern.test(nameVal)){
+            $.msg.error("请至少选择一个");
+            return false;
+        }
+
+        //下拉框
+        var nameVal = $('#city2 option:selected').val();
+        if(nameVal == ''){
+            $.msg.error("请至少选择一个");
+            return false;
+        }
+
+        //复选框
+        var checked = $("input[name='checkbox_field']:checked");
+        if (checked.length == 0) {
+            $.msg.error("请至少选择一个");
+            return false;
+        }
+        var nameVal = [];
+        $("input[type='checkbox'][name='checkThis']:checked").each(function(){
+            nameVal.push($(this).val())
+        })
+        formData.name = nameVal.join(',');
+
+        //单选框
+
+    }
+
+
 
 </script>
 {/block}

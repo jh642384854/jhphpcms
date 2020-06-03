@@ -184,7 +184,7 @@ class TableStructService extends Service
                     $newFieldInfo['length'] = empty($fieldInfo['length']) ? 100 : $fieldInfo['length'];
                     $newFieldInfo['charset'] = empty($fieldInfo['charset']) ? 'utf8mb4' : $fieldInfo['charset'];
                     $newFieldInfo['collate'] = empty($fieldInfo['collate']) ? 'utf8mb4_bin' : $fieldInfo['collate'];
-                    $newFieldInfo['defaultval'] = empty($fieldInfo['defaultval']) ? '' : $fieldInfo['defaultval'];
+                    $newFieldInfo['defaultvalue'] = empty($fieldInfo['defaultvalue']) ? '' : $fieldInfo['defaultvalue'];
                     break;
                 case 'tinyint':
                 case 'smallint':
@@ -193,19 +193,19 @@ class TableStructService extends Service
                 case 'int':
                 case 'bigint':
                 case 'bit':
-                    if (!isset($fieldInfo['defaultval']) || $fieldInfo['defaultval'] == '') {
+                    if (!isset($fieldInfo['defaultvalue']) || $fieldInfo['defaultvalue'] == '') {
                         $defalutVal = 0;
                     } else {
-                        $defalutVal = $fieldInfo['defaultval'];
+                        $defalutVal = $fieldInfo['defaultvalue'];
                     }
-                    $newFieldInfo['defaultval'] = $defalutVal;
+                    $newFieldInfo['defaultvalue'] = $defalutVal;
                     break;
                 case 'real':
                 case 'double':
                 case 'float':
                 case 'decimal':
                 case 'numeric':
-                    $newFieldInfo['defaultval'] = empty($fieldInfo['defaultval']) ? 0 : $fieldInfo['defaultval'];
+                    $newFieldInfo['defaultvalue'] = empty($fieldInfo['defaultvalue']) ? 0 : $fieldInfo['defaultvalue'];
                     $newFieldInfo['precision'] = empty($fieldInfo['precision']) ? 0 : $fieldInfo['precision'];
                     break;
                 case 'tinytext':
@@ -216,10 +216,10 @@ class TableStructService extends Service
                     $newFieldInfo['collate'] = empty($fieldInfo['collate']) ? 'utf8mb4_bin' : $fieldInfo['collate'];
                     break;
                 case 'timestamp':
-                    $newFieldInfo['defaultval'] = empty($fieldInfo['defaultval']) ? 'CURRENT_TIMESTAMP' : $fieldInfo['defaultval'];
+                    $newFieldInfo['defaultvalue'] = empty($fieldInfo['defaultvalue']) ? 'CURRENT_TIMESTAMP' : $fieldInfo['defaultvalue'];
                     break;
                 case 'datetime':
-                    $newFieldInfo['defaultval'] = empty($fieldInfo['defaultval']) ? '' : $fieldInfo['defaultval'];
+                    $newFieldInfo['defaultvalue'] = empty($fieldInfo['defaultvalue']) ? '' : $fieldInfo['defaultvalue'];
                     break;
             }
 
@@ -241,7 +241,7 @@ class TableStructService extends Service
             if (in_array($newFieldInfo['type'], ['char', 'varchar', 'tinytext', 'mediumtext', 'text', 'longtext'])) {
                 $sql .= 'CHARACTER SET ' . $newFieldInfo['charset'] . ' COLLATE ' . $newFieldInfo['collate'] . ' ';
             }
-            $sql .= $newFieldInfo['isNull'] . " DEFAULT '" . $newFieldInfo['defaultval'] . "'";
+            $sql .= $newFieldInfo['isNull'] . " DEFAULT '" . $newFieldInfo['defaultvalue'] . "'";
             if ($newFieldInfo['commment'] != '') {
                 $sql .= " COMMENT '" . $newFieldInfo['commment'] . "'";
             }
@@ -258,8 +258,8 @@ class TableStructService extends Service
                 $sql .= $newFieldInfo['isNull'];
             }
             //③、修改了原来的默认值
-            if (!empty($fieldInfo['defaultval']) && $fieldInfo['defaultval'] != "") {
-                $sql .= " DEFAULT '" . $newFieldInfo['defaultval'] . "'";
+            if (!empty($fieldInfo['defaultvalue']) && $fieldInfo['defaultvalue'] != "") {
+                $sql .= " DEFAULT '" . $newFieldInfo['defaultvalue'] . "'";
             }
             //④、修改了原来的注释
             if (!empty($fieldInfo['commment']) && $fieldInfo['commment'] != "") {

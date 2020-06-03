@@ -62,19 +62,19 @@ return [
         ],
         'date' => [
             'name' => '日期',
-            'field_list' => ['date']
+            'field_list' => ['date','char','varchar']
         ],
         'daterange' => [
             'name' => '日期带范围',
-            'field_list' => ['varchar']
+            'field_list' => ['varchar','char']
         ],
         'time' => [
             'name' => '时间',
-            'field_list' => ['time']
+            'field_list' => ['time','char','varchar']
         ],
         'timerange' => [
             'name' => '时间带范围',
-            'field_list' => ['varchar']
+            'field_list' => ['varchar','char']
         ],
         'datetime' => [
             'name' => '日期时间',
@@ -82,22 +82,22 @@ return [
         ],
         'datetimerange' => [
             'name' => '日期时间带范围',
-            'field_list' => ['varchar']
+            'field_list' => ['varchar','char']
         ],
         'select' => [
-            'name' => '单选下拉框',
+            'name' => 'select下拉框',
             'field_list' => ['varchar', 'char', 'int', 'tinyint']
         ],
-/*        'selects' => [
-            'name' => '多选下拉框',
-            'field_list' => ['varchar', 'char', 'tinyint']
-        ],*/
+        /*        'selects' => [
+                    'name' => '多选下拉框',
+                    'field_list' => ['varchar', 'char', 'tinyint']
+                ],*/
         'radio' => [
-            'name' => '单选按钮',
+            'name' => 'radio单选按钮',
             'field_list' => ['varchar', 'char', 'int', 'tinyint']
         ],
         'checkbox' => [
-            'name' => '复选按钮',
+            'name' => 'checkbox复选按钮',
             'field_list' => ['varchar', 'char']
         ],
         'image' => [
@@ -145,7 +145,7 @@ return [
     'modelPattern' => [
         'text' => [
             'name' => '普通字符',
-            'rule' => '/^[\w]+$/'
+            'rule' => '/^[.*]+$/'
         ],
         'number' => [
             'name' => '数字',
@@ -163,6 +163,7 @@ return [
             'name' => '数字+字母',
             'rule' => '/^[0-9a-z]+$/i'
         ],
+        //TODO 添加日期、时间、日期时间正则匹配
         'email' => [
             'name' => 'Email',
             'rule' => '/^[\w\-\.]+@[\w\-\.]+(\.\w+)+$/'
@@ -206,7 +207,8 @@ return [
         'moduledata' => '系统模块'
     ],
     'selectDataModule' => [
-        'catgory' => '栏目列表'
+        'catgory' => '栏目列表',
+        'recommend' => '推荐位'
     ],
     //字段索引类型
     'fieldIndexType' => ['Normal', 'Unique', 'Full Text'],
