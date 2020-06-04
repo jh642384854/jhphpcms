@@ -57,9 +57,17 @@ class Content extends Controller
             'news_title' => 465,
             'keywords' => '关键字1,关键字2'
         ];
-        $this->formData = $form->get($defaultData);
+        $this->formFields = $form->get($defaultData);
         $this->formValidator = $form->formValidator;
         $this->dependJS = $form->dependJS;
+        $this->formData = $form->formData;
+        $layuiJsModel = array_unique($form->layuiJsModule);
+        $layuiJSinit = '';
+        foreach ($layuiJsModel as $value){
+            $layuiJSinit .= $value.' = layui.'.$value.',';
+        }
+        $this->layuiJsModels = implode('","',$layuiJsModel);
+        $this->layuiJSinit = $layuiJSinit;
         $this->fetch();
 
 /*        $form = new \form\Form([]);
@@ -68,6 +76,11 @@ class Content extends Controller
         //echo $res;
         echo $form->dependJS;*/
 
+    }
+
+    public function uploadtest()
+    {
+        $this->fetch();
     }
 
     protected function _form_filter()

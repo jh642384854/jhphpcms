@@ -8,11 +8,42 @@
     </div>
     <div class="layui-col-xs3">
         <label class="relative block">
-            <span class="color-green font-w7">字段长度</span>
-            <input type="text" name="setting[length]" value='{$length|default="7"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
-            <span class="color-desc">字段长度</span>
+            <span class="color-green font-w7">表单样式</span>
+            <input type="text" name="setting[css]" value='{$css|default="layui-input"}' autocomplete="off" placeholder="请输入表单样式名称" class="layui-input">
+            <span class="color-desc">css样式的class名称</span>
         </label>
     </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">色值取值类型</span>
+            <select name="setting[color_value_type]" lay-filter="colorselect_pattern">
+                {foreach :config('constant.colorValueType') as $key => $colorVal}
+                {eq name='key' value='$color_value_type|default="hex"'}
+                <option selected value='{$key}'>{$colorVal}</option>
+                {else}
+                <option value='{$key}'>{$colorVal}</option>
+                {/eq}
+                {/foreach}
+            </select>
+        </label>
+    </div>
+    <div class="layui-col-xs3">
+        <label class="relative block">
+            <span class="color-green font-w7">是否必选</span><br/>
+            <select name="setting[min]" lay-filter="colorselect_pattern">
+                {foreach :config('constant.YesOrNo') as $key => $val}
+                {eq name='key' value='$min|default="0"'}
+                <option selected value='{$key}'>{$val}</option>
+                {else}
+                <option value='{$key}'>{$val}</option>
+                {/eq}
+                {/foreach}
+            </select>
+        </label>
+    </div>
+</div>
+{if !$isupdate}
+<div class="layui-row layui-col-space15">
     <div class="layui-col-xs3">
         <label class="relative block">
             <span class="color-green font-w7">字段类型</span><br />
@@ -22,29 +53,32 @@
     </div>
     <div class="layui-col-xs3">
         <label class="relative block">
-            <span class="color-green font-w7">表单样式</span>
-            <input type="text" name="setting[css]" value='{$css|default="layui-input"}' autocomplete="off" placeholder="请输入表单样式名称" class="layui-input">
-            <span class="color-desc">css样式的class名称</span>
+            <span class="color-green font-w7">字段长度</span>
+            <input type="text" name="setting[length]" value='{$length|default="7"}'  autocomplete="off" required placeholder="请输入表单字段长度" class="layui-input">
+            <span class="color-desc">字段长度</span>
         </label>
     </div>
-</div>
-<div class="layui-form-item">
-    <div class="layui-input-inline" style="width: 50px; line-height: 38px;">默认值：</div>
-    <div class="layui-input-inline" style="width: 120px;">
-        <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default="#1c97f5"}' readonly placeholder="请选择颜色" class="layui-input" id="default_color_val">
+    <div class="layui-col-xs3">
+        <div class="layui-form-item">
+            <div class="layui-input-inline" style="width: 50px; line-height: 38px;">默认值：</div>
+            <div class="layui-input-inline" style="width: 120px;">
+                <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' readonly placeholder="请选择颜色" class="layui-input" id="default_color_val">
+            </div>
+            <div class="layui-inline" style="left: -11px;">
+                <div id="fieldColor"></div>
+            </div>
+        </div>
     </div>
-    <div class="layui-inline" style="left: -11px;">
-        <div id="test-form"></div>
-    </div>
 </div>
-
+{/if}
 <script>
     layui.use(['colorpicker'], function () {
         layui.form.render();
         var colorpicker = layui.colorpicker;
         colorpicker.render({
-            elem: '#test-form'
+            elem: '#fieldColor'
             ,color: '{$css|default="#1c97f5"}'
+            ,predefine: true // 开启预定义颜色
             ,done: function(color){
                 $('#default_color_val').val(color);
             }

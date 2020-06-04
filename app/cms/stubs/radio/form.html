@@ -47,14 +47,16 @@
     </div>
     <div class="layui-col-xs3">
         <label class="relative block">
-            <span class="color-green font-w7">是否必选</span><br/>
-            {foreach :config('constant.YesOrNo') as $k=>$v}
-            <!--{if (!isset($min) and $k eq '1') or (isset($min) and $min eq $k)}-->
-            <input type="radio" name="setting[min]" checked value="{$k}" title="{$v}">
-            <!--{else}-->
-            <input type="radio" name="setting[min]" value="{$k}" title="{$v}">
-            <!--{/if}-->
-            {/foreach}
+            <span class="color-green font-w7">是否必选</span>
+            <select name="setting[min]" lay-filter="colorselect_pattern">
+                {foreach :config('constant.YesOrNo') as $key => $val}
+                {eq name='key' value='$min|default="0"'}
+                <option selected value='{$key}'>{$val}</option>
+                {else}
+                <option value='{$key}'>{$val}</option>
+                {/eq}
+                {/foreach}
+            </select>
         </label>
     </div>
 </div>

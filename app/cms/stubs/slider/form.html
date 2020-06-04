@@ -1,7 +1,28 @@
 <div class="layui-row layui-col-space15">
-    <div class="layui-col-xs3">
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块步长值</span>
+            <input type="text" name="setting[step]" value='{$step|default="1"}' autocomplete="off" placeholder="请输入滑块步长值" class="layui-input">
+            <span class="color-desc">滑块步长值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块最小值</span>
+            <input type="text" name="setting[minval]" value='{$minval|default="1"}' autocomplete="off" placeholder="请输入滑块最小值" class="layui-input">
+            <span class="color-desc">滑块最小值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
+        <label class="relative block">
+            <span class="color-green font-w7">滑块最大值</span>
+            <input type="text" name="setting[maxval]" value='{$maxval|default="100"}' autocomplete="off" placeholder="请输入滑块最大值" class="layui-input">
+            <span class="color-desc">滑块最大值</span>
+        </label>
+    </div>
+    <div class="layui-col-xs2">
         <div class="layui-form-item">
-            <div>评分主题色：</div>
+            <div>滑块主题色：</div>
             <div class="layui-input-inline" style="width: 120px;">
                 <input type="text" name="setting[theme]" value='{$theme|default="#1c97f5"}' readonly placeholder="请选择滑块主题色" class="layui-input" id="default_silder_color_val">
             </div>
@@ -10,32 +31,23 @@
             </div>
         </div>
     </div>
-    <div class="layui-col-xs3">
+    <div class="layui-col-xs2">
         <label class="relative block">
-            <span class="color-green font-w7">评分星星个数</span>
-            <input type="text" name="setting[star_length]" value='{$star_length|default="5"}' autocomplete="off" placeholder="请输入评分星星个数" class="layui-input">
-            <span class="color-desc">设置评分显示的星星个数</span>
-        </label>
-    </div>
-    <div class="layui-col-xs3">
-        <label class="relative block">
-            <span class="color-green font-w7">是否允许半星评价</span><br />
-            <select name="setting[half]" lay-filter="colorselect_pattern">
-                {foreach :config('constant.YesOrNo') as $key => $val}
-                {eq name='key' value='$half|default="0"'}
-                <option selected value='{$key}'>{$val}</option>
-                {else}
-                <option value='{$key}'>{$val}</option>
-                {/eq}
-                {/foreach}
+            <span class="color-green font-w7">显示方式</span>
+            <select name="setting[silder_type]" lay-filter="colorselect_pattern">
+            {foreach ['default'=>'水平','vertical'=>'垂直'] as $key => $val}
+            {eq name='key' value='$color_value_type|default="default"'}
+            <option selected value='{$key}'>{$val}</option>
+            {else}
+            <option value='{$key}'>{$val}</option>
+            {/eq}
+            {/foreach}
             </select>
-            <br />
-            <span class="color-desc">设定组件是否可以选择半星</span>
         </label>
     </div>
-    <div class="layui-col-xs3">
+    <div class="layui-col-xs2">
         <label class="relative block">
-            <span class="color-green font-w7">是否必选</span><br/>
+            <span class="color-green font-w7">是否必选</span>
             <select name="setting[min]" lay-filter="colorselect_pattern">
                 {foreach :config('constant.YesOrNo') as $key => $val}
                 {eq name='key' value='$min|default="0"'}
@@ -64,7 +76,7 @@
             <span class="color-desc">字段长度</span>
         </label>
     </div>
-    <div class="layui-col-xs2">
+    <div class="layui-col-xs3">
         <label class="relative block">
             <span class="color-green font-w7">滑块默认值</span>
             <input type="text" name="setting[defaultvalue]" value='{$defaultvalue|default=""}' autocomplete="off" placeholder="请输入表单默认值" class="layui-input">

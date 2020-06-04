@@ -519,6 +519,67 @@ $(function () {
         });
     };
 
+    /*! 上传单个附件 */
+    $.fn.uploadOneAttach = function(){
+        return this.each(function (input, template) {
+            input = $(this), template = $('<button type="button" class="layui-btn"><i class="layui-icon"></i>上传附件</button>'), attachVal = this.value ? this.value : "";
+            template.attr('data-type', input.data('type') || 'doc,docx,xls,xlsx,ppt,pptx,pdf,zip,rar,tar.gz,tar');
+            template.attr('data-field', input.attr('name') || 'attach').data('input', this);
+            input.attr('name', template.attr('data-field')).after(template)
+            template.uploadFile(function (url, fileobj) {
+                input.val(fileobj.name+':'+fileobj.size+':'+url);
+                showAttach(fileobj);
+            });
+            if(attachVal != ""){
+                var fileData = attachVal.split(':');
+                var fileobj = {name:fileData[0],size:fileData[1],xurl:fileData[2]};
+                showAttach(fileobj);
+            }
+            function showAttach(fileobj) {
+                $info = '<div class="layui-upload-list"><table class="layui-table"><thead><tr><th>文件名</th><th>文件大小</th><th>服务器地址</th></tr></thead><tbody><tr><td>'+fileobj.name+'</td><td>'+ (fileobj.size/1024).toFixed(1) +'kb</td><td>'+fileobj.xurl+'</td></tr></tbody></table></div>';
+                template.before($info);
+            }
+        }), this;
+    };
+
+    /*! 上传多个附件 */
+    $.fn.uploadMultipleAttach = function(){
+        return this.each(function () {
+            var $button = $('<button type="button" class="layui-btn"><i class="layui-icon"></i>上传附件</button>');
+            var attachObjs = [];
+            //获取默认值
+            if(this.value != ""){
+                var attachData = this.value.split('|');
+                for(i = 0,arrlen = attachData.length;i<arrlen;i++){
+                    var fileData = attachData[i].split(':');
+                    var fileObj = {name:fileData[0],size:fileData[1],xurl:fileData[2]};
+                    attachObjs.push(fileObj);
+                }
+            }
+            var $input = $(this), name = $input.attr('name') || 'attach',upmaxsize = $input.data('upmaxsize') || 10, type = $input.data('type') || 'doc,docx,xls,xlsx,ppt,pptx,pdf,zip,rar,tar.gz,tar';
+            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('upmaxsize', upmaxsize).data('input', this); //data('upmaxsize', upmaxsize)是设置当前可以上传的文件个数
+            $input.attr('name', name).after($button);
+            var $attachStr = '<div class="layui-upload-list"  style="display:none" id="layui-upload-list"><table class="layui-table"><thead><tr><th>文件名</th><th>文件大小</th><th>服务器地址</th></tr></thead><tbody id="attach_tbody"></tbody></table></div>';
+            $button.uploadFile(function (url, fileobj) {
+                attachObjs.push(fileobj.name+':'+fileobj.size+':'+url), $input.val(attachObjs.join('|'));
+                $("#layui-upload-list").show();
+                $("#attach_tbody").append(showAttachContainer([fileobj]));
+            });
+            $button.before($attachStr);
+            if (attachObjs.length > 0){
+                $attachStr += showAttachContainer(attachObjs);
+                $button.before($attachStr);
+            }
+            function showAttachContainer(fileobjs) {
+                var $attachStr = '';
+                $(fileobjs).each(function (idx, fileobj) {
+                    $attachStr += '<tr><td>'+fileobj.name+'</td><td>'+ (fileobj.size/1024).toFixed(1) +'kb</td><td>'+fileobj.xurl+'</td></tr>';
+                });
+                return $attachStr;
+            }
+        }), this;
+    };
+
     /*! 上传单张图片 */
     $.fn.uploadOneImage = function () {
         return this.each(function (input, template) {
@@ -538,8 +599,8 @@ $(function () {
     $.fn.uploadMultipleImage = function () {
         return this.each(function () {
             var $button = $('<a class="uploadimage"></a>'), images = this.value ? this.value.split('|') : [];
-            var $input = $(this), name = $input.attr('name') || 'umt-image', type = $input.data('type') || 'png,jpg,gif';
-            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('input', this);
+            var $input = $(this), name = $input.attr('name') || 'umt-image',upmaxsize = $input.data('upmaxsize') || 10, type = $input.data('type') || 'png,jpg,gif';
+            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('upmaxsize', upmaxsize).data('input', this);
             $input.attr('name', name).after($button), $button.uploadFile(function (src) {
                 images.push(src), $input.val(images.join('|')), showImageContainer([src]);
             });

@@ -54,7 +54,7 @@ return [
         ],
         'richtext' => [
             'name' => '富文本',
-            'field_list' => ['text']
+            'field_list' => ['text','tinytext','mediumtext','longtext']
         ],
         'number' => [
             'name' => '数字',
@@ -62,19 +62,19 @@ return [
         ],
         'date' => [
             'name' => '日期',
-            'field_list' => ['date','char','varchar']
+            'field_list' => ['date', 'char', 'varchar']
         ],
         'daterange' => [
             'name' => '日期带范围',
-            'field_list' => ['varchar','char']
+            'field_list' => ['varchar', 'char']
         ],
         'time' => [
             'name' => '时间',
-            'field_list' => ['time','char','varchar']
+            'field_list' => ['time', 'char', 'varchar']
         ],
         'timerange' => [
             'name' => '时间带范围',
-            'field_list' => ['varchar','char']
+            'field_list' => ['varchar', 'char']
         ],
         'datetime' => [
             'name' => '日期时间',
@@ -82,7 +82,7 @@ return [
         ],
         'datetimerange' => [
             'name' => '日期时间带范围',
-            'field_list' => ['varchar','char']
+            'field_list' => ['varchar', 'char']
         ],
         'select' => [
             'name' => 'select下拉框',
@@ -120,13 +120,13 @@ return [
             'name' => '颜色选择器',
             'field_list' => ['char', 'varchar']
         ],
-        'silder' => [
+        'slider' => [
             'name' => '滑块',
-            'field_list' => ['char', 'varchar']
+            'field_list' => ['char', 'varchar', 'int', 'tinyint']
         ],
         'score' => [
             'name' => '评分',
-            'field_list' => ['char', 'varchar']
+            'field_list' => ['char', 'varchar', 'int', 'tinyint']
         ],
         /*'transfer' => [
             'name' => '穿梭框',
@@ -210,6 +210,7 @@ return [
         'catgory' => '栏目列表',
         'recommend' => '推荐位'
     ],
+    'colorValueType' => ['hex' => 'HEX(十六进制)', 'rgb' => 'RGB', 'rgba' => 'RGBA'],
     //字段索引类型
     'fieldIndexType' => ['Normal', 'Unique', 'Full Text'],
     //字段索引方法

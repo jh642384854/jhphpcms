@@ -95,7 +95,7 @@ class Field extends Controller
     {
         if ($this->request->isPost()) {
             //过滤空值
-            $settings = array_filter($vo['setting']);
+            $settings = array_filter($vo['setting'],function ($val){return ($val === '' || $val === null) ? false : true;});
             if (!empty($vo['id'])) {
                 //更新操作。要获取原来的setting配置信息，保留里面的一些必要配置信息
                 $oldSettings = $this->app->db->name($this->table)->field('setting')->where(['id' => $vo['id']])->find();
@@ -107,7 +107,6 @@ class Field extends Controller
                 }
             }
             $vo['setting'] = json_encode($settings);
-
         }
     }
 
@@ -129,9 +128,11 @@ class Field extends Controller
                     $fieldInfo = [
                         'name' => $data['field'],
                         'type' => $setting['chartype'],
-                        'length' => $setting['length'],
                         'commment' => $data['title'],
                     ];
+                    if (isset($setting['length']) && $setting['length'] != '') {
+                        $fieldInfo['length'] = $setting['length'];
+                    }
                     if (isset($setting['defaultvalue']) && $setting['defaultvalue'] != '') {
                         $fieldInfo['defaultvalue'] = $setting['defaultvalue'];
                     }

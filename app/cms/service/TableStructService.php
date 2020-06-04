@@ -214,6 +214,7 @@ class TableStructService extends Service
                 case 'longtext':
                     $newFieldInfo['charset'] = empty($fieldInfo['charset']) ? 'utf8mb4' : $fieldInfo['charset'];
                     $newFieldInfo['collate'] = empty($fieldInfo['collate']) ? 'utf8mb4_bin' : $fieldInfo['collate'];
+                    $newFieldInfo['defaultvalue'] = empty($fieldInfo['defaultvalue']) ? '' : $fieldInfo['defaultvalue'];
                     break;
                 case 'timestamp':
                     $newFieldInfo['defaultvalue'] = empty($fieldInfo['defaultvalue']) ? 'CURRENT_TIMESTAMP' : $fieldInfo['defaultvalue'];

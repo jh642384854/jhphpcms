@@ -3,7 +3,7 @@
 <div class="layui-tab layui-tab-card think-bg-white">
     <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
         <div class="layui-card-body">
-            {foreach $formData['base'] as $key=>$vo}
+            {foreach $formFields['base'] as $key=>$vo}
             <div class="layui-form-item">
                 <label class="layui-form-label">{$vo.title}</label>
                 <div class="layui-input-block">
@@ -33,16 +33,17 @@
     }).extend({
         formSelects: 'formSelects-v4'
     });
-    layui.use(['jquery', 'form','laydate', 'formSelects'], function () {
+    layui.use(['jquery', 'form',"{$layuiJsModels|raw}"], function () {
         var layer = layui.layer,
             $ = layui.jquery,
-            laydate = layui.laydate,
+            {$layuiJSinit|raw}
             form = layui.form;
 
         {$dependJS|raw}
 
         form.on('submit(saveData)', function (data) {
             {$formValidator|raw}
+            {$formData|raw}
             //拦截layui自带的提交
             console.log(formData);
             return false;

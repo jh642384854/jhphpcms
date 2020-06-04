@@ -5,6 +5,8 @@ define(['md5'], function (SparkMD5, allowExtsMimes) {
         options = {element: $(element), exts: [], mimes: [], files: {}, cache: {}, loading: 0};
         options.count = {total: 0, uploaded: 0};
         options.type = options.element.data('type') || '';
+        /*! 定义批量上传文件的文件个数 */
+        options.upmaxsize = options.element.data('upmaxsize') || 10;
         options.safe = options.element.data('safe') ? 1 : 0;
         options.types = options.type ? options.type.split(',') : [];
         options.field = options.element.data('field') || 'file';
@@ -19,35 +21,51 @@ define(['md5'], function (SparkMD5, allowExtsMimes) {
         options.uploader = layui.upload.render({
             auto: false, multiple: options.multiple, accept: 'file', elem: element,
             exts: options.exts.join('|'), acceptMime: options.mimes.join(','), choose: function (obj) {
-                for (var index in options.files = obj.pushFile()) {
-                    options.loading = $.msg.loading('上传进度 <span data-upload-progress>0%</span>');
-                    options.count.total++, options.files[index].index = index, options.cache[index] = options.files[index], delete options.files[index];
-                    md5file(options.cache[index]).then(function (file) {
-                        jQuery.ajax("{:url('admin/api.upload/state')}", {
-                            data: {xkey: file.xkey, uptype: options.uptype, safe: options.safe, name: file.name}, method: 'post', success: function (ret) {
-                                file.xurl = ret.data.url;
-                                if (parseInt(ret.code) === 404) {
-                                    options.uploader.config.url = ret.data.server;
-                                    options.uploader.config.data.key = ret.data.xkey;
-                                    options.uploader.config.data.safe = ret.data.safe;
-                                    options.uploader.config.data.uptype = ret.data.uptype;
-                                    if (ret.data.uptype === 'qiniu') {
-                                        options.uploader.config.data.token = ret.data.token;
-                                    } else if (ret.data.uptype === 'alioss') {
-                                        options.uploader.config.data.policy = ret.data.policy;
-                                        options.uploader.config.data.signature = ret.data.signature;
-                                        options.uploader.config.data.OSSAccessKeyId = ret.data.OSSAccessKeyId;
-                                        options.uploader.config.data.success_action_status = 200;
-                                        options.uploader.config.data['Content-Disposition'] = 'inline;filename=' + encodeURIComponent(file.name);
+                var upfiels = obj.pushFile();
+                var jsonLength = 0;
+                for(var item in upfiels){
+                    jsonLength++;
+                }
+                if(jsonLength <= options.upmaxsize){
+                    for (var index in options.files = upfiels) {
+                        options.loading = $.msg.loading('上传进度 <span data-upload-progress>0%</span>');
+                        options.count.total++, options.files[index].index = index, options.cache[index] = options.files[index], delete options.files[index];
+                        md5file(options.cache[index]).then(function (file) {
+                            jQuery.ajax("{:url('admin/api.upload/state')}", {
+                                data: {xkey: file.xkey, uptype: options.uptype, safe: options.safe, name: file.name}, method: 'post', success: function (ret) {
+                                    file.xurl = ret.data.url;
+                                    if (parseInt(ret.code) === 404) {
+                                        options.uploader.config.url = ret.data.server;
+                                        options.uploader.config.data.key = ret.data.xkey;
+                                        options.uploader.config.data.safe = ret.data.safe;
+                                        options.uploader.config.data.uptype = ret.data.uptype;
+                                        if (ret.data.uptype === 'qiniu') {
+                                            options.uploader.config.data.token = ret.data.token;
+                                        } else if (ret.data.uptype === 'alioss') {
+                                            options.uploader.config.data.policy = ret.data.policy;
+                                            options.uploader.config.data.signature = ret.data.signature;
+                                            options.uploader.config.data.OSSAccessKeyId = ret.data.OSSAccessKeyId;
+                                            options.uploader.config.data.success_action_status = 200;
+                                            options.uploader.config.data['Content-Disposition'] = 'inline;filename=' + encodeURIComponent(file.name);
+                                        }
+                                        obj.upload(file.index, file);
+                                    } else if (parseInt(ret.code) === 200) {
+                                        options.uploader.config.done({uploaded: true, url: file.xurl}, file.index);
+                                    } else {
+                                        $.msg.tips(ret.info || ret.error.message || '文件上传出错！');
                                     }
-                                    obj.upload(file.index, file);
-                                } else if (parseInt(ret.code) === 200) {
-                                    options.uploader.config.done({uploaded: true, url: file.xurl}, file.index);
-                                } else {
-                                    $.msg.tips(ret.info || ret.error.message || '文件上传出错！');
                                 }
-                            }
+                            });
                         });
+                    }
+                }else{
+                    $.msg.tips('文件上传个数不能超过'+options.upmaxsize+'个！');
+                    $.each(upfiels,function(_key){
+                        var key = _key;
+                        var value = upfiels[_key];
+                        if(_key == index) {
+                            delete upfiels[_key];
+                        }
                     });
                 }
             }, progress: function (n) {
