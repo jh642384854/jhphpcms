@@ -28,14 +28,11 @@ class CategoryService extends Service
      * @param int $currentCid
      * @return string
      */
-    public function getCategoryTree($selectId = 0, $currentCid = 0, $modelid = 0)
+    public function getCategoryTree($selectId = 0, $currentCid = 0)
     {
-        $categories = $this->model->order('sort ASC')->where(['status' => 1])->where(function (Query $query) use ($currentCid, $modelid) {
+        $categories = $this->model->order('sort ASC')->where(['status' => 1])->where(function (Query $query) use ($currentCid) {
             if (!empty($currentCid)) {
                 $query->where('id', '<>', $currentCid);
-            }
-            if (!empty($modelid)) {
-                $query->where(['modelid' => $modelid]);
             }
         })->select();
 
@@ -82,6 +79,24 @@ class CategoryService extends Service
             $data = $this->cacheAllCategory();
         }
         return $data;
+    }
+
+    /**
+     * 获取所有栏目，并构建为树形结构
+     * @return array
+     */
+    public function getAllCategoryTree($selectId = 0)
+    {
+        $categories = $this->model->field('id,name,parent_id')->order('sort ASC')->where(['status' => 1])->select();
+        $tree = new Tree();
+        $newCategories = [];
+        foreach ($categories as $item) {
+            $item['selected'] = $selectId == $item['id'] ? "selected" : "";
+            array_push($newCategories, $item);
+        }
+        $tree->init($newCategories);
+        $treeStr = $tree->getTreeArray($selectId);
+        return $treeStr;
     }
 
     /**

@@ -39,6 +39,32 @@ class Attachment extends Controller
         // 列表排序并显示
         $query->order('id desc')->page();
     }
+
+    /**
+     * 文件选择操作
+     * @auth true
+     */
+    public function fileManager()
+    {
+        $this->fetch();
+    }
+
+    /**
+     * 获取图片列表
+     * @return \think\response\Json
+     */
+    public function imgLists()
+    {
+        //if($this->app->request->isPost()){
+            $page = $this->app->request->get('page', 1);
+            $limit = $this->app->request->get('limit', 20);
+            $fields = 'filename as name,fileext as type,filepath as thumb';
+            $total = $this->app->db->name($this->table)->whereIn('fileext',config('constant.attachmentType.img.suffix'))->count();
+            $data = $this->app->db->name($this->table)->field($fields)->whereIn('fileext',config('constant.attachmentType.img.suffix'))->order('id desc')->page($page,$limit)->select();
+            return json(['images'=>$data->toArray(),'count'=>$total]);
+        //}
+    }
+
     /**
      * 列表数据额外处理
      * @param $data

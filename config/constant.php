@@ -54,7 +54,7 @@ return [
         ],
         'richtext' => [
             'name' => '富文本',
-            'field_list' => ['text','tinytext','mediumtext','longtext']
+            'field_list' => ['text', 'tinytext', 'mediumtext', 'longtext']
         ],
         'number' => [
             'name' => '数字',
@@ -207,7 +207,7 @@ return [
         'moduledata' => '系统模块'
     ],
     'selectDataModule' => [
-        'catgory' => '栏目列表',
+        'category' => '栏目列表',
         'recommend' => '推荐位'
     ],
     'colorValueType' => ['hex' => 'HEX(十六进制)', 'rgb' => 'RGB', 'rgba' => 'RGBA'],

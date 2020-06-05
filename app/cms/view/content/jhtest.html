@@ -8,7 +8,6 @@
                 <label class="layui-form-label">{$vo.title}</label>
                 <div class="layui-input-block">
                     {$vo.form|raw}
-                    <!--<p class="help-block">必填，请填写表字段名称，建议字符不要太长，一般4-20个英文字符</p>-->
                 </div>
             </div>
             {/foreach}
@@ -24,20 +23,19 @@
 {/block}
 {block name='style'}
 <link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/formSelects-v4.css">
+<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/cascader.css">
 {/block}
 {block name='script'}
 <script>
     layui.form.render();
     layui.config({
         base: "__ROOT__/static/plugs/layui/mods/"
-    }).extend({
-        formSelects: 'formSelects-v4'
     });
     layui.use(['jquery', 'form',"{$layuiJsModels|raw}"], function () {
         var layer = layui.layer,
             $ = layui.jquery,
             {$layuiJSinit|raw}
-            form = layui.form;
+        form = layui.form;
 
         {$dependJS|raw}
 
@@ -49,43 +47,6 @@
             return false;
         })
     });
-
-    function checkForm(){
-        //输入框
-        var nameVal = $.vali.trim($('#name').val());
-        if(nameVal === ''){
-            $.msg.error("请至少选择一个");
-            return false;
-        }
-        var namePattern = /^\d+$/;
-        if(!namePattern.test(nameVal)){
-            $.msg.error("请至少选择一个");
-            return false;
-        }
-
-        //下拉框
-        var nameVal = $('#city2 option:selected').val();
-        if(nameVal == ''){
-            $.msg.error("请至少选择一个");
-            return false;
-        }
-
-        //复选框
-        var checked = $("input[name='checkbox_field']:checked");
-        if (checked.length == 0) {
-            $.msg.error("请至少选择一个");
-            return false;
-        }
-        var nameVal = [];
-        $("input[type='checkbox'][name='checkThis']:checked").each(function(){
-            nameVal.push($(this).val())
-        })
-        formData.name = nameVal.join(',');
-
-        //单选框
-
-    }
-
 
 
 </script>

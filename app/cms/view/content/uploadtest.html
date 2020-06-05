@@ -4,17 +4,13 @@
     <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
         <div class="layui-card-body">
             <div class="layui-form-item">
-                <label class="layui-form-label">附件上传</label>
+                <label class="layui-form-label">图片上传</label>
                 <div class="layui-input-block">
-                    <div class="layui-upload">
-                        <button type="button" class="layui-btn" id="test8"><i class="layui-icon"></i>上传文件</button>
-                        <button type="button" class="layui-btn" id="test9">开始上传</button>
-                    </div>
+                    <button type="button" data-modal="{:url('module/attachment/fileManager')}" class="layui-btn" style="float: left; margin-right: 15px;">图片选择</button>
+                    <input type="hidden" name="thumb" id="thumb" value="{$vo.thumb|default=''}">
+                    <script>$('[name=thumb]').uploadOneImage()</script>
                 </div>
-            </div>
-            <div class="layui-upload-list"><table class="layui-table"><thead><tr><th>文件名</th><th>地址</th></tr></thead>
-                <tbody><tr><td>admin_ad项目修改.txt</td><td>0.1kb</td></tr></tbody>
-            </table>
+
             </div>
             <div class="hr-line-dashed"></div>
             {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
@@ -27,46 +23,24 @@
 </div>
 {/block}
 {block name='style'}
-
+<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/cascader.css">
 {/block}
 {block name='script'}
 <script>
     layui.form.render();
-    layui.use(['jquery', 'upload'], function () {
+    layui.config({
+        base: "__ROOT__/static/plugs/layui/mods/"
+    });
+    layui.use(['jquery'], function () {
         var layer = layui.layer,
-            $ = layui.jquery,
-            upload = layui.upload;
+            $ = layui.jquery;
 
-        //选完文件后不自动上传
-        upload.render({
-            elem: '#test8'
-            ,url: 'dkfjd' //改成您自己的上传接口
-            ,auto: false
-            ,accept: 'file' //普通文件
-            ,exts: 'txt|xls|doc' //只允许上传指定文件
-            //,multiple: true
-            //,bindAction: '#test9'
-            ,choose: function(obj){
-                //将每次选择的文件追加到文件队列
-                var files = obj.pushFile();
-                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
-                obj.preview(function(index, file, result){
-                    console.log(index); //得到文件索引
-                    console.log(file); //得到文件对象
-                    console.log(result); //得到文件base64编码，比如图片
-                    //obj.resetFile(index, file, '123.jpg'); //重命名文件名，layui 2.3.0 开始新增
-                    //这里还可以做一些 append 文件列表 DOM 的操作
-                    obj.upload(index, file); //对上传失败的单个文件重新上传，一般在某个事件中使用
-                    //delete files[index]; //删除列表中对应的文件，一般在某个事件中使用
-                });
-            }
-            ,done: function(res){
-                layer.msg('上传成功');
-                console.log(res)
-            }
-        });
-
-
+        //弹层选择后的回调
+        window.callbackFun = function(res){
+            var obj = $('#thumb');
+            obj.val(res.thumb);
+            obj.next('a.uploadimage').css({'backgroundImage':'url('+res.thumb+')'});
+        }
     });
 </script>
 {/block}

@@ -18,7 +18,7 @@ return [
     'default' => 'file',
     //应用中使用的cache Key
     'usekey' => [
-        'category'=>[
+        'category' => [
             'key' => 'AllCategory',
             'describe' => '缓存所有栏目'
         ],
@@ -26,26 +26,30 @@ return [
             'key' => 'AllModel',
             'describe' => '缓存所有的模型'
         ],
+        'recommend' => [
+            'key' => 'AllRecommend',
+            'describe' => '缓存所有的推荐位'
+        ],
         'field' => [
             'key' => 'AllField',
             'describe' => '缓存指定模型的所有字段'
         ]
     ],
     // 缓存连接方式配置
-    'stores'  => [
+    'stores' => [
         'file' => [
             // 驱动方式
-            'type'       => 'File',
+            'type' => 'File',
             // 缓存保存目录
-            'path'       => app()->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
+            'path' => app()->getRootPath() . 'runtime' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
             // 缓存名称前缀
-            'prefix'     => '',
+            'prefix' => '',
             // 缓存有效期 0 表示永久缓存
-            'expire'     => 0,
+            'expire' => 0,
             // 缓存标签前缀
             'tag_prefix' => 'tag:',
             // 序列化机制
-            'serialize'  => [],
+            'serialize' => [],
         ],
     ],
 ];

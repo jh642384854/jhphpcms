@@ -110,6 +110,7 @@ class Upload extends Controller
             file_exists($realpath) && is_dir($realpath) || mkdir($realpath, 0755, true);
             rename($file->getPathname(), $realname);
             $info = $local->info($this->name, $this->safe, $file->getOriginalName());
+            //TODO 写上传文件到附件表中
         } else {
             $bina = file_get_contents($file->getRealPath());
             $info = Storage::instance($this->uptype)->set($this->name, $bina, $this->safe, $file->getOriginalName());

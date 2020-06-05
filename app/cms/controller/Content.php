@@ -4,6 +4,7 @@ namespace app\cms\controller;
 
 use app\cms\service\CategoryService;
 use app\cms\service\ModelService;
+use app\cms\service\RecommendService;
 use think\admin\Controller;
 use tree\Tree;
 
@@ -71,16 +72,30 @@ class Content extends Controller
         $this->fetch();
 
 /*        $form = new \form\Form([]);
-        $setting = '{"tips":"\u8bf7\u9009\u62e9\u65e5\u671f\u8303\u56f4","width":"100","css":"layui-input","datetime_min_max_isopen":"1","datetime_min":"2020-06-01","datetime_max":"2020-06-30","chartype":"varchar","length":"50"}';
-        $res = $form->daterange('select_field','',$setting);
-        //echo $res;
+        $setting = '{"tips":"\u8bf7\u9009\u62e9\u680f\u76eeID","width":"100","min":"1","is_multiple":"0","options_from":"moduledata","options_module":"category","length":"5","chartype":"tinyint"}';
+        $res = $form->select('catid','',$setting);
+        echo $res;
         echo $form->dependJS;*/
 
     }
 
     public function uploadtest()
     {
+        /*$res = CategoryService::instance()->getAllCategoryTree();
+        return json($res);*/
         $this->fetch();
+    }
+
+
+    public function attachs()
+    {
+        $rs['images'] = [
+            ['thumb'=>'https://xzcustomer.cdn.bcebos.com./uploadfile/category/d9/48/18/58/5c49b26f4be9f.jpg','name'=>'ISgfKjpg','type'=>'jpg'],
+            ['thumb'=>'https://xzcustomer.cdn.bcebos.com./uploadfile/category/d9/48/18/58/5c49b26f4be9f.jpg','name'=>'ISgfKjpg','type'=>'mp3'],
+            ['thumb'=>'https://xzcustomer.cdn.bcebos.com./uploadfile/category/d9/48/18/58/5c49b26f4be9f.jpg','name'=>'ISgfKjpg','type'=>'doc'],
+        ];
+        $rs['count'] = 30;
+        return json($rs);
     }
 
     protected function _form_filter()
