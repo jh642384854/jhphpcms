@@ -1,0 +1,57 @@
+<form onsubmit="return false" data-auto="true" action="{:request()->url()}" method="post" class='layui-form layui-card' autocomplete="off">
+    <div class="layui-card-body">
+
+        <div class="color-text margin-left-40 margin-bottom-20 layui-code text-center layui-bg-gray" style="border-left-width:1px">
+            <p class="margin-bottom-5 font-w7">开启敏感词功能后，对前后台发布的文章、评论等内容会对敏感字进行特殊过滤处理</p>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">是否开启</span>
+            </label>
+            <div class="layui-input-block">
+                {foreach :config('constant.YesOrNo') as $k=>$v}
+                {php}$is_open = sysconf("badword.is_open");{/php}
+                <!--{if (!isset($is_open) and $k eq 1) or (isset($is_open) and $is_open eq $k)}-->
+                <input type="radio" name="badword.is_open" checked value="{$k}" title="{$v}">
+                <!--{else}-->
+                <input type="radio" name="badword.is_open" value="{$k}" title="{$v}">
+                <!--{/if}-->
+                {/foreach}
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">敏感词文件</span>
+            </label>
+            <div class="layui-input-block">
+                <input type="hidden" name="badword.file" data-type="txt" required value='{:sysconf("badword.file")}' >
+                <script>$('input[name="badword.file"]').uploadOneAttach()</script>
+                <p>上传 <b style="color:#FF0000;">txt</b> 格式文件，敏感词之间用半角逗号(,)来分割</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">敏感词替换为：</span>
+            </label>
+            <div class="layui-input-block">
+                <input name="badword.replace" value='{:sysconf("badword.replace")}' required placeholder="请输入敏感词被替换后的字符串" class="layui-input">
+            </div>
+        </div>
+
+        <div class="hr-line-dashed margin-left-40"></div>
+        <div class="layui-form-item text-center padding-left-40">
+            <button class="layui-btn" type="submit">保存配置</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消修改吗？" data-close>取消修改</button>
+        </div>
+
+    </div>
+</form>
+
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}

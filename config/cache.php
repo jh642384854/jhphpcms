@@ -33,6 +33,14 @@ return [
         'field' => [
             'key' => 'AllField',
             'describe' => '缓存指定模型的所有字段'
+        ],
+        'cascader' => [
+            'key' => 'Cascader',
+            'describe' => '缓存指定级联菜单数据'
+        ],
+        'config' => [
+            'key' => 'Config',
+            'describe' => '缓存指定系统配置数据'
         ]
     ],
     // 缓存连接方式配置

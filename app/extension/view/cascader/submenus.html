@@ -1,0 +1,65 @@
+{extend name="../../admin/view/main"}
+{block name="button"}
+<!--{if auth("addSub")}-->
+<button data-modal='{:url("addSub",["typeid"=>$typeid,"pid"=>$parent_id])}' data-title="添加子菜单" class='layui-btn layui-btn-sm layui-btn-primary'>添加子菜单</button>
+<!--{/if}-->
+<!--{if auth("submenus") && $parent_id gt 0}-->
+<a data-open='{:url("submenus",["typeid"=>$typeid,"pid"=>$current_parent_id])}' data-title="返回上级" class='layui-btn layui-btn-sm layui-btn-primary'>返回上级</a>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-sort-td'>
+                    <button type="button" data-reload class="layui-btn layui-btn-xs">刷 新</button>
+                </th>
+                <th class='text-left nowrap' width="120px">id</th>
+                <th class='text-left nowrap' width="120px">菜单名称</th>
+                <th class='text-left nowrap'>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr data-dbclick>
+                <td class='list-table-sort-td'>
+                    <label><input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input"></label>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.id}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.name}
+                </td>
+                <td class='text-left nowrap'>
+                    {if $vo.status eq 1}<span style="color: green">启用</span>{else/}<span style="color: red">未启用</span>{/if}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--{if auth("submenus")}-->
+                    <a class="layui-btn layui-btn-normal layui-btn-sm" data-title="子菜单列表" data-open='{:url("submenus",["typeid"=>$vo.typeid,"pid"=>$vo.id])}'>子菜单列表</a>
+                    <!--{/if}-->
+                    <!--{if auth("addSub")}-->
+                    <a class="layui-btn layui-btn-warm layui-btn-sm" data-title="添加子菜单" data-modal='{:url("addSub",["typeid"=>$typeid,"pid"=>$vo.id])}'>添加子菜单</a>
+                    <!--{/if}-->
+                    <!--{if auth("editSub")}-->
+                    <a class="layui-btn layui-btn-sm" data-title="编辑菜单" data-modal='{:url("editSub",["id"=>$vo.id,"typeid"=>$typeid,"pid"=>$vo.parent_id])}'>修 改</a>
+                    <!--{/if}-->
+                    <!--{if auth("deleteSub")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要永久删除此菜单吗？" data-action='{:url("deleteSub",["id"=>$vo.id])}' data-value="id#{$vo.id}" data-csrf="{:systoken('delete')}">删 除</a>
+                    <!--{/if}-->
+
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+{/block}

@@ -1,0 +1,119 @@
+<form onsubmit="return false" data-auto="true" action="{:request()->url()}" method="post" class='layui-form layui-card'
+      autocomplete="off">
+    <div class="layui-card-body">
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">是否开启</span>
+            </label>
+            <div class="layui-input-block">
+                {foreach :config('constant.YesOrNo') as $k=>$v}
+                {php}$is_open = sysconf("smtp.is_open");{/php}
+                <!--{if (!isset($is_open) and $k eq 1) or (isset($is_open) and $is_open eq $k)}-->
+                <input type="radio" name="smtp.is_open" checked value="{$k}" title="{$v}">
+                <!--{else}-->
+                <input type="radio" name="smtp.is_open" value="{$k}" title="{$v}">
+                <!--{/if}-->
+                {/foreach}
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">邮件服务器：</span>
+            </label>
+            <div class="layui-input-block">
+                <input name="smtp.server" id="smtpServer" value='{:sysconf("smtp.server")}' required
+                       placeholder="请输入邮件服务器地址" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">端口：</span>
+            </label>
+            <div class="layui-input-block">
+                <input name="smtp.port" id="smtpPort" value='{:sysconf("smtp.port")}' required placeholder="请输入邮件发送端口"
+                       class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">发件人地址：</span>
+            </label>
+            <div class="layui-input-block">
+                <input name="smtp.senduser" id="smtpSenduser" value='{:sysconf("smtp.senduser")}' required
+                       placeholder="请输入邮件发件人地址" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">发件人密码：</span>
+            </label>
+            <div class="layui-input-block">
+                <input name="smtp.passwd" id="smtpPasswd" value='' {if sysconf("smtp.passwd") eq ''}required{/if}
+                placeholder="请输入邮件发件人密码" class="layui-input">
+            </div>
+        </div>
+        <!--{if auth("testEmail")}-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">
+                <span class="color-green font-w7">邮件测试：</span>
+            </label>
+            <div class="layui-input-block">
+                <div class="layui-col-xs9">
+                    <input name="toUser" id="toUser" value='' placeholder="请输入收件人邮箱地址" class="layui-input">
+                </div>
+                <div class="layui-col-xs3">
+                    <button class="layui-btn layui-btn-normal" type='button' id="testSendEmail">测试发送</button>
+                </div>
+            </div>
+        </div>
+        <!--{/if}-->
+        <div class="hr-line-dashed margin-left-40"></div>
+        <div class="layui-form-item text-center padding-left-40">
+            <button class="layui-btn" type="submit">保存配置</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消修改吗？" data-close>取消修改</button>
+        </div>
+
+    </div>
+</form>
+
+{block name='script'}
+<script>
+    layui.form.render();
+    $('#testSendEmail').click(function () {
+        var smtpServer = $.trim($('#smtpServer').val());
+        var smtpPort = $.trim($('#smtpPort').val());
+        var smtpSenduser = $.trim($('#smtpSenduser').val());
+        var smtpPasswd = $.trim($('#smtpPasswd').val());
+        var toUser = $.trim($('#toUser').val());
+        if (smtpServer != '' && smtpPort != '' && smtpSenduser != '' && smtpPasswd != '' && toUser != '') {
+            var mtpConfig = {
+                server: smtpServer,
+                port: smtpPort,
+                senduser: smtpSenduser,
+                passwd: smtpPasswd,
+                toUser: toUser
+            };
+            $.ajax({
+                url: '{:url("testEmail")}',    //请求的url地址
+                dataType: "json",   //返回格式为json
+                async: true,//请求是否异步，默认为异步，这也是ajax重要特性
+                data: mtpConfig,    //参数值
+                type: "POST",   //请求方式
+                success: function (req) {
+                    if (req.code == 1) {
+                        $.msg.success('测试邮件成功');
+                    } else {
+                        $.msg.error(req.info);
+                    }
+                }
+            });
+        } else {
+            $.msg.error("请完善邮件配置信息后在进行邮件测试功能!");
+        }
+    })
+</script>
+{/block}

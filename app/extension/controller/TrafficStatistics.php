@@ -9,7 +9,7 @@ use think\admin\Controller;
  * Class Flow
  * @package app\extension\controller
  */
-class Flow extends Controller
+class TrafficStatistics extends Controller
 {
 
 }

@@ -33,7 +33,9 @@
     "zoujingli/think-library": "6.0.*-dev",
     "zoujingli/wechat-developer": "^1.2",
     "league/flysystem": "^1.0",
-    "monolog/monolog": "^2.1"
+    "monolog/monolog": "^2.1",
+    "lustre/php-dfa-sensitive": "^1.4",
+    "phpmailer/phpmailer": "^6.1"
   },
   "autoload": {
     "psr-4": {

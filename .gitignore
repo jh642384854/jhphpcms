@@ -3,6 +3,7 @@
 .vscode
 *.log
 /runtime
+/vendor
 /safefile
 /nbproject
 /public/upload

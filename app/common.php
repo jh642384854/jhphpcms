@@ -14,7 +14,49 @@ function errorHandler($msg)
 }
 
 /**
- * 渲染字段设置的额外配置信息
+ * 利用phpmailer进行邮件发送
+ * @param $toUser
+ * @param $content
+ */
+function sendEmail($toUser, $content = '', $subject = 'test')
+{
+    //获取邮件配置信息
+    $smtpConfig = \app\admin\service\ConfigService::instance()->getTypeConfigFromCache('smtp');
+    //加密解密处理
+    $cryption = new \cryption\Cryption(config('constant.CryptionKey'));
+    $mail = new \PHPMailer\PHPMailer\PHPMailer();
+    $mail->isSMTP();
+    $mail->Host = $smtpConfig['server'];
+    $mail->Port = $smtpConfig['port'];
+    $mail->SMTPAuth = true;
+    $mail->Username = $smtpConfig['senduser'];
+    $mail->Password = $cryption->decrypt($smtpConfig['passwd']);
+    // 设置发件人信息，如邮件格式说明中的发件人，这里会显示为Mailer(xxxx@163.com），Mailer是当做名字显示
+    $mail->setFrom($smtpConfig['senduser'], sysconf('base.site_name'));
+    // 设置回复人信息，指的是收件人收到邮件后，如果要回复，回复邮件将发送到的邮箱地址
+    //$mail->addReplyTo('replyto@example.com', 'First Last');
+    // 设置收件人信息，如邮件格式说明中的收件人，这里会显示为Liang(yyyy@163.com)
+    $mail->addAddress($toUser);
+    // 邮件标题
+    $mail->Subject = $subject;
+    $mail->Body = $content;
+    //$mail->msgHTML(file_get_contents('contents.html'), __DIR__);
+    // 这个是设置纯文本方式显示的正文内容，如果不支持Html方式，就会用到这个，基本无用
+    //$mail->AltBody = 'AltBody';
+    // 添加附件
+    //$mail->addAttachment('images/phpmailer_mini.png');
+
+    if (!$mail->send()) {
+        sysoplog(config('log.typeText.email'), '向' . $toUser . '发送邮件失败,邮件内容：' . $content . ',失败原因：' . $mail->ErrorInfo);
+        return false;
+    } else {
+        sysoplog(config('log.typeText.email'), '向' . $toUser . '发送邮件成功,邮件内容：' . $content);
+        return true;
+    }
+}
+
+/**
+ * 自定义字段里面渲染字段设置的额外配置信息
  * @param $type 什么字段类型
  * @param string $default 默认的值
  * @return string

@@ -527,11 +527,11 @@ $(function () {
             template.attr('data-field', input.attr('name') || 'attach').data('input', this);
             input.attr('name', template.attr('data-field')).after(template)
             template.uploadFile(function (url, fileobj) {
-                input.val(fileobj.name+':'+fileobj.size+':'+url);
+                input.val(fileobj.name+'|'+fileobj.size+'|'+url);
                 showAttach(fileobj);
             });
             if(attachVal != ""){
-                var fileData = attachVal.split(':');
+                var fileData = attachVal.split('|');
                 var fileobj = {name:fileData[0],size:fileData[1],xurl:fileData[2]};
                 showAttach(fileobj);
             }

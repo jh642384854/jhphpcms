@@ -40,6 +40,7 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
             'Psr\\Cache\\' => 10,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'O' => 
         array (
@@ -57,6 +58,10 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
         'E' => 
         array (
             'Endroid\\QrCode\\' => 15,
+        ),
+        'D' => 
+        array (
+            'DfaFilter\\' => 10,
         ),
         'A' => 
         array (
@@ -120,6 +125,10 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
         'Opis\\Closure\\' => 
         array (
             0 => __DIR__ . '/..' . '/opis/closure/src',
@@ -139,6 +148,10 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
         'Endroid\\QrCode\\' => 
         array (
             0 => __DIR__ . '/..' . '/endroid/qr-code/src',
+        ),
+        'DfaFilter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lustre/php-dfa-sensitive/src/DfaFilter',
         ),
         'AliPay\\' => 
         array (

@@ -1,0 +1,53 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-form-item">
+            <label class="layui-form-label label-required-next">所属类别</label>
+            <div class="layui-input-block">
+                <select  class="layui-input" name="parent_id" required>
+                    <option value="0">作为一级分类</option>
+                    {$cascaderTree|raw}
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称</label>
+            <div class="layui-input-block">
+                {notempty name='vo.id'}
+                <input name="name" value='{$vo.name|default=""}' required placeholder="请输入级联类别菜单名称" class="layui-input">
+                <p class="help-block">必填，请填写级联菜单名称（如：中国区域数据），建议字符不要太长，一般4-10个汉字</p>
+                {else}
+                <textarea placeholder="请输入级联类别菜单名称" class="layui-textarea" required name="name"></textarea>
+                <p class="help-block">必填，请输入菜单名称，批量添加以换行分隔</p>
+                {/notempty}
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                {foreach :config('constant.YesOrNo') as $k=>$v}
+                <!--{if (!isset($vo.status) and $k eq '1') or (isset($vo.status) and $vo.status eq $k)}-->
+                <input type="radio" name="status" checked value="{$k}" title="{$v}">
+                <!--{else}-->
+                <input type="radio" name="status" value="{$k}" title="{$v}">
+                <!--{/if}-->
+                {/foreach}
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <input type='hidden' value='{$typeid}' name='typeid'>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}

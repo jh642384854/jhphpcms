@@ -35,6 +35,17 @@
             {/foreach}
         </div>
     </div>
+    <div class="layui-form-item margin-bottom-5">
+        <span class="color-green font-w7">其他配置 Other</span>
+        <div class="padding-top-5">
+            <!--{if auth("smtp")}-->
+            <a data-title="邮件配置" data-modal="{:url('smtp')}" class="layui-btn layui-btn-sm"><span class="nav-icon padding-left-5 layui-icon layui-icon-log"></span>邮件配置</a>
+            <!--{/if}-->
+            <!--{if auth("badword")}-->
+            <a data-title="敏感词配置" data-modal="{:url('badword')}" class="layui-btn layui-btn-sm layui-btn-primary">敏感词配置</a>
+            <!--{/if}-->
+        </div>
+    </div>
 </div>
 
 <div class="think-box-shadow padding-40 padding-top-30 padding-bottom-20 margin-bottom-15">

@@ -10,5 +10,15 @@ use think\admin\Controller;
  */
 class Database extends Controller
 {
+    public function index()
+    {
+        echo '数据库管理';
+    }
 
+    public function jhtest()
+    {
+        sendEmail("642384854@qq.com",'PHPMailer测试邮件发送');
+        /*$smtpConfig = \app\admin\service\ConfigService::instance()->getTypeConfigFromCache('smtp');
+        dump($smtpConfig);*/
+    }
 }
