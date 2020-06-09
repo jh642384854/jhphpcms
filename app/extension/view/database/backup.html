@@ -1,0 +1,69 @@
+<div class="layui-tab-item layui-show">
+    <div>
+        <!--{if auth("backup")}-->
+        <button data-action='{:url("backup")}' data-rule="tables#{key}" data-csrf="{:systoken('backup')}" data-confirm="确定要备份这些表吗？" class='layui-btn layui-btn-sm'>备 份</button>
+        <!--{/if}-->
+    </div>
+    <div class="layui-tab-content">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-check-td think-checkbox'>
+                    <label><input data-auto-none data-check-target='.list-check-box' type='checkbox'></label>
+                </th>
+                <th class='text-left nowrap' width="120px">表名称</th>
+                <th class='text-left nowrap' width="120px">引擎</th>
+                <th class='text-left nowrap'>记录数</th>
+                <th class='text-left nowrap'>占用空间大小</th>
+                <th class='text-left nowrap'>备注</th>
+                <th class='text-left nowrap'>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <label><input class="list-check-box" value='{$vo.Name}' type='checkbox'></label>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.Name}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.Engine}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.Rows}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.Data_length|format_bytes}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.Comment}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.Create_time}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--MyISAM-->
+                    <!--{if auth("optimize") && strtolower($vo.Engine) eq 'myisam'}-->
+                    <a class="layui-btn layui-btn-normal layui-btn-sm" data-confirm="确定要优化这张表吗？" data-action="{:url('optimize')}" data-value="tables#{$vo.Name}" data-csrf="{:systoken('optimize')}">优 化</a>
+                    <!--{/if}-->
+
+                    <!--{if auth("repair") && strtolower($vo.Engine) eq 'myisam'}-->
+                    <a class="layui-btn layui-btn-warm layui-btn-sm" data-confirm="确定要修复这张表吗？" data-action="{:url('repair')}" data-value="tables#{$vo.Name}" data-csrf="{:systoken('repair')}">修 复</a>
+                    <!--{/if}-->
+
+                    <!--{if auth("backup")}-->
+                    <a class="layui-btn layui-btn-sm" data-confirm="确定要备份这张表吗？" data-action="{:url('backup')}" data-value="tables#{$vo.Name}" data-csrf="{:systoken('backup')}">备 份</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>

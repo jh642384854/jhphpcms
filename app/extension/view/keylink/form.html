@@ -1,0 +1,45 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">关键字名称</label>
+            <div class="layui-input-block">
+                <input name="keyword" value='{$vo.keyword|default=""}' required placeholder="请输入模型名称" class="layui-input">
+                <p class="help-block">必填，请填写模型名称（如：文章模型），建议字符不要太长，一般4-6个汉字</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">链接地址</label>
+            <div class="layui-input-block">
+                <input name="url" value='{$vo.url|default=""}' placeholder="请输入模型描述" class="layui-input">
+                <p class="help-block">选填，请填写模型描述</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否启用</label>
+            <div class="layui-input-block">
+                {foreach :config('constant.YesOrNo') as $k=>$v}
+                <!--{if (!isset($vo.status) and $k eq '1') or (isset($vo.status) and $vo.status eq $k)}-->
+                <input type="radio" name="status" checked value="{$k}" title="{$v}">
+                <!--{else}-->
+                <input type="radio" name="status" value="{$k}" title="{$v}">
+                <!--{/if}-->
+                {/foreach}
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}

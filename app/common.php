@@ -2,6 +2,11 @@
 
 use think\facade\View;
 
+use cryption\Cryption;
+use app\admin\service\ConfigService;
+use DfaFilter\SensitiveHelper;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
 /**
  * 错误信息反馈共页面
  * @param $msg
@@ -21,9 +26,9 @@ function errorHandler($msg)
 function sendEmail($toUser, $content = '', $subject = 'test')
 {
     //获取邮件配置信息
-    $smtpConfig = \app\admin\service\ConfigService::instance()->getTypeConfigFromCache('smtp');
+    $smtpConfig = ConfigService::instance()->getTypeConfigFromCache('smtp');
     //加密解密处理
-    $cryption = new \cryption\Cryption(config('constant.CryptionKey'));
+    $cryption = new Cryption(config('constant.CryptionKey'));
     $mail = new \PHPMailer\PHPMailer\PHPMailer();
     $mail->isSMTP();
     $mail->Host = $smtpConfig['server'];
@@ -52,6 +57,37 @@ function sendEmail($toUser, $content = '', $subject = 'test')
     } else {
         sysoplog(config('log.typeText.email'), '向' . $toUser . '发送邮件成功,邮件内容：' . $content);
         return true;
+    }
+}
+
+/**
+ * 敏感词过滤处理
+ * @param $content
+ * @return mixed
+ * @throws \DfaFilter\Exceptions\PdsBusinessException
+ * @throws \DfaFilter\Exceptions\PdsSystemException
+ */
+function dealBadwords($content){
+    if(!empty($content)){
+        $badwordConfig = ConfigService::instance()->getTypeConfigFromCache('badword');
+        $badwordFile = trim(app()->getConfigPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'badword.txt';
+        $replaceStr = '';
+        if(count($badwordConfig)>0){
+            $configFile = explode('|',$badwordConfig['file']);
+            if(count($configFile)>0){
+                //判断文件是否存在
+                $adapter = new Local(ROOT_PATH);
+                $filesystem = new Filesystem($adapter);
+                if($filesystem->has($configFile[2])){
+                    $badwordFile = $configFile[2];
+                    $replaceStr = $badwordConfig['replace'];
+                }
+            }
+        }
+        $wordPool = file_get_contents($badwordFile);
+        $wordData = explode(',', $wordPool);
+        $handle = SensitiveHelper::init()->setTree($wordData);//setTreeByFile()这个方法没有生效
+        return $handle->replace($content,$replaceStr);
     }
 }
 

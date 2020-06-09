@@ -1,0 +1,97 @@
+{extend name="../../admin/view/main"}
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("index")}' data-title="碎片列表" class='layui-btn layui-btn-sm layui-btn-primary'>碎片列表</button>
+<!--{/if}-->
+{/block}
+
+
+{block name="content"}
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off" lay-filter="block">
+    <div class="layui-card-body">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">碎片名称</label>
+            <div class="layui-input-block">
+                <input name="name" value='{$vo.name|default=""}' required placeholder="请输入碎片名称" class="layui-input">
+                <p class="help-block">必填，请填写碎片名称（如：网站底部版本信息），建议字符不要太长，一般4-6个汉字</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">碎片别名</label>
+            <div class="layui-input-block">
+                <input name="alias" value='{$vo.alias|default=""}' required  pattern="^[A-Za-z0-9_-]+$" placeholder="请输入碎片别名" class="layui-input">
+                <p class="help-block">必填，页面调用的唯一标识字符，只能输入字母、数字、下划线、中横线</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                {foreach :config('constant.blockType') as $k=>$v}
+                <input type="radio" data-block-type="{$k}" name="type" value="{$k}" title="{$v}" lay-filter="block_type">
+                {/foreach}
+            </div>
+        </div>
+
+        <div class="margin-top-15">
+                <div class="layui-anim layui-anim-fadein" data-type="richtext">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-block">
+                            <textarea name='content_richtext'>{$vo.content_richtext|default=""}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-anim layui-anim-fadein" data-type="text">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-block">
+                            <textarea name="content_text" placeholder="请输入内容" class="layui-textarea">{$vo.content_text|default=""}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-anim layui-anim-fadein" data-type="image">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">内容</label>
+                        <div class="layui-input-block">
+                            <input type="hidden" name="content_image" value="{$vo.content_image|default=''}">
+                            <script>$('[name=content_image]').uploadOneImage()</script>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit' lay-filter="saveData">保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{/block}
+
+{block name='script'}
+<script>
+    require(['ckeditor'], function () {
+        var editor;
+        var $form = $('form[name="block"]');
+        setTimeout(function () {
+            if (editor) editor.destroy();
+            editor = window.createEditor('[name="content_richtext"]');
+        }, 100);
+
+    });
+    $(function () {
+        apply({value: '{$vo.type|default="richtext"}' || 'richtext'});
+        window.form.render(), window.form.on('radio(block_type)', apply);
+
+        function apply(data) {
+            this.$active = $("[data-block-type='" + data.value + "']").trigger('click');
+            if (this.$active.size() < 1) $("[data-block-type]:first").trigger('click');
+            $('[data-type="' + data.value + '"]').show().siblings('[data-type]').hide();
+        }
+    });
+</script>
+{/block}

@@ -22,6 +22,12 @@ return [
     'auto_timestamp'  => true,
     // 时间字段取出后的默认时间格式
     'datetime_format' => 'Y-m-d H:i:s',
+    //数据库配置信息
+    'backup' => [
+        'part' => 20971520,//备份分卷大小(单位：B；建议设置20M,即20971520)
+        'compress' => 1,  //是否开启压缩
+        'compress_level' => 4 //压缩率(1:最低 4:一般 9:最高)
+    ],
     // 数据库连接配置信息
     'connections'     => [
         'mysql' => [

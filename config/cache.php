@@ -41,6 +41,10 @@ return [
         'config' => [
             'key' => 'Config',
             'describe' => '缓存指定系统配置数据'
+        ],
+        'keylink' => [
+            'key' => 'Keylink',
+            'describe' => '缓存关键字链接数据'
         ]
     ],
     // 缓存连接方式配置

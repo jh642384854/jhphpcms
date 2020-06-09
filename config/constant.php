@@ -211,6 +211,12 @@ return [
         'category' => '栏目列表',
         'recommend' => '推荐位'
     ],
+    //碎片类型
+    'blockType' => [
+        'richtext' => '富文本',
+        'text' => '普通文本',
+        'image' => '图片'
+    ],
     'colorValueType' => ['hex' => 'HEX(十六进制)', 'rgb' => 'RGB', 'rgba' => 'RGBA'],
     //字段索引类型
     'fieldIndexType' => ['Normal', 'Unique', 'Full Text'],

@@ -1,0 +1,23 @@
+{extend name="../../admin/view/main"}
+{block name="button"}{/block}
+{block name="content"}
+<div class="layui-tab layui-tab-card"></div>
+    <div class="layui-tab layui-tab-brief think-bg-white" lay-filter="docDemoTabBrief">
+        <ul class="layui-tab-title">
+            {foreach $dbmenu as $k=>$v}
+            {if isset($op) and $op eq $k}
+            <li data-open="{$v.url}" class="layui-this">{$v['name']}</li>
+            {else}
+            <li data-open="{$v.url}">{$v['name']}</li>
+            {/if}
+            {/foreach}
+        </ul>
+        <div class="layui-tab-content">
+            {if isset($op) and $op eq 'backup'}
+                {include file='database/backup'}
+            {else/}
+                {include file='database/recover'}
+            {/if}
+        </div>
+    </div>
+{/block}

@@ -1,0 +1,59 @@
+<div class="layui-tab-item layui-show">
+    <div>
+        <!--{if auth("delbackup")}-->
+        <button data-action='{:url("delbackup")}' data-rule="id#{key}" data-csrf="{:systoken('delbackup')}" class='layui-btn layui-btn-sm layui-btn-danger'>删 除</button>
+        <!--{/if}-->
+    </div>
+    <div class="layui-tab-content">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-check-td think-checkbox'>
+                    <label><input data-auto-none data-check-target='.list-check-box' type='checkbox'></label>
+                </th>
+                <th class='text-left nowrap' width="120px">备份名称</th>
+                <th class='text-left nowrap' width="120px">备份卷数</th>
+                <th class='text-left nowrap'>备份压缩方式</th>
+                <th class='text-left nowrap'>备份文件大小</th>
+                <th class='text-left nowrap'>备份时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr>
+                <td class='list-table-check-td think-checkbox'>
+                    <label><input class="list-check-box" value='{$vo.id}' type='checkbox'></label>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.name}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.part}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.compress}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.size|format_bytes}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.time}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--{if auth("recover")}-->
+                    <a class="layui-btn layui-btn-normal layui-btn-sm" data-confirm="确定要恢复这个备份文件吗？" data-action="{:url('recover')}" data-value="id#{$vo.id}" data-csrf="{:systoken('recover')}">恢 复</a>
+                    <!--{/if}-->
+                    <!--{if auth("delbackup")}-->
+                    <a class="layui-btn layui-btn-danger layui-btn-sm" data-confirm="确定要删除这个备份文件吗？" data-action="{:url('delbackup')}" data-value="id#{$vo.id}" data-csrf="{:systoken('delbackup')}">删 除</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
