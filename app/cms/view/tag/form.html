@@ -1,0 +1,41 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off" lay-filter="block">
+    <div class="layui-card-body">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标签名称</label>
+            <div class="layui-input-block">
+                <input name="name" value='{$vo.name|default=""}' required placeholder="请输入标签名称" class="layui-input">
+                <p class="help-block">必填，请填写标签名称（如：网站底部版本信息），建议字符不要太长，一般4-6个汉字</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">SEO标题</label>
+            <div class="layui-input-block">
+                <input name="seo_title" value='{$vo.seo_title|default=""}' placeholder="请输入模型描述" class="layui-input">
+                <p class="help-block">针对搜索引擎设置的标题</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">SEO关键字</label>
+            <div class="layui-input-block">
+                <input name="seo_keywords" value='{$vo.seo_keywords|default=""}' placeholder="请输入模型表名称" class="layui-input">
+                <p class="help-block">关键字中间用半角逗号隔开	</p>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">SEO描述</label>
+            <div class="layui-input-block">
+                <textarea name="seo_description" placeholder="请输入描述" class="layui-textarea">{$vo.seo_description|default=""}</textarea>
+                <p class="help-block">针对搜索引擎设置的网页描述</p>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit' lay-filter="saveData">保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>

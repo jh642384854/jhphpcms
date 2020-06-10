@@ -1,0 +1,62 @@
+{extend name="../../admin/view/main"}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-sort-td'>
+                    <button type="button" data-reload class="layui-btn layui-btn-xs">刷 新</button>
+                </th>
+                <th class='text-left nowrap' width="120px">关联文章</th>
+                <th class='text-left nowrap' width="120px">评论用户</th>
+                <th class='text-left nowrap' width="120px">评论内容</th>
+                <th class='text-left nowrap'>状态</th>
+                <th class='text-left nowrap'>IP</th>
+                <th class='text-left nowrap'>添加时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr data-dbclick>
+                <td class='list-table-sort-td'>
+                    <label><input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input"></label>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.aid}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.uid}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.content|raw}
+                </td>
+                <td class='text-left nowrap'>
+                    {if $vo.status eq 1}<span style="color: green">显示</span>{else/}<span style="color: red">不显示</span>{/if}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.ip}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.create_at|format_datetime}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--{if auth("edit")}-->
+                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑评论" data-modal='{:url("edit",["id"=>$vo.id])}'>编 辑</a>
+                    <!--{/if}-->
+                    <!--{if auth("delete")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要永久删除此评论吗？" data-action="{:url('delete')}" data-value="id#{$vo.id}" data-csrf="{:systoken('delete')}">删 除</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+{/block}

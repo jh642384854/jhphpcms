@@ -70,6 +70,7 @@ function sendEmail($toUser, $content = '', $subject = 'test')
 function dealBadwords($content){
     if(!empty($content)){
         $badwordConfig = ConfigService::instance()->getTypeConfigFromCache('badword');
+        //系统默认的敏感词库
         $badwordFile = trim(app()->getConfigPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'badword.txt';
         $replaceStr = '';
         if(count($badwordConfig)>0){
@@ -134,3 +135,4 @@ function rendFieldOptions($type, $default = '')
     }
     return $str;
 }
+

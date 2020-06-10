@@ -7,7 +7,7 @@
 
 
 {block name="content"}
-<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off" lay-filter="block">
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
     <div class="layui-card-body">
 
         <div class="layui-form-item">
@@ -76,7 +76,6 @@
 <script>
     require(['ckeditor'], function () {
         var editor;
-        var $form = $('form[name="block"]');
         setTimeout(function () {
             if (editor) editor.destroy();
             editor = window.createEditor('[name="content_richtext"]');
