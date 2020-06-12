@@ -4,13 +4,44 @@
     <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
         <div class="layui-card-body">
             <div class="layui-form-item">
-                <label class="layui-form-label">图片上传</label>
+                <label class="layui-form-label">markdown</label>
                 <div class="layui-input-block">
-                    <button type="button" data-modal="{:url('module/attachment/fileManager')}" class="layui-btn" style="float: left; margin-right: 15px;">图片选择</button>
-                    <input type="hidden" name="thumb" id="thumb" value="{$vo.thumb|default=''}">
-                    <script>$('[name=thumb]').uploadOneImage()</script>
-                </div>
+                    <div id="test-editormd">
+                        <textarea style="display:none;">[TOC]
 
+#### Disabled options
+
+- TeX (Based on KaTeX);
+- Emoji;
+- Task lists;
+- HTML tags decode;
+- Flowchart and Sequence Diagram;
+
+#### Editor.md directory
+
+    editor.md/
+            lib/
+            css/
+            scss/
+            tests/
+            fonts/
+            images/
+            plugins/
+            examples/
+            languages/
+            editormd.js
+            ...
+
+```html
+&lt;!-- English --&gt;
+&lt;script src="../dist/js/languages/en.js"&gt;&lt;/script&gt;
+
+&lt;!-- 繁體中文 --&gt;
+&lt;script src="../dist/js/languages/zh-tw.js"&gt;&lt;/script&gt;
+```
+</textarea>
+                    </div>
+                </div>
             </div>
             <div class="hr-line-dashed"></div>
             {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
@@ -23,24 +54,88 @@
 </div>
 {/block}
 {block name='style'}
-<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/cascader.css">
+<link rel="stylesheet" href="__ROOT__/static/plugs/editormd/css/editormd.css">
 {/block}
 {block name='script'}
 <script>
     layui.form.render();
-    layui.config({
-        base: "__ROOT__/static/plugs/layui/mods/"
+    requirejs.config({
+        //baseUrl: "__ROOT__/static/plugs/editormd/lib/",
+        paths: {
+            jquery          : "__ROOT__/static/plugs/jquery/jquery.min",
+            marked          : "__ROOT__/static/plugs/editormd/lib/marked.min",
+            prettify        : "__ROOT__/static/plugs/editormd/lib/prettify.min",
+            raphael         : "__ROOT__/static/plugs/editormd/lib/raphael.min",
+            underscore      : "__ROOT__/static/plugs/editormd/lib/underscore.min",
+            flowchart       : "__ROOT__/static/plugs/editormd/lib/flowchart.min",
+            jqueryflowchart : "__ROOT__/static/plugs/editormd/lib/jquery.flowchart.min",
+            sequenceDiagram : "__ROOT__/static/plugs/editormd/lib/sequence-diagram.min",
+            katex           : "//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.1.1/katex.min",
+            editormd        : "__ROOT__/static/plugs/editormd/editormd.amd" // Using Editor.md amd version for Require.js
+        },
+        waitSeconds: 30
     });
-    layui.use(['jquery'], function () {
-        var layer = layui.layer,
-            $ = layui.jquery;
 
-        //弹层选择后的回调
-        window.callbackFun = function(res){
-            var obj = $('#thumb');
-            obj.val(res.thumb);
-            obj.next('a.uploadimage').css({'backgroundImage':'url('+res.thumb+')'});
-        }
+    var deps = [
+        "editormd",
+        "../languages/en",
+        "../plugins/link-dialog/link-dialog",
+        "../plugins/reference-link-dialog/reference-link-dialog",
+        "../plugins/image-dialog/image-dialog",
+        "../plugins/code-block-dialog/code-block-dialog",
+        "../plugins/table-dialog/table-dialog",
+        "../plugins/emoji-dialog/emoji-dialog",
+        "../plugins/goto-line-dialog/goto-line-dialog",
+        "../plugins/help-dialog/help-dialog",
+        "../plugins/html-entities-dialog/html-entities-dialog",
+        "../plugins/preformatted-text-dialog/preformatted-text-dialog"
+    ];
+
+    var testEditor;
+
+    require(deps, function(editormd) {
+
+        // if enable codeFold
+        // or <link rel="stylesheet" href="../lib/codemirror/addon/fold/foldgutter.css" />
+        editormd.loadCSS("__ROOT__/static/plugs/editormd/lib/codemirror/addon/fold/foldgutter");
+
+        testEditor = editormd("test-editormd", {
+            width: "90%",
+            height: 640,
+            path : '__ROOT__/static/plugs/editormd/lib/',
+            //markdown : md,
+            codeFold : true,
+            searchReplace : true,
+            saveHTMLToTextarea : true,                // 保存HTML到Textarea
+            htmlDecode : "style,script,iframe|on*",       // 开启HTML标签解析，为了安全性，默认不开启
+            emoji : true,
+            taskList : true,
+            tex : true,
+            tocm            : true,         // Using [TOCM]
+            autoLoadModules : false,
+            previewCodeHighlight : true,
+            flowChart : true,
+            sequenceDiagram : true,
+            //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+            //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+            //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+            //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+            //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+            imageUpload : true,
+            imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+            imageUploadURL : "./php/upload.php",
+            onload : function() {
+                console.log('onload', this);
+                //this.fullscreen();
+                //this.unwatch();
+                //this.watch().fullscreen();
+
+                //this.setMarkdown("#PHP");
+                //this.width("100%");
+                //this.height(480);
+                //this.resize("100%", 640);
+            }
+        });
     });
 </script>
 {/block}

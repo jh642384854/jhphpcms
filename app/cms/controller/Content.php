@@ -16,6 +16,11 @@ use tree\Tree;
 class Content extends Controller
 {
     /**
+     * 当前操作数据表
+     * @var string
+     */
+    protected $table = 'cms_article';
+    /**
      * 文章列表
      * @auth true
      * @menu true
@@ -23,20 +28,10 @@ class Content extends Controller
     public function index()
     {
         $this->title='文章列表';
-        if($this->app->request->isGet() && $this->app->request->getInput('tree')){
-            $tree = new Tree();
-            $cagetorys = CategoryService::instance()->getAllCategoryFromCache();
-            $tree->init($cagetorys);
-            return $tree->getTreeArray(0);
+        if($this->app->request->isGet() && input('action') === 'tree'){
+            $this->success('获取权限节点成功！', array_values(CategoryService::instance()->getAllCategoryFromCache()));
         }
-        $mid= $this->request->param('mid');  //父栏目ID
-        $this->models = ModelService::instance()->getAllModelsFromCache();
-        if(empty($mid)){
-            $this->defaultModel = current($this->models);
-        }else{
-            $this->defaultModel = $this->models[$mid];
-        }
-        $query = $this->_query($this->defaultModel['tablename'])->like('title');
+        $query = $this->_query($this->table)->like('title');
         $query->equal('catid')->dateBetween('create_at');
         // 列表排序并显示
         $query->order('id desc')->page();
@@ -45,19 +40,36 @@ class Content extends Controller
     public function add()
     {
         $this->title = '添加文章';
-        $this->_applyFormToken();
-        $this->_form('cms_article', 'form');
+        $catid = $this->request->get('catid',0,'intval');
+        if($catid>0){
+            $categoryService = CategoryService::instance();
+            $cagetorys = $categoryService->getAllCategoryFromCache();
+            if(isset($cagetorys[$catid])){
+                $this->_applyFormToken();
+                $catdata = $cagetorys[$catid];
+                $this->allFields($catdata['modelid']);
+                $this->_form('cms_article', 'form');
+            }else{
+                $this->redirect(url('index'));
+            }
+        }else{
+            $this->redirect(url('index'));
+        }
+
     }
 
-    public function jhtest()
+    /**
+     * 根据指定的模型来获取模型的所有字段信息
+     * @param $modelid 模型ID
+     */
+    private function allFields($modelid,$defaultData=[])
     {
-        $modelid = 6;
-        $modelFields = $this->app->db->name('cms_model_field')->where(['modelid'=>$modelid])->select();
-        $form = new \form\Form($modelFields);
-        $defaultData = [
-            'news_title' => 465,
-            'keywords' => '关键字1,关键字2'
-        ];
+        //基础模型的字段
+        $baseFields = $this->app->db->name('cms_model_field')->where(['modelid'=>1,'isshow'=>1])->order('sort asc')->select();
+        //当前模型的自定义字段
+        $modelFields = $this->app->db->name('cms_model_field')->where(['modelid'=>$modelid,'isshow'=>1])->order('sort asc')->select();
+        $allFiels = $baseFields->merge($modelFields);
+        $form = new \form\Form($allFiels);
         $this->formFields = $form->get($defaultData);
         $this->formValidator = $form->formValidator;
         $this->dependJS = $form->dependJS;
@@ -69,13 +81,18 @@ class Content extends Controller
         }
         $this->layuiJsModels = implode('","',$layuiJsModel);
         $this->layuiJSinit = $layuiJSinit;
-        $this->fetch();
+    }
 
-/*        $form = new \form\Form([]);
-        $setting = '{"tips":"\u8bf7\u9009\u62e9\u680f\u76eeID","width":"100","min":"1","is_multiple":"0","options_from":"moduledata","options_module":"category","length":"5","chartype":"tinyint"}';
-        $res = $form->select('catid','',$setting);
-        echo $res;
-        echo $form->dependJS;*/
+    public function jhtest()
+    {
+        $cagetorys = CategoryService::instance()->getAllCategoryFromCache();
+
+
+        /*        $form = new \form\Form([]);
+                $setting = '{"tips":"\u8bf7\u9009\u62e9\u680f\u76eeID","width":"100","min":"1","is_multiple":"0","options_from":"moduledata","options_module":"category","length":"5","chartype":"tinyint"}';
+                $res = $form->select('catid','',$setting);
+                echo $res;
+                echo $form->dependJS;*/
 
     }
 

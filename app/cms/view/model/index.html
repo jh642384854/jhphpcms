@@ -4,10 +4,9 @@
 <!--{if auth("add")}-->
 <button data-modal='{:url("add")}' data-title="添加模型" class='layui-btn layui-btn-sm layui-btn-primary'>添加模型</button>
 <!--{/if}-->
-<!--{if auth("remove")}-->
-<a data-confirm="确定要删除这些模型吗？" data-action='{:url("remove")}' data-rule="id#{key}" data-csrf="{:systoken('remove')}" class='layui-btn layui-btn-sm layui-btn-danger'>批量删除</a>
+<!--{if auth("upcache")}-->
+<button data-modal='{:url("upcache")}' data-title="更新模型缓存" class='layui-btn layui-btn-sm layui-btn-normal'>更新模型缓存</button>
 <!--{/if}-->
-
 {/block}
 
 {block name="content"}
@@ -17,13 +16,9 @@
             {notempty name='list'}
             <thead>
             <tr>
-                <th class='list-table-check-td think-checkbox'>
-                    <label><input data-auto-none data-check-target='.list-check-box' type='checkbox'></label>
-                </th>
                 <th class='text-left nowrap' width="120px">模型名称</th>
                 <th class='text-left nowrap' width="120px">模型描述</th>
                 <th class='text-left nowrap' width="150px">表名称</th>
-                <th class='text-left nowrap' width="150px">状态</th>
                 <th class='text-left nowrap'>栏目页模版</th>
                 <th>列表页模版</th>
                 <th>内容页模版</th>
@@ -35,9 +30,6 @@
             <tbody>
             {foreach $list as $key=>$vo}
             <tr data-dbclick>
-                <td class='list-table-check-td think-checkbox'>
-                    <label><input class="list-check-box" value='{$vo.id}' type='checkbox'></label>
-                </td>
                 <td class='text-left nowrap'>
                     {$vo.name}
                 </td>
@@ -46,9 +38,6 @@
                 </td>
                 <td class='text-left nowrap'>
                     {$vo.tablename}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.status}
                 </td>
                 <td class='text-left nowrap'>
                     {$vo.category_template}
@@ -63,14 +52,14 @@
                     {$vo.create_at|format_datetime}
                 </td>
                 <td class='text-left nowrap'>
-                    <!--{if auth("edit")}-->
+                    <!--{if auth("edit")&& $vo.id neq 1}-->
                     <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑模型" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
                     <!--{/if}-->
                     <!--{if auth("field/index")}-->
                     <a data-dbclick class="layui-btn layui-btn-normal layui-btn-sm" data-title="字段列表" data-open='{:url("field/index",["mid"=>$vo.id])}'>字段列表</a>
                     <!--{/if}-->
-                    <!--{if auth("remove")}-->
-                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此模型吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
+                    <!--{if auth("delete") && $vo.id neq 1}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此模型吗？" data-action="{:url('delete')}" data-value="id#{$vo.id}" data-csrf="{:systoken('delete')}">删 除</a>
                     <!--{/if}-->
                 </td>
             </tr>

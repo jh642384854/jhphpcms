@@ -24,8 +24,10 @@
             <div class="article_list think-bg-white">
                 {include file='content/index_search'}
                 <div class="operator">
-                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-modal='{:url("add")}' data-title="添加文章" >添加</button>
+                    {if isset($catid)}
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-open='{:url("add",["catid"=>$catid])}' data-title="添加文章" >添加</button>
                     <button type="button" class="layui-btn layui-btn-sm">移动</button>
+                    {/if}
                     <button type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除</button>
                 </div>
                 <table class="layui-table margin-top-10" lay-skin="line">
@@ -152,12 +154,15 @@
             view: {showLine: true, showIcon: true, dblClickExpand: true},
         };
         this.showTree = function(that, index){
-            this.ztree = $.fn.zTree.init($("#categoryTree"), this.setting, zNodes);
+            this.ztree = $.fn.zTree.init($("#categoryTree"), this.setting, this.data);
             fuzzySearch('categoryTree','#key',null,true); //初始化模糊搜索方法
         };
         this.getData = function (that, index) {
-            that.showTree();
-
+            index = $.msg.loading();
+            $.form.load('{:url("index")}', {action: 'tree'}, 'get', function (ret) {
+                that.data = ret.data;
+                return $.msg.close(index), that.showTree(), false;
+            });
         };
         this.getData(this);
     }

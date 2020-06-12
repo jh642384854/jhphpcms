@@ -1,11 +1,11 @@
 {extend name="../../admin/view/main"}
 
 {block name="button"}
-<!--{if auth("upcache")}-->
-<button data-load='{:url("upcache")}' data-title="更新栏目缓存" class='layui-btn layui-btn-sm layui-btn-primary'>更新栏目缓存</button>
-<!--{/if}-->
 <!--{if auth("add")}-->
 <button data-open='{:url("add")}' data-title="添加栏目" class='layui-btn layui-btn-sm layui-btn-primary'>添加栏目</button>
+<!--{/if}-->
+<!--{if auth("upcache")}-->
+<button data-load='{:url("upcache")}' data-title="更新栏目缓存" class='layui-btn layui-btn-sm layui-btn-normal'>更新栏目缓存</button>
 <!--{/if}-->
 {/block}
 

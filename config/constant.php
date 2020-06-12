@@ -47,7 +47,7 @@ return [
         'text' => [
             'name' => '单行文本',
             //第一个值是默认的字段类型
-            'field_list' => ['varchar', 'char']
+            'field_list' => ['varchar', 'char','int', 'tinyint', 'smallint']
         ],
         'textarea' => [
             'name' => '多行文本',
@@ -107,7 +107,7 @@ return [
         ],
         'images' => [
             'name' => '多图片',
-            'field_list' => ['varchar', 'text']
+            'field_list' => ['varchar', 'text', 'tinytext', 'mediumtext', 'longtext']
         ],
         'file' => [
             'name' => '单文件',
@@ -115,7 +115,7 @@ return [
         ],
         'files' => [
             'name' => '多文件',
-            'field_list' => ['varchar', 'text']
+            'field_list' => ['varchar', 'text', 'tinytext', 'mediumtext', 'longtext']
         ],
         'color_select' => [
             'name' => '颜色选择器',

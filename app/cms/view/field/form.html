@@ -26,6 +26,8 @@
         </div>
         <div class="layui-col-md10">
             <div class="layui-card-body">
+                <!-- 判断是否为基础模型 -->
+                {if $modelid eq 1}
                 <div class="layui-form-item">
                     <label class="layui-form-label">作为系统字段</label>
                     <div class="layui-input-block">
@@ -43,6 +45,9 @@
                         {/notempty}
                     </div>
                 </div>
+                {else/}
+                <input type='hidden' value='0' name='issystem'>
+                {/if}
 
                 <div class="layui-form-item">
                     <label class="layui-form-label">字段名</label>
@@ -50,7 +55,7 @@
                         {notempty name='vo.id'}
                         <div class="form_txt_show">{$vo.field|default=""}</div>
                         {else}
-                        <input name="field" value='{$vo.field|default=""}' pattern="^[A-Za-z0-9_-]+$" required placeholder="请输入表字段名称" class="layui-input">
+                        <input name="field" value='{$vo.field|default=""}' pattern="^[A-Za-z0-9_-]+$" required placeholder="请输入表字段名称，注意是非中文字符" class="layui-input">
                         <p class="help-block">必填，请填写表字段名称，建议字符不要太长，一般4-20个英文字符</p>
                         {/notempty}
                     </div>
@@ -130,6 +135,20 @@
                         <!--{/if}-->
                         {/foreach}
                         <p class="help-block">选填，核心字段是可以被禁用、删除的</p>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否在页面显示</label>
+                    <div class="layui-input-block">
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.isshow) and $k eq '1') or (isset($vo.isshow) and $vo.isshow eq $k)}-->
+                        <input type="radio" name="isshow" checked value="{$k}" title="{$v}">
+                        <!--{else}-->
+                        <input type="radio" name="isshow" value="{$k}" title="{$v}">
+                        <!--{/if}-->
+                        {/foreach}
+                        <p class="help-block">选填，是否将该字段显示在页面上面</p>
                     </div>
                 </div>
 

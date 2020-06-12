@@ -2,8 +2,9 @@
 
 namespace app\cms\controller;
 
+use app\cms\service\FieldService;
 use app\cms\service\ModelService;
-use app\cms\service\TableStructService;
+use database\TableOpt;
 use think\admin\Controller;
 use think\facade\Log;
 
@@ -87,6 +88,20 @@ class Field extends Controller
         }
     }
 
+    public function jhtest2()
+    {
+        $modeid = 3;
+        $filed = 'test';
+        $fields = $this->app->db->name('cms_model_field')->whereIn('modelid', '1,' . $modeid)->select('field');
+        dump($fields);
+        exit;
+        $flag = false;
+        if (in_array($filed, $fields)) {
+            $flag = true;
+        }
+        dump($flag);
+    }
+
     /**
      * 提交表单数据进行过滤处理
      * @param $vo
@@ -94,8 +109,16 @@ class Field extends Controller
     protected function _form_filter(&$vo)
     {
         if ($this->request->isPost()) {
-            //过滤空值
-            $settings = array_filter($vo['setting'],function ($val){return ($val === '' || $val === null) ? false : true;});
+            //①、判断字段名是否重复
+            $fieldService = FieldService::instance();
+            if ($fieldService->checkFieldEixts($vo['modelid'], $vo['field'])) {
+                $this->error('字段名称重复，请更换新字段名！');
+            }
+            //②、过滤空值
+            $settings = array_filter($vo['setting'], function ($val) {
+                return ($val === '' || $val === null) ? false : true;
+            });
+            $vo['field'] = strtolower($vo['field']);
             if (!empty($vo['id'])) {
                 //更新操作。要获取原来的setting配置信息，保留里面的一些必要配置信息
                 $oldSettings = $this->app->db->name($this->table)->field('setting')->where(['id' => $vo['id']])->find();
@@ -137,14 +160,18 @@ class Field extends Controller
                         $fieldInfo['defaultvalue'] = $setting['defaultvalue'];
                     }
                     if ($data['formtype'] == 'number') {
-                        $fieldInfo['precision'] = $data['setting']['precision'];
+                        if(isset($setting['precision'])){
+                            $fieldInfo['precision'] = $setting['precision'];
+                        }else{
+                            $fieldInfo['precision'] = 2;
+                        }
                     }
-                    $tabService = TableStructService::instance();
+                    $tableOpt = new TableOpt();
                     $tablename = $modelData['tablename'];
                     if (!$data['issystem']) {
-                        $tablename = $modelData['tablename'] . '_data';
+                        $tablename = config('database.modeltable.prefix') . $modelData['tablename'] . config('database.modeltable.suffix');
                     }
-                    if (!$tabService->addField($tablename, $fieldInfo)) {
+                    if (!$tableOpt->addField($tablename, $fieldInfo)) {
                         $flag = false;
                         //①、如果字段创建失败，记录日志
                         Log::error(sprintf("为 %s 模型(%s)新建 %s 字段失败，字段格式为：%s", $modelData['name'], $tablename, $data['field'], json_encode($fieldInfo)));

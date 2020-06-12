@@ -30,6 +30,7 @@ class ModelService extends Service
      */
     public function cacheAllModels()
     {
+        cache(config('cache.usekey.model.key', 'AllModel'), null);
         $models = $this->model->order('id ASC')->select();
         $newModels = [];
         if (count($models) > 0) {
@@ -52,5 +53,17 @@ class ModelService extends Service
             $data = $this->cacheAllModels();
         }
         return $data;
+    }
+
+    /**
+     * 删除指定模型的字段
+     * @param $modelid
+     * @return false|int
+     */
+    public function deleteModelField($modelid)
+    {
+        if($modelid>1){
+            return $this->app->db->name('cms_model_field')->where(['modelid'=>$modelid])->delete();
+        }
     }
 }

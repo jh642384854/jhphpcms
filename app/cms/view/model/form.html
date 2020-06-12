@@ -1,5 +1,10 @@
 <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
-    <div class="layui-card-body">
+    <div style="padding: 20px;">
+        {if !isset($vo.id)}
+        <div class="color-text margin-left-40 margin-bottom-20 layui-code text-center layui-bg-gray" style="border-left-width:1px">
+            <p class="margin-bottom-5 font-w7">所有新创建的模型都会继承<font color="red">文章模型</font>，即新创建的模型会自动有文章模型的所有字段。<br />在创建字段的时候，不要创建和文章模型一样的字段名</p>
+        </div>
+        {/if}
 
         <div class="layui-form-item">
             <label class="layui-form-label">模型名称</label>
@@ -20,7 +25,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">模型表名称</label>
             <div class="layui-input-block">
-                <input name="tablename" value='{$vo.tablename|default=""}' pattern="^[A-Za-z0-9]+$" required placeholder="请输入模型表名称" class="layui-input">
+                <input name="tablename" value='{$vo.tablename|default=""}' pattern="^[A-Za-z0-9_-]+$" required placeholder="请输入模型表名称，注意是非中文字符" class="layui-input">
                 <p class="help-block">必填，请填写模型表名称，建议字符不要太长，一般4-20个英文字符</p>
             </div>
         </div>
@@ -31,9 +36,9 @@
                 <select name='category_template' class='layui-select' required lay-search>
                     {foreach $categoryTpls as $key => $categoryTpl}
                     {eq name='key' value='$vo.category_template|default="category.html"'}
-                    <option selected value='{$key}'>{$categoryTpl}</option>
+                    <option selected value='{$categoryTpl}'>{$categoryTpl}</option>
                     {else}
-                    <option value='{$key}'>{$categoryTpl}</option>
+                    <option value='{$categoryTpl}'>{$categoryTpl}</option>
                     {/eq}
                     {/foreach}
                 </select>
@@ -47,9 +52,9 @@
                 <select name='list_template' class='layui-select' required lay-search>
                     {foreach $listTpls as $key => $listTpl}
                     {eq name='key' value='$vo.list_template|default="list.html"'}
-                    <option selected value='{$key}'>{$listTpl}</option>
+                    <option selected value='{$listTpl}'>{$listTpl}</option>
                     {else}
-                    <option value='{$key}'>{$listTpl}</option>
+                    <option value='{$listTpl}'>{$listTpl}</option>
                     {/eq}
                     {/foreach}
                 </select>
@@ -63,9 +68,9 @@
                 <select name='show_template' class='layui-select' required lay-search>
                     {foreach $showTpls as $key => $showTpl}
                     {eq name='key' value='$vo.show_template|default="show.html"'}
-                    <option selected value='{$key}'>{$showTpl}</option>
+                    <option selected value='{$showTpl}'>{$showTpl}</option>
                     {else}
-                    <option value='{$key}'>{$showTpl}</option>
+                    <option value='{$showTpl}'>{$showTpl}</option>
                     {/eq}
                     {/foreach}
                 </select>

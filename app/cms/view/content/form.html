@@ -1,10 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-添加文章
-</body>
-</html>
+{extend name="../../admin/view/main"}
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+        <div class="layui-row layui-col-space10" style="padding: 30px 0px;">
+            <div class="layui-col-md8">
+                {foreach $formFields['base'] as $key=>$vo}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{$vo.title}</label>
+                    <div class="layui-input-block">
+                        {$vo.form|raw}
+                    </div>
+                </div>
+                {/foreach}
+            </div>
+            <div class="layui-col-md4">
+                {foreach $formFields['extend'] as $key=>$vo}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{$vo.title}</label>
+                    <div class="layui-input-block">
+                        {$vo.form|raw}
+                    </div>
+                </div>
+                {/foreach}
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveData">保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </form>
+</div>
+{/block}
+{block name='style'}
+<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/formSelects-v4.css">
+<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/cascader.css">
+{/block}
+{block name='script'}
+<script>
+    layui.form.render();
+    layui.config({
+        base: "__ROOT__/static/plugs/layui/mods/"
+    });
+    layui.use(['jquery', 'form',"{$layuiJsModels|raw}"], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            {$layuiJSinit|raw}
+        form = layui.form;
+
+        {$dependJS|raw}
+
+        form.on('submit(saveData)', function (data) {
+            {$formValidator|raw}
+            {$formData|raw}
+            //拦截layui自带的提交
+            console.log(formData);
+            return false;
+        })
+    });
+
+
+</script>
+{/block}
