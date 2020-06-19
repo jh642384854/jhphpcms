@@ -3,14 +3,7 @@
 <div class="layui-tab layui-tab-card think-bg-white">
     <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
         <div class="layui-card-body">
-            {foreach $formFields['base'] as $key=>$vo}
-            <div class="layui-form-item">
-                <label class="layui-form-label">{$vo.title}</label>
-                <div class="layui-input-block">
-                    {$vo.form|raw}
-                </div>
-            </div>
-            {/foreach}
+            <div id="test-editormd"></div>
             <div class="hr-line-dashed"></div>
             {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
             <div class="layui-form-item text-center">
@@ -22,32 +15,30 @@
 </div>
 {/block}
 {block name='style'}
-<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/formSelects-v4.css">
-<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/cascader.css">
+<link rel="stylesheet" href="__ROOT__/static/plugs/editormd/css/editormd.css">
 {/block}
 {block name='script'}
+<script src="__ROOT__/static/plugs/editormd/editormd.min.js"></script>
 <script>
-    layui.form.render();
-    layui.config({
-        base: "__ROOT__/static/plugs/layui/mods/"
+    var testEditor;
+
+    $(function() {
+        testEditor = editormd("test-editormd", {
+            width   : "90%",
+            height  : 640,
+            syncScrolling : "single",
+            path    : "./editormd/lib/"
+        });
+
+        /*
+        // or
+        testEditor = editormd({
+            id      : "test-editormd",
+            width   : "90%",
+            height  : 640,
+            path    : "../lib/"
+        });
+        */
     });
-    layui.use(['jquery', 'form',"{$layuiJsModels|raw}"], function () {
-        var layer = layui.layer,
-            $ = layui.jquery,
-            {$layuiJSinit|raw}
-        form = layui.form;
-
-        {$dependJS|raw}
-
-        form.on('submit(saveData)', function (data) {
-            {$formValidator|raw}
-            {$formData|raw}
-            //拦截layui自带的提交
-            console.log(formData);
-            return false;
-        })
-    });
-
-
 </script>
 {/block}

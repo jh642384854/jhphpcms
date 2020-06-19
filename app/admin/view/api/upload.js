@@ -7,6 +7,8 @@ define(['md5'], function (SparkMD5, allowExtsMimes) {
         options.type = options.element.data('type') || '';
         /*! 定义批量上传文件的文件个数 */
         options.upmaxsize = options.element.data('upmaxsize') || 10;
+        options.catid = options.element.attr('data-catid') || 0;
+        options.modelid = options.element.attr('data-modelid') || 1;
         options.safe = options.element.data('safe') ? 1 : 0;
         options.types = options.type ? options.type.split(',') : [];
         options.field = options.element.data('field') || 'file';
@@ -19,7 +21,7 @@ define(['md5'], function (SparkMD5, allowExtsMimes) {
         }
         /*! 初始化上传组件 */
         options.uploader = layui.upload.render({
-            auto: false, multiple: options.multiple,number:options.upmaxsize, accept: 'file', elem: element,data:{ module:1,catid:2},
+            auto: false, multiple: options.multiple,number:options.upmaxsize, accept: 'file', elem: element,data:{ modelid:options.modelid,catid:options.catid},
             exts: options.exts.join('|'), acceptMime: options.mimes.join(','), choose: function (obj) {
                 var upfiels = obj.pushFile();
                 for (var index in options.files = upfiels) {

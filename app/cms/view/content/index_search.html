@@ -19,9 +19,7 @@
         <div class="layui-form-item layui-inline">
             <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
             <!--{if auth("export")}-->
-            {if count($list) gt 0}
             <span lay-submit lay-filter="gofilter" class="layui-btn layui-btn-primary export_button"><i class="layui-icon">&#xe65b;</i> 导 出</span>
-            {/if}
             <!--{/if}-->
         </div>
     </form>

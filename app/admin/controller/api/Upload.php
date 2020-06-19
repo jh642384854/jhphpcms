@@ -15,6 +15,7 @@
 
 namespace app\admin\controller\api;
 
+use app\module\service\AttachmentService;
 use think\admin\Controller;
 use think\admin\Storage;
 use think\admin\storage\AliossStorage;
@@ -95,7 +96,9 @@ class Upload extends Controller
         if (!($file = $this->getFile()) || empty($file)) {
             return json(['uploaded' => false, 'error' => ['message' => '文件上传异常，文件可能过大或未上传']]);
         }
+        $this->fielSize = $file->getSize();
         $this->extension = $file->getOriginalExtension();
+        $this->filemd5 = $file->md5();
         if (!in_array($this->extension, explode(',', sysconf('storage.allow_exts')))) {
             return json(['uploaded' => false, 'error' => ['message' => '文件上传类型受限，请在后台配置']]);
         }
@@ -110,11 +113,24 @@ class Upload extends Controller
             file_exists($realpath) && is_dir($realpath) || mkdir($realpath, 0755, true);
             rename($file->getPathname(), $realname);
             $info = $local->info($this->name, $this->safe, $file->getOriginalName());
-            //TODO 写上传文件到附件表中
         } else {
             $bina = file_get_contents($file->getRealPath());
             $info = Storage::instance($this->uptype)->set($this->name, $bina, $this->safe, $file->getOriginalName());
         }
+        //写上传文件到附件表中
+        $attachData = [
+            'modelid'=>input('modelid',0,'intval'),
+            'catid' => input('catid',0,'intval'),
+            'filename' => $file->getOriginalName(),
+            'filepath' => $info['url'],
+            'filesize' => $this->fielSize,
+            'fileext' => $this->extension,
+            'uploadtime' => time(),
+            'userid' => session('user.id'),
+            'uploadip' => request()->ip(),
+            'filemd5' => $this->filemd5
+        ];
+        AttachmentService::instance()->addAttachment($attachData);
         if (is_array($info) && isset($info['url'])) {
             return json(['uploaded' => true, 'filename' => $this->name, 'url' => $this->safe ? $this->name : $info['url']]);
         } else {

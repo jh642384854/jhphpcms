@@ -56,7 +56,7 @@ class CategoryService extends Service
      */
     public function cacheAllCategory()
     {
-        $fields = ['id', 'parent_id', 'name', 'sort', 'description', 'modelid', 'status', 'arrparentid', 'haschild', 'childids'];
+        $fields = ['id', 'parent_id', 'name', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids'];
         $categories = $this->app->db->name('CmsCategory')->field($fields)->order('sort ASC')->select();
         $newCategories = [];
         if (count($categories) > 0) {

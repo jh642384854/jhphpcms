@@ -525,6 +525,8 @@ $(function () {
         return this.each(function (input, template) {
             input = $(this), template = $('<button type="button" class="layui-btn"><i class="layui-icon"></i>上传附件</button>'), attachVal = this.value ? this.value : "";
             template.attr('data-type', input.data('type') || 'doc,docx,xls,xlsx,ppt,pptx,pdf,zip,rar,tar.gz,tar');
+            template.attr('data-catid', input.data('catid') || 0);
+            template.attr('data-modelid', input.data('modelid') || 1);
             template.attr('data-field', input.attr('name') || 'attach').data('input', this);
             input.attr('name', template.attr('data-field')).after(template)
             template.uploadFile(function (url, fileobj) {
@@ -557,8 +559,8 @@ $(function () {
                     attachObjs.push(fileObj);
                 }
             }
-            var $input = $(this), name = $input.attr('name') || 'attach',upmaxsize = $input.data('upmaxsize') || 10, type = $input.data('type') || 'doc,docx,xls,xlsx,ppt,pptx,pdf,zip,rar,tar.gz,tar';
-            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('upmaxsize', upmaxsize).data('input', this); //data('upmaxsize', upmaxsize)是设置当前可以上传的文件个数
+            var $input = $(this), name = $input.attr('name') || 'attach',catid = $input.data('catid'),modelid = $input.data('modelid'),upmaxsize = $input.data('upmaxsize') || 10, type = $input.data('type') || 'doc,docx,xls,xlsx,ppt,pptx,pdf,zip,rar,tar.gz,tar';
+            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('catid', catid).data('modelid', modelid).data('upmaxsize', upmaxsize).data('input', this); //data('upmaxsize', upmaxsize)是设置当前可以上传的文件个数
             $input.attr('name', name).after($button);
             var $attachStr = '<div class="layui-upload-list"  style="display:none" id="layui-upload-list"><table class="layui-table"><thead><tr><th>文件名</th><th>文件大小</th><th>服务器地址</th></tr></thead><tbody id="attach_tbody"></tbody></table></div>';
             $button.uploadFile(function (url, fileobj) {
@@ -586,6 +588,8 @@ $(function () {
         return this.each(function (input, template) {
             input = $(this), template = $('<a data-file="one" class="uploadimage"><span class="layui-icon">&#x1006;</span></a>');
             template.attr('data-type', input.data('type') || 'png,jpg,gif');
+            template.attr('data-catid', input.data('catid') || 0);
+            template.attr('data-modelid', input.data('modelid') || 1);
             template.attr('data-field', input.attr('name') || 'image').data('input', this);
             template.find('span').on('click', function (event) {
                 event.stopPropagation(), template.attr('style', ''), input.val('');
@@ -600,8 +604,8 @@ $(function () {
     $.fn.uploadMultipleImage = function () {
         return this.each(function () {
             var $button = $('<a class="uploadimage"></a>'), images = this.value ? this.value.split('|') : [];
-            var $input = $(this), name = $input.attr('name') || 'umt-image',upmaxsize = $input.data('upmaxsize') || 10, type = $input.data('type') || 'png,jpg,gif';
-            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('upmaxsize', upmaxsize).data('input', this);
+            var $input = $(this), name = $input.attr('name') || 'umt-image',catid = $input.data('catid'),modelid = $input.data('modelid'),upmaxsize = $input.data('upmaxsize') || 10, type = $input.data('type') || 'png,jpg,gif';
+            $button.attr('data-type', type).attr('data-field', name).attr('data-file', 'mut').data('catid', catid).data('modelid', modelid).data('upmaxsize', upmaxsize).data('input', this);
             $input.attr('name', name).after($button), $button.uploadFile(function (src) {
                 images.push(src), $input.val(images.join('|')), showImageContainer([src]);
             });

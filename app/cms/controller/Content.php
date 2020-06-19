@@ -28,33 +28,127 @@ class Content extends Controller
     public function index()
     {
         $this->title='文章列表';
-        if($this->app->request->isGet() && input('action') === 'tree'){
-            $this->success('获取权限节点成功！', array_values(CategoryService::instance()->getAllCategoryFromCache()));
+        if($this->app->request->isGet() && input('action') === 'getdata'){
+            $query = $this->_query($this->table)->like('title');
+            $categoryservice = CategoryService::instance();
+            $cateDatas = $categoryservice->getAllCategoryFromCache();
+            $catid = input('catid');
+            if(!empty($catid) && $catid > 0){
+                $category = $cateDatas[$catid];
+                if($category['haschild']){
+                    $query->whereIn('catid',$category['childids']);
+                }else{
+                    $query->equal('catid');
+                }
+            }
+            $query->dateBetween('create_at');
+            $data = $query->order('id desc')->page(true,false);
+            return json(['code'=>0,'msg'=>'获取数据成功','count'=>$data['page']['total'],'data'=>$data['list']]);
+        }else{
+            $this->categoryTree = json_encode(array_values(CategoryService::instance()->getAllCategoryTree()));
+            $this->fetch();
         }
-        $query = $this->_query($this->table)->like('title');
-        $query->equal('catid')->dateBetween('create_at');
-        // 列表排序并显示
-        $query->order('id desc')->page();
     }
 
+    //对列表数据进行二次处理
+    protected function _index_page_filter(&$data)
+    {
+        $categorys = CategoryService::instance()->getAllCategoryFromCache();
+        foreach ($data as &$vo) {
+            $catname = '未知';
+            if(isset($categorys[$vo['catid']])){
+                $catname = $categorys[$vo['catid']]['name'];
+            }
+            $vo['catname'] = $catname;
+            $vo['create_at'] = format_datetime($vo['create_at']);
+            if($vo['posids'] != ''){
+                $vo['title'] = $vo['title'].' <span class="layui-badge">推荐</span>';
+            }
+        }
+    }
+
+    /**
+     * 添加文章
+     * @auth true
+     */
     public function add()
     {
-        $this->title = '添加文章';
-        $catid = $this->request->get('catid',0,'intval');
-        if($catid>0){
-            $categoryService = CategoryService::instance();
-            $cagetorys = $categoryService->getAllCategoryFromCache();
-            if(isset($cagetorys[$catid])){
-                $this->_applyFormToken();
-                $catdata = $cagetorys[$catid];
-                $this->allFields($catdata['modelid']);
-                $this->_form('cms_article', 'form');
+        $categoryService = CategoryService::instance();
+        $cagetorys = $categoryService->getAllCategoryFromCache();
+        if ($this->request->isGet()) {
+            $this->title = '添加文章';
+            $catid = $this->request->get('catid',0,'intval');
+            if($catid>0){
+                if(isset($cagetorys[$catid])){
+                    $this->_applyFormToken();
+                    $catdata = $cagetorys[$catid];
+                    $this->allFields($catid,$catdata['modelid'],['catid'=>str_replace('-',',',substr($catdata['path'],2))]);
+
+                }else{
+                    $this->redirect(url('index'));
+                }
             }else{
                 $this->redirect(url('index'));
             }
-        }else{
-            $this->redirect(url('index'));
         }
+        $this->_form($this->table, 'form');
+    }
+
+    protected function _form_filter(&$data)
+    {
+        if($this->request->isPost()){
+            $categoryService = CategoryService::instance();
+            $cagetorys = $categoryService->getAllCategoryFromCache();
+            $catid = $data['catid'];
+            if(strrpos($data['catid'],',')>0){
+                $catid = substr($data['catid'],strrpos($data['catid'],',')+1);
+                $data['catid'] = $catid;
+            }
+            $catdata = $cagetorys[$catid];
+            $data['modelid'] = $catdata['modelid'];
+            $data['tags'] = str_replace('，',',',$data['tags']);
+            $data['content'] = dealBadwords($data['content']);
+            $data['create_at'] = strtotime($data['create_at']);
+        }
+    }
+
+    protected function _form_result($result,$data)
+    {
+        dump($result);
+        dump($data);
+        exit;
+        if($result){
+            //内容敏感词过滤处理
+            if ($this->app->db->name($this->table)->insert($data) !== false) {
+                $this->success('文章保存成功！', 'javascript:history.back()');
+            } else {
+                $this->error('文章保存失败，请稍候再试！');
+            }
+        }
+    }
+
+    /**
+     * 处理标签
+     */
+    private function doTags($tag)
+    {
+
+    }
+
+    /**
+     * 处理推荐位
+     */
+    private function doPosid($posids)
+    {
+
+    }
+
+    /**
+     * 处理附件
+     * @param $imgs
+     */
+    private function doAttach($imgs)
+    {
 
     }
 
@@ -62,14 +156,17 @@ class Content extends Controller
      * 根据指定的模型来获取模型的所有字段信息
      * @param $modelid 模型ID
      */
-    private function allFields($modelid,$defaultData=[])
+    private function allFields($catid,$modelid,$defaultData=[])
     {
         //基础模型的字段
         $baseFields = $this->app->db->name('cms_model_field')->where(['modelid'=>1,'isshow'=>1])->order('sort asc')->select();
         //当前模型的自定义字段
-        $modelFields = $this->app->db->name('cms_model_field')->where(['modelid'=>$modelid,'isshow'=>1])->order('sort asc')->select();
+        $modelFields = [];
+        if($modelid != 1){
+            $modelFields = $this->app->db->name('cms_model_field')->where(['modelid'=>$modelid,'isshow'=>1])->order('sort asc')->select();
+        }
         $allFiels = $baseFields->merge($modelFields);
-        $form = new \form\Form($allFiels);
+        $form = new \form\Form($catid,$modelid,$allFiels);
         $this->formFields = $form->get($defaultData);
         $this->formValidator = $form->formValidator;
         $this->dependJS = $form->dependJS;
@@ -85,15 +182,8 @@ class Content extends Controller
 
     public function jhtest()
     {
-        $cagetorys = CategoryService::instance()->getAllCategoryFromCache();
-
-
-        /*        $form = new \form\Form([]);
-                $setting = '{"tips":"\u8bf7\u9009\u62e9\u680f\u76eeID","width":"100","min":"1","is_multiple":"0","options_from":"moduledata","options_module":"category","length":"5","chartype":"tinyint"}';
-                $res = $form->select('catid','',$setting);
-                echo $res;
-                echo $form->dependJS;*/
-
+        //$this->fetch();
+        dump(array_values(CategoryService::instance()->getAllCategoryTree()));
     }
 
     public function uploadtest()
@@ -113,11 +203,6 @@ class Content extends Controller
         ];
         $rs['count'] = 30;
         return json($rs);
-    }
-
-    protected function _form_filter()
-    {
-
     }
 
 }

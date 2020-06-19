@@ -1,7 +1,7 @@
 {extend name="../../admin/view/main"}
 {block name="content"}
 <div class="layui-tab layui-tab-card think-bg-white">
-    <form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <form class="layui-form layui-card" action="" data-auto="true" method="post" autocomplete="off">
         <div class="layui-row layui-col-space10" style="padding: 30px 0px;">
             <div class="layui-col-md8">
                 {foreach $formFields['base'] as $key=>$vo}
@@ -54,8 +54,8 @@
         form.on('submit(saveData)', function (data) {
             {$formValidator|raw}
             {$formData|raw}
+            $.form.load('{:url("add")}',formData,'post');
             //拦截layui自带的提交
-            console.log(formData);
             return false;
         })
     });

@@ -16,7 +16,7 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
         this.domContent="";     // content节点
         this.textArr=[];        // 最终的text数组
         this.textStr="";        // 最终的text
-        this.valueArr=[];        // 最终的value数组
+        this.idArr=[];        // 最终的value数组
         this.onOff=false;       // 是否显示
         this.positionArr=[];    // 当前点击的面板在数据中的下标位置
         this.blockData={};      // 当前点击的当前面板的数据
@@ -75,7 +75,7 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
             var string =  laytpl(
                 '<ul class="urp-cascader-child">'+
                     '{{# for(var i=0;i<d.length;i++){ }}'+
-                        '<li>{{ d[i].label }}<i class="layui-icon layui-icon-right" ></i></li>'+
+                        '<li>{{ d[i].title }}<i class="layui-icon layui-icon-right" ></i></li>'+
                     '{{# } }}'+
                 '</ul>'
             ).render(this.d);
@@ -132,13 +132,13 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
             // 获取text值
             this.textArr.length=this.floor;
             var blockData=node || this.blockData;
-            this.textArr.push(blockData.label);
-            this.valueArr.length=this.floor;
-            this.valueArr.push(blockData.value);
+            this.textArr.push(blockData.title);
+            this.idArr.length=this.floor;
+            this.idArr.push(blockData.id);
             var string =  laytpl(
                 '<ul class="urp-cascader-child">'+
                     '{{# for(var i=0;i< d.length;i++){ }}'+
-                        '<li>{{ d[i].label }}<i class="layui-icon layui-icon-right"></i></li>'+
+                        '<li>{{ d[i].title }}<i class="layui-icon layui-icon-right"></i></li>'+
                     '{{# } }}'+
                 '</ul>'
             ).render(blockData["children"]);
@@ -158,7 +158,7 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
                 this.textStr=this.option.showLastLevels ? this.textArr[this.textArr.length-1] : this.textArr.join("/");
                 $(this.elem).val(this.textStr);
                 //回调函数，选择完成之后的回调函数，返回值为value数组
-                if(triggerData!=="initValue" && this.option.success) this.option.success(this.valueArr,this.textArr);
+                if(triggerData!=="initValue" && this.option.success) this.option.success(this.idArr,this.textArr);
             }
         },
         // 结束之后拿取数据
@@ -166,9 +166,9 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
             this.domContent.find(".urp-cascader-child:gt("+(this.floor)+")").remove();
             
             this.textArr.length=this.floor;
-            this.textArr.push(this.blockData.label);
-            this.valueArr.length=this.floor;
-            this.valueArr.push(this.blockData.value);
+            this.textArr.push(this.blockData.title);
+            this.idArr.length=this.floor;
+            this.idArr.push(this.blockData.id);
             // 文本拼接
             this.textStr=this.textArr.join("/");
 
@@ -183,19 +183,19 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
             $(this.elem).siblings("i").removeClass("layui-icon-up").addClass("layui-icon-down");
 
             // 如果有初始值，则第一次不回调
-            if(triggerData!=="initValue" && this.option.success) this.option.success(this.valueArr,this.textArr);
+            if(triggerData!=="initValue" && this.option.success) this.option.success(this.idArr,this.textArr);
             // this.count++;
-            // if($.isArray(this.option.value) && this.option.value.length>0 && this.count===1 && this.option.success){
+            // if($.isArray(this.option.id) && this.option.id.length>0 && this.count===1 && this.option.success){
             //     return;
             // }
-            // if(this.option.success) this.option.success(this.valueArr,this.textArr);
+            // if(this.option.success) this.option.success(this.idArr,this.textArr);
         },
         // 赋初值
         initValue: function() {
             var self=this;
-            if($.isArray(this.option.value) && this.option.value.length>0) {
+            if($.isArray(this.option.id) && this.option.id.length>0) {
                 if(self.option.lazy) throw "懒加载暂不支持赋初值"
-                var value=self.option.value;
+                var value=self.option.id;
                 $(self.elem).trigger("click");
 
                 var arrr=[];    // 保存当前在data中的位置
@@ -205,9 +205,9 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
                 value.forEach(function(val,index){
                     // console.log(data);
                     if(!data) throw "选择器"+self.elem+"初始化数据不匹配";
-                    var oLiHeight=self.domContent.find(".urp-cascader-child").eq(index).find("li").outerHeight();
+                    var oLiHeight=self.domContent.find(".urp-cascader- child").eq(index).find("li").outerHeight();
                     for(var i=0;i<data.length;i++){
-                        if(data[i].value==val){
+                        if(data[i].id==val){
                             arrr.push(i);
                             self.domContent.find(".urp-cascader-child").eq(index).find("li").eq(i).trigger(self.triggerType,"initValue");
                             // 若有滚动条则滚动定位
@@ -229,21 +229,21 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
                 $(self.elem).siblings("i").removeClass("layui-icon-up").addClass("layui-icon-down");
 
                 // for(var i=0;i<d.length;i++){
-                //     if(d[i].value==value[0]){
+                //     if(d[i].id==value[0]){
                 //         arrr.push(i);
                 //         obj.domContent.find(".urp-cascader-child").eq(0).find("li").eq(i).trigger(triggerType);
                 //     }
                 // }
 
                 // for(var i=0;i<d[arrr[0]].children.length;i++){
-                //     if(d[arrr[0]].children[i].value==value[1]){
+                //     if(d[arrr[0]].children[i].id==value[1]){
                 //         arrr.push(i)
                 //         obj.domContent.find(".urp-cascader-child").eq(1).find("li").eq(i).trigger(triggerType);
                 //     }
                 // }
 
                 // for(var i=0;i<d[arrr[0]].children[arrr[1]].children.length;i++){
-                //     if(d[arrr[0]].children[arrr[1]].children[i].value==value[2]){
+                //     if(d[arrr[0]].children[arrr[1]].children[i].id==value[2]){
                 //         obj.domContent.find(".urp-cascader-child").eq(2).find("li").eq(i).trigger(triggerType);
                 //     }
                 // }
@@ -327,7 +327,7 @@ layui.define(["jquery","laytpl","layer"], function (exports) {
             this.domContent="";     
             this.textArr=[];        
             this.textStr="";        
-            this.valueArr=[];       
+            this.idArr=[];       
             this.onOff=false;       
             this.positionArr=[];    
             this.blockData={};      
