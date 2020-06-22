@@ -1,8 +1,10 @@
 <?php
+
 namespace app\cms\controller;
 
 
 use app\cms\service\CategoryService;
+use app\cms\service\PageService;
 use think\admin\Controller;
 
 /**
@@ -34,12 +36,13 @@ class Page extends Controller
         $categorys = CategoryService::instance()->getAllCategoryFromCache();
         foreach ($data as &$vo) {
             $catname = '未知';
-            if(isset($categorys[$vo['catid']])){
+            if (isset($categorys[$vo['catid']])) {
                 $catname = $categorys[$vo['catid']]['name'];
             }
             $vo['catname'] = $catname;
         }
     }
+
     /**
      * 添加/编辑单页
      * @auth true
@@ -51,7 +54,17 @@ class Page extends Controller
     {
         $this->title = '编辑单页';
         $this->_applyFormToken();
-        $this->_form($this->table, 'form');
+        $this->catid = $this->request->request('catid', 0, 'intval');
+        $pageData = [];
+        if($this->request->isGet()){
+            if($this->catid > 0){
+                $pageData = $this->app->db->name($this->table)->where(['catid'=>$this->catid])->find();
+                if(!$pageData){
+                    $pageData = ['catid'=>$this->catid];
+                }
+            }
+        }
+        $this->_form($this->table, 'form','',[],$pageData);
     }
 
     protected function _form_result($result, $data)

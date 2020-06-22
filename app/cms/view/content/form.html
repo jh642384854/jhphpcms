@@ -25,7 +25,7 @@
             </div>
         </div>
         <div class="hr-line-dashed"></div>
-        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        {notempty name='id'}<input type='hidden' value='{$id}' name='id'>{/notempty}
         <div class="layui-form-item text-center">
             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveData">保存数据</button>
             <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
@@ -54,7 +54,12 @@
         form.on('submit(saveData)', function (data) {
             {$formValidator|raw}
             {$formData|raw}
+            {notempty name='id'}
+            formData.id = $('input[name="id"]').val();
+            $.form.load('{:url("edit")}',formData,'post');
+            {else/}
             $.form.load('{:url("add")}',formData,'post');
+            {/notempty}
             //拦截layui自带的提交
             return false;
         })

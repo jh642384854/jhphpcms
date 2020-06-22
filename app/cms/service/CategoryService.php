@@ -83,11 +83,18 @@ class CategoryService extends Service
 
     /**
      * 获取所有栏目，并构建为树形结构
+     * @param int $selectId
+     * @param bool $excludePage 是否排除单页模型
      * @return array
      */
-    public function getAllCategoryTree($selectId = 0)
+    public function getAllCategoryTree($selectId = 0,$excludePage = false)
     {
-        $categories = $this->model->field('id,name,parent_id')->order('sort ASC')->where(['status' => 1])->select();
+        $map[] = ['status','=',1];
+        //排除单页栏目
+        if($excludePage){
+            array_push($map,['modelid','<>',0]);
+        }
+        $categories = $this->model->field('id,name,parent_id')->order('sort ASC')->where($map)->select();
         $tree = new Tree();
         $newCategories = [];
         foreach ($categories as $item) {
@@ -120,7 +127,8 @@ class CategoryService extends Service
         $catetory_prefix = 'category';
         $list_prefix = 'list';
         $show_prefix = 'show';
-        if (count($dir->toArray()) > 0) {
+        $page_prefix = 'page';
+        if (count($allTpls) > 0) {
             foreach ($allTpls as $tpl) {
                 if (strncmp($tpl['filename'], $catetory_prefix, strlen($catetory_prefix)) === 0) {
                     $templates['category'][] = $tpl['filename'];
@@ -128,11 +136,14 @@ class CategoryService extends Service
                     $templates['list'][] = $tpl['filename'];
                 } else if (strncmp($tpl['filename'], $show_prefix, strlen($show_prefix)) === 0) {
                     $templates['show'][] = $tpl['filename'];
+                } else if (strncmp($tpl['filename'], $page_prefix, strlen($page_prefix)) === 0) {
+                    $templates['page'][] = $tpl['filename'];
                 }
             }
         }
         return $templates;
     }
+
 
     /**
      * 更新栏目状态

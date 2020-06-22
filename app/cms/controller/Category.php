@@ -1,4 +1,5 @@
 <?php
+
 namespace app\cms\controller;
 
 use app\cms\service\CategoryService;
@@ -42,6 +43,8 @@ class Category extends Controller
                     $categoryData[$key] = $cate;
                     if (in_array($cate['modelid'], array_keys($models))) {
                         $categoryData[$key]['modelname'] = $models[$cate['modelid']]['name'];
+                    } else if ($cate['modelid'] == 0) {
+                        $categoryData[$key]['modelname'] = '单页模型';
                     } else {
                         $categoryData[$key]['modelname'] = '未知模型';
                     }
@@ -63,14 +66,20 @@ class Category extends Controller
     {
         $this->title = '添加栏目';
         $this->_applyFormToken();
+        $type = $this->request->request('type', 'category', 'trim');
+        $this->type = $type;
         $categoryService = CategoryService::instance();
-        //①、获取模版列表
         $tpls = $categoryService->getCategoryTemplate();
-        $this->categoryTpls = isset($tpls['category']) ? $tpls['category'] : [];
-        $this->listTpls = isset($tpls['list']) ? $tpls['list'] : [];
-        $this->showTpls = isset($tpls['show']) ? $tpls['show'] : [];
-        //②、获取模型列表
-        $this->models = ModelService::instance()->getAllModelsFromCache();
+        if ($type === 'page') {
+            $this->categoryTpls = isset($tpls['page']) ? $tpls['page'] : [];
+        } else {
+            //①、获取模版列表
+            $this->categoryTpls = isset($tpls['category']) ? $tpls['category'] : [];
+            $this->listTpls = isset($tpls['list']) ? $tpls['list'] : [];
+            $this->showTpls = isset($tpls['show']) ? $tpls['show'] : [];
+            //②、获取模型列表
+            $this->models = ModelService::instance()->getAllModelsFromCache();
+        }
         $this->parentid = $this->request->param('pid', 0, 'intval');
         //③、获取栏目列表树形结构
         $this->categoriesTree = $categoryService->getCategoryTree($this->parentid);
@@ -87,18 +96,25 @@ class Category extends Controller
     public function edit()
     {
         $this->title = '编辑栏目';
-        $this->_applyFormToken();
-        $categoryService = CategoryService::instance();
-        //①、获取模版列表
-        $tpls = $categoryService->getCategoryTemplate();
-        $this->categoryTpls = isset($tpls['category']) ? $tpls['category'] : [];
-        $this->listTpls = isset($tpls['list']) ? $tpls['list'] : [];
-        $this->showTpls = isset($tpls['show']) ? $tpls['show'] : [];
-        //②、获取模型列表
-        $this->models = ModelService::instance()->getAllModelsFromCache();
-        //③、获取栏目列表树形结构
         $this->parentid = $this->request->param('pid', 0, 'intval');  //父栏目ID
         $this->id = $this->request->param('id', 0, 'intval');         //当前栏目ID
+        $this->mid = $this->request->param('mid', 0, 'intval');       //当前栏目模型ID
+        $this->_applyFormToken();
+        $categoryService = CategoryService::instance();
+        $tpls = $categoryService->getCategoryTemplate();
+        if ($this->mid > 0) {
+            $this->type = 'category';
+            //①、获取模版列表
+            $this->categoryTpls = isset($tpls['category']) ? $tpls['category'] : [];
+            $this->listTpls = isset($tpls['list']) ? $tpls['list'] : [];
+            $this->showTpls = isset($tpls['show']) ? $tpls['show'] : [];
+            //②、获取模型列表
+            $this->models = ModelService::instance()->getAllModelsFromCache();
+        } else {
+            $this->type = 'page';
+            $this->categoryTpls = isset($tpls['page']) ? $tpls['page'] : [];
+        }
+        //③、获取栏目列表树形结构
         $this->categoriesTree = $categoryService->getCategoryTree($this->parentid, $this->id);
         $this->_form($this->table, 'form');
     }

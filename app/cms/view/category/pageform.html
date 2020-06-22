@@ -28,25 +28,19 @@
                                     </select>
                                 </div>
                             </div>
-
                             <div class="layui-form-item">
                                 <label class="layui-form-label label-required-next">栏目模型</label>
                                 <div class="layui-input-block">
-                                    {if $type eq 'category'}
                                     <select  class="layui-input" name="modelid" required {notempty name='vo.id'}disabled{/notempty}>
-                                        <option value="">请选择栏目模型</option>
-                                        {foreach $models as $key => $model}
-                                        {eq name='model.id' value='$vo.modelid|default=""'}
-                                        <option selected value='{$model.id}'>{$model.name}</option>
-                                        {else}
-                                        <option value='{$model.id}'>{$model.name}</option>
-                                        {/eq}
-                                        {/foreach}
+                                    <option value="">请选择栏目模型</option>
+                                    {foreach $models as $key => $model}
+                                    {eq name='model.id' value='$vo.modelid|default=""'}
+                                    <option selected value='{$model.id}'>{$model.name}</option>
+                                    {else}
+                                    <option value='{$model.id}'>{$model.name}</option>
+                                    {/eq}
+                                    {/foreach}
                                     </select>
-                                    {else/}
-                                    单页模型
-                                    <input type="hidden" name="modelid" value="0">
-                                    {/if}
                                 </div>
                             </div>
 
@@ -105,11 +99,11 @@
                             </div>
 
                         </div>
-                        <div class="layui-col-xs3" style="overflow: hidden">
+                        <div class="layui-col-xs3">
                             <div class="layui-form-item">
                                 <label class="layui-form-label">栏目图片</label>
                                 <div class="layui-input-block">
-                                    <input class="layui-input" onchange="$(this).nextAll('img').attr('src', this.value)" value="{$vo.image|default=''}" name="image" placeholder="请上传图片或输入图片URL地址">
+                                    <input class="layui-input" onchange="$(this).nextAll('image').attr('src', this.value)" value="{$vo.image|default=''}" name="image" placeholder="请上传图片或输入图片URL地址">
                                     <a data-file="btn" data-type="bmp,png,jpeg,jpg,gif" data-field="image" class="input-group-addon"><i class="layui-icon layui-icon-upload"></i></a>
                                     <p class="help-block">{:config('constant.UploadTips')}</p>
                                     <img data-tips-image src='{$vo.image|default=""}' alt="image">
@@ -161,8 +155,6 @@
                         </div>
                     </div>
 
-                    {if $type eq 'category'}
-                    <!-- 单页模型不需要选择列表页和内容页的模版 -->
                     <div class="layui-form-item">
                         <label class="layui-form-label label-required-next">列表页模版</label>
                         <div class="layui-input-block">
@@ -194,7 +186,6 @@
                             <p class="help-block">必选，请选择内容页模版</p>
                         </div>
                     </div>
-                    {/if}
                 </div>
             </div>
         </div>
@@ -210,18 +201,18 @@
 
 {block name='style'}
 <style>
-.layui-tab-item{ min-height: 400px;}
-.input-group-addon {
-    top: 0;
-    right: 0;
-    color: #eee;
-    width: 25px;
-    padding: 7px;
-    position: absolute;
-    margin-top: -1px;
-    text-align: center;
-    background: #393D49;
-}
+    .layui-tab-item{ min-height: 400px;}
+    .input-group-addon {
+        top: 0;
+        right: 0;
+        color: #eee;
+        width: 25px;
+        padding: 7px;
+        position: absolute;
+        margin-top: -1px;
+        text-align: center;
+        background: #393D49;
+    }
 </style>
 {/block}
 {block name='script'}
