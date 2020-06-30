@@ -9,10 +9,16 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
     public static $files = array (
         '9b552a3cc426e3287cc811caefa3cf53' => __DIR__ . '/..' . '/topthink/think-helper/src/helper.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
+        'dc1275c308c5b416beb314b6317daca2' => __DIR__ . '/..' . '/overtrue/pinyin/src/const.php',
+        '9da907a41740a37509d2ef83e2370e7c' => __DIR__ . '/..' . '/xiaodi/think-pinyin/src/helpers.php',
         '8dafcc6956460bc297e00381fed53e11' => __DIR__ . '/..' . '/zoujingli/think-library/src/common.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        'x' => 
+        array (
+            'xiaodi\\ThinkPinyin\\' => 19,
+        ),
         't' => 
         array (
             'think\\view\\driver\\' => 18,
@@ -44,6 +50,7 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
         ),
         'O' => 
         array (
+            'Overtrue\\Pinyin\\' => 16,
             'Opis\\Closure\\' => 13,
         ),
         'M' => 
@@ -70,6 +77,10 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
     );
 
     public static $prefixDirsPsr4 = array (
+        'xiaodi\\ThinkPinyin\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/xiaodi/think-pinyin/src',
+        ),
         'think\\view\\driver\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-view/src',
@@ -86,8 +97,9 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
         array (
             0 => __DIR__ . '/..' . '/topthink/framework/src/think',
             1 => __DIR__ . '/..' . '/topthink/think-helper/src',
-            2 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            3 => __DIR__ . '/..' . '/topthink/think-template/src',
+            2 => __DIR__ . '/..' . '/topthink/think-image/src',
+            3 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            4 => __DIR__ . '/..' . '/topthink/think-template/src',
         ),
         'app\\' => 
         array (
@@ -128,6 +140,10 @@ class ComposerStaticInitf41e9df38a61a147f539b835fbd021f0
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'Overtrue\\Pinyin\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/overtrue/pinyin/src',
         ),
         'Opis\\Closure\\' => 
         array (

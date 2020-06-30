@@ -1,0 +1,35 @@
+{
+    "name": "xiaodi/think-pinyin",
+    "description": "ThinkPHP 中文转拼音扩展包",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "xiaodi",
+            "email": "liangjinbiao@live.com"
+        }
+    ],
+    "keywords": [
+        "thinkphp",
+        "pinyin",
+        "chinese"
+    ],
+    "require": {
+        "overtrue/pinyin": "~4.0",
+        "topthink/framework": "6.0.*|5.1.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "xiaodi\\ThinkPinyin\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "xiaodi\\ThinkPinyin\\PinyinService"
+            ]
+        }
+    }
+}

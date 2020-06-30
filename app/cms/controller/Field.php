@@ -88,20 +88,6 @@ class Field extends Controller
         }
     }
 
-    public function jhtest2()
-    {
-        $modeid = 3;
-        $filed = 'test';
-        $fields = $this->app->db->name('cms_model_field')->whereIn('modelid', '1,' . $modeid)->select('field');
-        dump($fields);
-        exit;
-        $flag = false;
-        if (in_array($filed, $fields)) {
-            $flag = true;
-        }
-        dump($flag);
-    }
-
     /**
      * 提交表单数据进行过滤处理
      * @param $vo

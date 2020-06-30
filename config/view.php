@@ -36,6 +36,8 @@ return [
     'taglib_begin'       => '{',
     // 标签库标签结束标记
     'taglib_end'         => '}',
+    // 预先加载的标签库
+    //'taglib_pre_load'     =>    'app\\common\\taglib\\Jhphpcms',
     // 定义模板替换字符串
     'tpl_replace_string' => [
         '__APP__'    => rtrim(url('@')->build(), '\\/'),

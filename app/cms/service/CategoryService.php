@@ -23,6 +23,23 @@ class CategoryService extends Service
     }
 
     /**
+     * 根据urlpath来获取栏目信息
+     * @param string $urlpath
+     * @return array
+     */
+    public function getCategoryByUrlPath($urlpath = '')
+    {
+        $category = [];
+        if($urlpath != ''){
+            $data = $this->model->where('url_path','=',$urlpath)->find();
+            if($data){
+                $category = $data;
+            }
+        }
+        return $category;
+    }
+
+    /**
      * 获取所有栏目，并构建成为树形结构
      * @param int $selectId
      * @param int $currentCid
@@ -56,7 +73,7 @@ class CategoryService extends Service
      */
     public function cacheAllCategory()
     {
-        $fields = ['id', 'parent_id', 'name', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids'];
+        $fields = ['id', 'parent_id', 'name','url_path','link_url', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids'];
         $categories = $this->app->db->name('CmsCategory')->field($fields)->order('sort ASC')->select();
         $newCategories = [];
         if (count($categories) > 0) {

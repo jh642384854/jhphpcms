@@ -1,6 +1,14 @@
 <form onsubmit="return false" data-auto="true" action="{:request()->url()}" method="post" class='layui-form layui-card' autocomplete="off">
     <div class="layui-card-body padding-left-40">
         <div class="layui-form-item">
+            <span class="color-green font-w7 label-required-prev">站点域名</span>
+            <span class="color-desc margin-left-5">domain</span>
+            <label class="layui-input relative block label-required-null">
+                <input required  pattern="^(http:\/\/|^https:\/\/|^\/\/)((\w|=|\?|\.|\/|&|-)+)" placeholder="请输入站点域名" class="layui-input inline-block padding-0 border-0" style="background:none" value="{:sysconf('site_url')}" name="site_url">
+            </label>
+            <span class="help-block">站点域名需要带上协议(http或https)</span>
+        </div>
+        <div class="layui-form-item">
             <span class="color-green font-w7 label-required-prev">后台登录入口</span>
             <span class="color-desc margin-left-5">login</span>
             <label class="layui-input relative block label-required-null">

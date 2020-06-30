@@ -58,6 +58,14 @@
         <div class="help-block">网站名称及网站图标，将显示在浏览器的标签上</div>
     </div>
     <div class="layui-form-item">
+        <div class="color-green font-w7">网站域名 Domain</div>
+        <label class="relative block">
+            <input readonly value="{:sysconf('site_url')}" class="layui-input layui-bg-gray">
+            <a data-copy="{:sysconf('site_url')}" class="fa fa-copy input-right-icon"></a>
+        </label>
+        <div class="help-block">网站域名</div>
+    </div>
+    <div class="layui-form-item">
         <div class="color-green font-w7">管理程序名称 Name</div>
         <label class="relative block">
             <input readonly placeholder="请输入程序名称" value="{:sysconf('app_name')}" class="layui-input layui-bg-gray">

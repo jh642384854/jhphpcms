@@ -420,6 +420,77 @@
         ]
     },
     {
+        "name": "overtrue/pinyin",
+        "version": "4.0.6",
+        "version_normalized": "4.0.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/overtrue/pinyin.git",
+            "reference": "9836dae1783bcf5934508a2abe32eca9ea5ee15d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/overtrue/pinyin/zipball/9836dae1783bcf5934508a2abe32eca9ea5ee15d",
+            "reference": "9836dae1783bcf5934508a2abe32eca9ea5ee15d",
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
+        },
+        "require": {
+            "php": ">=7.1"
+        },
+        "require-dev": {
+            "brainmaestro/composer-git-hooks": "^2.7",
+            "friendsofphp/php-cs-fixer": "^2.16",
+            "phpunit/phpunit": "~8.0"
+        },
+        "time": "2020-04-13T08:53:30+00:00",
+        "type": "library",
+        "extra": {
+            "hooks": {
+                "pre-commit": [
+                    "composer test",
+                    "composer fix-style"
+                ],
+                "pre-push": [
+                    "composer test",
+                    "composer check-style"
+                ]
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Overtrue\\Pinyin\\": "src/"
+            },
+            "files": [
+                "src/const.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "overtrue",
+                "email": "anzhengchao@gmail.com",
+                "homepage": "http://github.com/overtrue"
+            }
+        ],
+        "description": "Chinese to pinyin translator.",
+        "homepage": "https://github.com/overtrue/pinyin",
+        "keywords": [
+            "Chinese",
+            "Pinyin",
+            "cn2pinyin"
+        ]
+    },
+    {
         "name": "phpmailer/phpmailer",
         "version": "v6.1.6",
         "version_normalized": "6.1.6.0",
@@ -891,6 +962,54 @@
         "description": "The ThinkPHP6 Helper Package"
     },
     {
+        "name": "topthink/think-image",
+        "version": "v1.0.7",
+        "version_normalized": "1.0.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/top-think/think-image.git",
+            "reference": "8586cf47f117481c6d415b20f7dedf62e79d5512"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/top-think/think-image/zipball/8586cf47f117481c6d415b20f7dedf62e79d5512",
+            "reference": "8586cf47f117481c6d415b20f7dedf62e79d5512",
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
+        },
+        "require": {
+            "ext-gd": "*"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.8.*",
+            "topthink/framework": "^5.0"
+        },
+        "time": "2016-09-29T06:05:43+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "think\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "yunwuxin",
+                "email": "448901948@qq.com"
+            }
+        ],
+        "description": "The ThinkPHP5 Image Package"
+    },
+    {
         "name": "topthink/think-multi-app",
         "version": "v1.0.12",
         "version_normalized": "1.0.12.0",
@@ -1084,6 +1203,66 @@
             }
         ],
         "description": "thinkphp template driver"
+    },
+    {
+        "name": "xiaodi/think-pinyin",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/edenleung/think-pinyin.git",
+            "reference": "4675515d3be42bebff712383c306ff99ef279f97"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/edenleung/think-pinyin/zipball/4675515d3be42bebff712383c306ff99ef279f97",
+            "reference": "4675515d3be42bebff712383c306ff99ef279f97",
+            "shasum": "",
+            "mirrors": [
+                {
+                    "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                    "preferred": true
+                }
+            ]
+        },
+        "require": {
+            "overtrue/pinyin": "~4.0",
+            "topthink/framework": "6.0.*|5.1.*"
+        },
+        "time": "2019-10-25T09:19:32+00:00",
+        "type": "library",
+        "extra": {
+            "think": {
+                "services": [
+                    "xiaodi\\ThinkPinyin\\PinyinService"
+                ]
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "xiaodi\\ThinkPinyin\\": "src/"
+            },
+            "files": [
+                "src/helpers.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "xiaodi",
+                "email": "liangjinbiao@live.com"
+            }
+        ],
+        "description": "ThinkPHP 中文转拼音扩展包",
+        "keywords": [
+            "Chinese",
+            "Pinyin",
+            "thinkphp"
+        ]
     },
     {
         "name": "zoujingli/ip2region",

@@ -58,6 +58,14 @@
                             </div>
 
                             <div class="layui-form-item">
+                                <label class="layui-form-label">路径地址</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="url_path" value='{$vo.url_path|default=""}' required pattern="^[A-Za-z0-9_-\s]+$"  placeholder="请输入栏目英文名称" class="layui-input">
+                                    <input type="checkbox" name="usepy" lay-filter="urlpath_filter" lay-skin="switch" lay-text="ON|OFF"> 使用栏目名称首拼
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
                                 <label class="layui-form-label">栏目英文名称</label>
                                 <div class="layui-input-block">
                                     <input type="text" name="en_name" value='{$vo.en_name|default=""}' pattern="^[A-Za-z0-9_-\s]+$"  placeholder="请输入栏目英文名称" class="layui-input">
@@ -239,6 +247,18 @@
                 $('#category_link_url').show();
             }else{
                 $('#category_link_url').hide();
+            }
+        });
+        //监听指定开关
+        form.on('switch(urlpath_filter)', function(data){
+            if(this.checked){
+                $(this).parent('.layui-input-block').prev().removeClass('label-required-next');
+                $('input[name="url_path"]').next('span').hide();
+                $('input[name="url_path"]').removeAttr('required').attr('disabled',true);
+            }else{
+                $(this).parent('.layui-input-block').prev().addClass('label-required-next');
+                $('input[name="url_path"]').next('span').show();
+                $('input[name="url_path"]').removeAttr('disabled').attr('required',true);
             }
         });
     });

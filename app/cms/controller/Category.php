@@ -127,8 +127,26 @@ class Category extends Controller
     {
         if ($this->request->isPost()) {
             //如果是进行更新操作，就把模型修改的属性给删除掉
+            $url_path = !empty($vo['url_path']) ? strtolower($vo['url_path']) : '';
+            if (!empty($vo['usepy']) && strtolower($vo['usepy']) == 'on') {
+                $url_path = $this->app->pinyin->abbr($vo['name']);
+                $vo['url_path'] = $url_path;
+            }
+            $checkUrlpath = false;
+            if ($url_path != '') {
+                $checkUrlpath = true;
+            }
+            $map = [];
             if (!empty($vo['id'])) {
                 unset($vo['modelid']);
+                $map[] = ['id', '<>', $vo['id']];
+            }
+            if ($checkUrlpath) {
+                $map[] = ['url_path', '=', $url_path];
+                $exits = $this->app->db->name($this->table)->field('id')->where($map)->find();
+                if ($exits) {
+                    $this->error('路径地址重复，请更换路径地址');
+                }
             }
         }
     }
