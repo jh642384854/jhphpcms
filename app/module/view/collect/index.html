@@ -1,0 +1,80 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-open='{:url("add")}' data-title="添加采集任务" class='layui-btn layui-btn-sm layui-btn-primary'>添加采集任务</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='text-left nowrap' width="120px">任务名称</th>
+                <th class='text-left nowrap' width="150px">任务URL</th>
+                <th class='text-left nowrap'>任务描述</th>
+                <th>标题规则</th>
+                <th>作者规则</th>
+                <th>来源规则</th>
+                <th>时间规则</th>
+                <th>内容规则</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr>
+                <td class='text-left nowrap'>
+                    {$vo.name}
+                </td>
+                <td class='text-left nowrap'>
+                   {$vo.url}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.description}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.title_rule}[{$vo.title_attr}]
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.author_rule} {$vo.author_attr}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.comeform_rule} {$vo.comeform_attr}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.time_rule} {$vo.time_attr}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.content_rule} {$vo.content_attr}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.create_at|format_datetime}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--{if auth("edit")}-->
+                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑任务" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                    <!--{/if}-->
+                    <!--{if auth("remove")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此任务吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
+                    <!--{/if}-->
+                    <!--{if auth("testjob")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-normal" data-title="测试任务" data-modal='{:url("testjob")}?id={$vo.id}'>测试采集</a>
+                    <!--{/if}-->
+                    <!--{if auth("dojob")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-warm" data-title="执行采集" data-open='{:url("dojob")}?id={$vo.id}'>执行采集</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+{/block}

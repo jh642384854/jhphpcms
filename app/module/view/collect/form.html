@@ -1,0 +1,425 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("index")}' data-title="采集列表" class='layui-btn layui-btn-sm layui-btn-primary'>返回采集列表</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">采集规则</li>
+                <li>内容规则</li>
+                <li>自定义规则</li>
+                <li>高级配置</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">任务名称</span><span class="color-desc margin-left-5">Name</span>
+                        <input type="text" name="name" value='{$vo.name|default=""}' required placeholder="请输入任务名称" class="layui-input">
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">采集网址</span><span class="color-des cmargin-left-5">Url</span>
+                        <input type="text" name="url" value='{$vo.url|default=""}' required placeholder="请输入采集网址" class="layui-input">
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">采集页面编码</span><span class="color-desc margin-left-5">Encode</span><br />
+                        {foreach ['UTF-8'=>'UTF-8','GBK'=>'GBK'] as $k=>$v}
+                        <!--{if (!isset($vo.encode) and $k eq 'UTF-8') or (isset($vo.encode) and $vo.encode eq $k)}-->
+                        <input type="radio" name="encode" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="encode" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                    </label>
+
+                    <div class="layui-form-item layui-row layui-col-space15">
+                        <div class="layui-col-xs6">
+                            <label class="relative block label-required-prev">
+                                <span class="color-green font-w7">起始页码</span>
+                                <span class="color-desc margin-left-5">Pagesize Start</span>
+                                <input name="pagesize_start" required placeholder="请输入起始页码" value='{$vo.pagesize_start|default="1"}' class="layui-input">
+                                <span class="help-block">采集列表页面的起始分页页码！</span>
+                            </label>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="relative block label-required-prev">
+                                <span class="color-green font-w7">结束页码</span>
+                                <span class="color-desc margin-left-5">Pagesize End</span>
+                                <input name="pagesize_end" required placeholder="请输入起始页码" value='{$vo.pagesize_end|default=""}' class="layui-input">
+                                <span class="help-block">采集列表页面的结束分页页码！</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">任务描述</span><span class="color-desc">Description</span>
+                        <textarea placeholder="请输入任务描述" class="layui-textarea" name="description">{$vo.description|default=""}</textarea>
+                    </label>
+                </div>
+                <div class="layui-tab-item">
+                    <fieldset class="layui-form-item">
+                        <legend>文章标题</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block label-required-prev">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="title_selector" required placeholder="请输入标题标签" value='{$vo.title_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block label-required-prev">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="title_attr" required placeholder="请输入标题标签属性" value='{$vo.title_attr|default="text"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="title_filter" placeholder="请输入标题过滤选项" value='{$vo.title_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend>文章详情链接</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block label-required-prev">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="page_url_selector" required placeholder="请输入详情链接标签" value='{$vo.page_url_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block label-required-prev">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="page_url_attr" required placeholder="请输入标题标签属性" value='{$vo.page_url_attr|default="href"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="title_filter" placeholder="请输入标题过滤选项" value='{$vo.title_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend>文章内容</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block label-required-prev">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="content_selector" required placeholder="请输入内容标签选择器" value='{$vo.content_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block label-required-prev">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="content_attr" required placeholder="请输入内容标签属性" value='{$vo.content_attr|default="html"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="content_filter" placeholder="请输入内容过滤选项" value='{$vo.content_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend>文章摘要</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="description_selector" placeholder="请输入摘要标签选择器" value='{$vo.description_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="description_attr" placeholder="请输入摘要标签" value='{$vo.description_attr|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="description_filter" placeholder="请输入内容过滤选项" value='{$vo.description_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend>缩略图</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="thumb_selector" placeholder="请输入标题标签" value='{$vo.thumb_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="thumb_attr" placeholder="请输入缩略图标签属性" value='{$vo.thumb_attr|default="src"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="thumb_filter" placeholder="请输入标题过滤选项" value='{$vo.thumb_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                    <fieldset class="layui-form-item">
+                        <legend>文章作者</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="author_selector" placeholder="请输入文章作者标签选择器" value='{$vo.author_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="author_attr" placeholder="请输入文章作者标签属性" value='{$vo.author_attr|default="text"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="author_filter" placeholder="请输入文章作者过滤选项" value='{$vo.author_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                    <fieldset class="layui-form-item">
+                        <legend>文章来源</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="comeform_selector" placeholder="请输入文章来源标签选择器" value='{$vo.comeform_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="comeform_attr" placeholder="请输入文章来源标签属性" value='{$vo.comeform_attr|default="text"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="comeform_filter" placeholder="请输入文章来源过滤选项" value='{$vo.comeform_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend>发布时间</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="time_selector" placeholder="请输入发布时间标签选择器" value='{$vo.time_selector|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="time_attr" placeholder="请输入发布时间标签属性" value='{$vo.time_attr|default="text"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="time_filter" placeholder="请输入发布时间过滤选项" value='{$vo.time_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                </div>
+                <div class="layui-tab-item">
+                    自定义设置
+                </div>
+                <div class="layui-tab-item">
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">是否过滤采集原站URL地址</span><span class="color-desc margin-left-5">Filter Url</span><br />
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.is_filter_url) and $k eq '1') or (isset($vo.is_filter_url) and $vo.is_filter_url eq $k)}-->
+                        <input type="radio" name="is_filter_url" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="is_filter_url" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">是否下载远程图片到本地</span><span class="color-desc margin-left-5">Download Imag</span><br />
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.is_download_img) and $k eq '1') or (isset($vo.is_download_img) and $vo.is_download_img eq $k)}-->
+                        <input type="radio" name="is_download_img" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="is_download_img" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">是否给下载的图片加水印</span><span class="color-desc margin-left-5">Image watermarking</span><br />
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.is_watermark_img) and $k eq '1') or (isset($vo.is_watermark_img) and $vo.is_watermark_img eq $k)}-->
+                        <input type="radio" name="is_watermark_img" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="is_watermark_img" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">是否保留原站信息</span><span class="color-desc margin-left-5">Keep the original information</span><br />
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.is_keep_origin) and $k eq '0') or (isset($vo.is_keep_origin) and $vo.is_keep_origin eq $k)}-->
+                        <input type="radio" name="is_keep_origin" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="is_keep_origin" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+    <div class="defaultFilterTag" style="display: none;width: 400px;padding: 20px;">
+        {foreach $collectDefaultFilterTag as $key=>$vo}
+        <input type="checkbox" name="filtertag" value="{$vo}" lay-skin="primary" title="{$vo}">
+        {/foreach}
+    </div>
+</form>
+{/block}
+
+{block name='style'}
+<style>
+    .filterTag{ padding-top: 35px;}
+</style>
+{/block}
+{block name='script'}
+<script>
+    layui.form.render();
+    layui.use(['layer', 'jquery', 'form','colorpicker'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        $(function(){
+            $('body').on('click','.chooseDefaultFilter',function(){
+                var obj = $(this);
+                layerIndex = layer.open({
+                    type:1,
+                    title:'默认过滤标签',
+                    area:[400,300],
+                    shade: 0,
+                    content: $('.defaultFilterTag'),
+                    btn: ['确定'],
+                    yes: function(index, layero){
+                        var checkedStr = '';
+                        $('input:checkbox[name=filtertag]:checked').each(function(k){
+                            checkedStr += $(this).val()+',';
+                        })
+                        if(checkedStr != ''){
+                            checkedStr = checkedStr.substring(0,checkedStr.length-1);
+                        }
+                        obj.parent('.layui-col-xs1').prev('.layui-col-xs5').find('input').val(checkedStr);
+                        layer.close(index);
+                    },
+                    cancel: function(index, layero){
+                        layer.close(index);
+                    },
+                    end:function(){
+                        $('input:checkbox[name=filtertag]:checked').each(function(k){
+                            $(this).attr('checked',false);
+                            $(this).next('div').removeClass('layui-form-checked');
+                        })
+                    }
+                });
+            });
+        })
+    });
+
+</script>
+{/block}

@@ -218,6 +218,7 @@ return [
         'text' => '普通文本',
         'image' => '图片'
     ],
+    'collectDefaultFilterTag' => ['p','a','script','iframe','table','span','b','img','object','embed','param','div'],
     'colorValueType' => ['hex' => 'HEX(十六进制)', 'rgb' => 'RGB', 'rgba' => 'RGBA'],
     //字段索引类型
     'fieldIndexType' => ['Normal', 'Unique', 'Full Text'],

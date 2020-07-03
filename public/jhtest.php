@@ -1,11 +1,6 @@
 <?php
 
-$a=0;
-//empty($a)返回true
-if(empty($a)){
-    echo "判断结果是空<br />";
-   }
-//isset($a)返回true
-if(isset($a)){
-    echo "判断结果不是空<br />";
-   }
+$url = 'https://www.php.net/archive/2020.php';
+print_r();
+
+print_r(pathinfo($url));

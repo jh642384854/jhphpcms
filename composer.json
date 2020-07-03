@@ -37,7 +37,8 @@
     "lustre/php-dfa-sensitive": "^1.4",
     "phpmailer/phpmailer": "^6.1",
     "xiaodi/think-pinyin": "^1.0",
-    "topthink/think-image": "^1.0"
+    "topthink/think-image": "^1.0",
+    "jaeger/querylist": "^4.2"
   },
   "autoload": {
     "psr-4": {
