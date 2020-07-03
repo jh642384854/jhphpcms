@@ -19,7 +19,7 @@ class Collect extends Controller
      * @var string
      */
     protected $table = 'module_collect';
-    protected $collectDefaultFilterTag = ['p','a','script','iframe','table','span','b','img','object','embed','param','div'];
+    protected $collectDefaultFilterTag = ['p','a','b','i','em','script','iframe','table','span','img','object','embed','param','div'];
     /**
      * 采集任务列表
      * @auth true
@@ -40,6 +40,7 @@ class Collect extends Controller
      */
     public function add()
     {
+        //采集测试网址 https://www.liqingbo.cn/news/list-1.html?cid=1&page=1
         $this->title='创建采集任务';
         $this->_applyFormToken();
         $this->_form($this->table, 'form');
@@ -57,6 +58,27 @@ class Collect extends Controller
         $this->title='编辑采集任务';
         $this->_applyFormToken();
         $this->_form($this->table, 'form');
+    }
+
+    protected function _form_filter(&$data)
+    {
+        if ($this->request->isPost()) {
+            if($data['name'] == '' || $data['url'] || $data['pagesize_start'] == '' || $data['pagesize_end'] == '' || $data['title_selector'] == '' || $data['title_attr'] == ''){
+                $this->error('数据填写不完整,请填写完整数据后在提交');
+            }
+            if(isset($data['customconfig'])){
+                $ruleNames = $data['customconfig']['name'];
+                $ruleSelectors = $data['customconfig']['selector'];
+                $ruleAttrs = $data['customconfig']['attr'];
+                $ruleFilters = $data['customconfig']['filter'];
+                $newrule = [];
+                foreach ($ruleNames as $key => $name){
+                    array_push($newrule,['name'=>$name,'selector'=>$ruleSelectors[$key],'attr'=>$ruleAttrs[$key],'filter'=>$ruleFilters[$key]]);
+                }
+                $data['custom_config'] = json_encode($newrule);
+                unset($data['customconfig']);
+            }
+        }
     }
 
     /**

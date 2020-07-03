@@ -39,26 +39,26 @@
                     {$vo.description}
                 </td>
                 <td class='text-left nowrap'>
-                    {$vo.title_rule}[{$vo.title_attr}]
+                    {$vo.title_selector}[{$vo.title_attr}]
                 </td>
                 <td class='text-left nowrap'>
-                    {$vo.author_rule} {$vo.author_attr}
+                    {$vo.author_selector} {$vo.author_attr}
                 </td>
                 <td class='text-left nowrap'>
-                    {$vo.comeform_rule} {$vo.comeform_attr}
+                    {$vo.comeform_selector} {$vo.comeform_attr}
                 </td>
                 <td class='text-left nowrap'>
-                    {$vo.time_rule} {$vo.time_attr}
+                    {$vo.time_selector} {$vo.time_attr}
                 </td>
                 <td class='text-left nowrap'>
-                    {$vo.content_rule} {$vo.content_attr}
+                    {$vo.content_selector} {$vo.content_attr}
                 </td>
                 <td class='text-left nowrap'>
                     {$vo.create_at|format_datetime}
                 </td>
                 <td class='text-left nowrap'>
                     <!--{if auth("edit")}-->
-                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑任务" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                    <a class="layui-btn layui-btn-sm" data-title="编辑任务" data-open='{:url("edit")}?id={$vo.id}'>编 辑</a>
                     <!--{/if}-->
                     <!--{if auth("remove")}-->
                     <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此任务吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>

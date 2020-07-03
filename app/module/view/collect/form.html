@@ -28,19 +28,20 @@
                         <input type="text" name="url" value='{$vo.url|default=""}' required placeholder="请输入采集网址" class="layui-input">
                     </label>
 
-                    <label class="layui-form-item block relative">
-                        <span class="color-green font-w7">采集页面编码</span><span class="color-desc margin-left-5">Encode</span><br />
-                        {foreach ['UTF-8'=>'UTF-8','GBK'=>'GBK'] as $k=>$v}
-                        <!--{if (!isset($vo.encode) and $k eq 'UTF-8') or (isset($vo.encode) and $vo.encode eq $k)}-->
-                        <input type="radio" name="encode" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
-                        <!--{else}-->
-                        <input type="radio" name="encode" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
-                        <!--{/if}-->
-                        {/foreach}
-                    </label>
-
                     <div class="layui-form-item layui-row layui-col-space15">
-                        <div class="layui-col-xs6">
+                        <div class="layui-col-xs2">
+                            <label class="relative block label-required-prev">
+                                <span class="color-green font-w7">采集页面编码</span><span class="color-desc margin-left-5">Encode</span><br />
+                                {foreach ['UTF-8'=>'UTF-8','GBK'=>'GBK'] as $k=>$v}
+                                <!--{if (!isset($vo.encode) and $k eq 'UTF-8') or (isset($vo.encode) and $vo.encode eq $k)}-->
+                                <input type="radio" name="encode" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                                <!--{else}-->
+                                <input type="radio" name="encode" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                                <!--{/if}-->
+                                {/foreach}
+                            </label>
+                        </div>
+                        <div class="layui-col-xs2">
                             <label class="relative block label-required-prev">
                                 <span class="color-green font-w7">起始页码</span>
                                 <span class="color-desc margin-left-5">Pagesize Start</span>
@@ -48,7 +49,7 @@
                                 <span class="help-block">采集列表页面的起始分页页码！</span>
                             </label>
                         </div>
-                        <div class="layui-col-xs6">
+                        <div class="layui-col-xs2">
                             <label class="relative block label-required-prev">
                                 <span class="color-green font-w7">结束页码</span>
                                 <span class="color-desc margin-left-5">Pagesize End</span>
@@ -65,7 +66,7 @@
                 </div>
                 <div class="layui-tab-item">
                     <fieldset class="layui-form-item">
-                        <legend>文章标题</legend>
+                        <legend style="color: red;">文章标题</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block label-required-prev">
@@ -95,7 +96,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend>文章详情链接</legend>
+                        <legend style="color: red;">文章详情链接</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block label-required-prev">
@@ -125,7 +126,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend>文章内容</legend>
+                        <legend style="color: red;">文章内容</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block label-required-prev">
@@ -308,7 +309,13 @@
 
                 </div>
                 <div class="layui-tab-item">
-                    自定义设置
+                    <div class="configController layui-form-item">
+                        <button class="layui-btn layui-btn-sm layui-btn-warm newrule" type='button'>创建规则</button>
+                    </div>
+
+                    <div id="diyconfigrule">
+
+                    </div>
                 </div>
                 <div class="layui-tab-item">
                     <label class="layui-form-item block relative">
@@ -365,11 +372,51 @@
             <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
         </div>
     </div>
+    <!-- 默认的标签过滤器 -->
     <div class="defaultFilterTag" style="display: none;width: 400px;padding: 20px;">
         {foreach $collectDefaultFilterTag as $key=>$vo}
         <input type="checkbox" name="filtertag" value="{$vo}" lay-skin="primary" title="{$vo}">
         {/foreach}
     </div>
+    <!-- 默认的规则模版 -->
+    <script type="text/html" id="diyruletpl">
+        <fieldset class="layui-form-item">
+            <div class="layui-form-item layui-row layui-col-space15">
+                <div class="layui-col-xs2">
+                    <label class="relative block label-required-prev">
+                        <span class="color-green font-w7">规则名称</span>
+                        <span class="color-desc margin-left-5">Rule Name</span>
+                        <input name="customconfig[name][]" required  placeholder="请输入规则名称" value='' class="layui-input">
+                    </label>
+                </div>
+                <div class="layui-col-xs3">
+                    <label class="relative block label-required-prev">
+                        <span class="color-green font-w7">标签选择器</span>
+                        <span class="color-desc margin-left-5">Tag Selector</span>
+                        <input name="customconfig[selector][]" required placeholder="请输入标签选择器" value='' class="layui-input">
+                    </label>
+                </div>
+                <div class="layui-col-xs3">
+                    <label class="relative block label-required-prev">
+                        <span class="color-green font-w7">标签属性</span>
+                        <span class="color-desc margin-left-5">Tag Attr</span>
+                        <input name="customconfig[attr][]" required placeholder="请输入标签属性" value='' class="layui-input">
+                    </label>
+                </div>
+                <div class="layui-col-xs3">
+                    <label class="relative block">
+                        <span class="color-green font-w7">过滤选项</span>
+                        <span class="color-desc margin-left-5">Filter</span>
+                        <input name="customconfig[filter][]" placeholder="请输入过滤选项" value='' class="layui-input">
+                    </label>
+                </div>
+                <div class="layui-col-xs1 filterTag">
+                    <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                    <span class="layui-btn layui-btn-sm layui-btn-danger removeDiyRule" type='button'>移除</span>
+                </div>
+            </div>
+        </fieldset>
+    </script>
 </form>
 {/block}
 
@@ -387,6 +434,16 @@
             form = layui.form;
 
         $(function(){
+
+            //创建新采集规则
+            $('.newrule').click(function () {
+                $('#diyconfigrule').append($('#diyruletpl').html());
+            });
+            //移除新创建的采集规则
+            $('body').on('click','.removeDiyRule',function(){
+                $(this).parents('fieldset').remove();
+            });
+            //选择默认的标签过滤器
             $('body').on('click','.chooseDefaultFilter',function(){
                 var obj = $(this);
                 layerIndex = layer.open({
@@ -399,12 +456,12 @@
                     yes: function(index, layero){
                         var checkedStr = '';
                         $('input:checkbox[name=filtertag]:checked').each(function(k){
-                            checkedStr += $(this).val()+',';
+                            checkedStr += '-'+$(this).val()+' ';
                         })
                         if(checkedStr != ''){
                             checkedStr = checkedStr.substring(0,checkedStr.length-1);
                         }
-                        obj.parent('.layui-col-xs1').prev('.layui-col-xs5').find('input').val(checkedStr);
+                        obj.parent('.layui-col-xs1').prev('div').find('input').val(checkedStr);
                         layer.close(index);
                     },
                     cancel: function(index, layero){
