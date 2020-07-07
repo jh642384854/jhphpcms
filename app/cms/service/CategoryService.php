@@ -23,6 +23,25 @@ class CategoryService extends Service
     }
 
     /**
+     * 根据栏目ID来获取栏目信息
+     * @param $catid
+     * @return array|mixed
+     */
+    public function getCategoryByCatid($catid)
+    {
+        $categoryData = [];
+        if ($catid && $catid > 0) {
+            $allCacheCategory = $this->getAllCategoryFromCache();
+            if (isset($allCacheCategory[$catid])) {
+                $categoryData = $allCacheCategory[$catid];
+            } else {
+                $categoryData = $this->model->where(['id' => $catid])->find();
+            }
+        }
+        return $categoryData;
+    }
+
+    /**
      * 根据urlpath来获取栏目信息
      * @param string $urlpath
      * @return array
@@ -30,9 +49,9 @@ class CategoryService extends Service
     public function getCategoryByUrlPath($urlpath = '')
     {
         $category = [];
-        if($urlpath != ''){
-            $data = $this->model->where('url_path','=',$urlpath)->find();
-            if($data){
+        if ($urlpath != '') {
+            $data = $this->model->where('url_path', '=', $urlpath)->find();
+            if ($data) {
                 $category = $data;
             }
         }
@@ -73,7 +92,7 @@ class CategoryService extends Service
      */
     public function cacheAllCategory()
     {
-        $fields = ['id', 'parent_id', 'name','url_path','link_url', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids'];
+        $fields = ['id', 'parent_id', 'name', 'url_path', 'link_url', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids'];
         $categories = $this->app->db->name('CmsCategory')->field($fields)->order('sort ASC')->select();
         $newCategories = [];
         if (count($categories) > 0) {
@@ -104,17 +123,17 @@ class CategoryService extends Service
      * @param bool $excludePage 是否排除单页模型
      * @return array
      */
-    public function getAllCategoryTree($selectId = 0,$excludePage = false)
+    public function getAllCategoryTree($selectId = 0, $excludePage = false)
     {
-        $map[] = ['status','=',1];
+        $map[] = ['status', '=', 1];
         //排除单页栏目
-        if($excludePage){
-            array_push($map,['modelid','<>',0]);
+        if ($excludePage) {
+            array_push($map, ['modelid', '<>', 0]);
         }
         $categories = $this->model->field('id,name,parent_id')->order('sort ASC')->where($map)->select();
         $tree = new Tree();
         $newCategories = [];
-        foreach ($categories as $item) {
+        foreach ($categories as &$item) {
             $item['selected'] = $selectId == $item['id'] ? "selected" : "";
             array_push($newCategories, $item);
         }

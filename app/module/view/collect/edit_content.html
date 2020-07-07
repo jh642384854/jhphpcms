@@ -1,0 +1,88 @@
+{extend name="../../admin/view/main"}
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("showlist",["id"=>$vo.collect_id])}' data-title="返回采集列表" class='layui-btn layui-btn-sm layui-btn-primary'>返回采集列表</button>
+<!--{/if}-->
+{/block}
+{block name="content"}
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input name="title" value='{$vo.title|default=""}' required placeholder="请输入文章标题" class="layui-input">
+                <p class="help-block">必填，请填写文章标题，建议字符不要太长，一般4-60个字符</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">缩略图</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="thumb" value="{$vo.thumb|default=''}">
+                <script>$('[name=thumb]').uploadOneImage()</script>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <textarea name='description' class="layui-textarea">{$vo.description|default=""}</textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">内容</label>
+            <div class="layui-input-block">
+                <textarea name='content'>{$vo.content|default=""}</textarea>
+            </div>
+        </div>
+
+        <fieldset class="layui-form-item">
+            <legend>其他内容</legend>
+            <div class="layui-form-item layui-row layui-col-space15">
+                <div class="layui-col-xs3">
+                    <label class="relative block">
+                        <span class="color-green font-w7">作者</span>
+                        <span class="color-desc margin-left-5">Author</span>
+                        <input name="author" placeholder="请输入文章作者" value='{$vo.author|default=""}' class="layui-input">
+                    </label>
+                </div>
+                <div class="layui-col-xs3">
+                    <label class="relative block">
+                        <span class="color-green font-w7">文章来源</span>
+                        <span class="color-desc margin-left-5">Come From</span>
+                        <input name="comefrom" placeholder="请输入文章来源" value='{$vo.comefrom|default=""}' class="layui-input">
+                    </label>
+                </div>
+                <div class="layui-col-xs3">
+                    <label class="relative block">
+                        <span class="color-green font-w7">创建时间</span>
+                        <span class="color-desc margin-left-5">Time</span>
+                        <input name="time" data-date-input="datetime" placeholder="请选择发布时间" value='{$vo.time|default=""}' class="layui-input">
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit' lay-filter="saveData">保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{/block}
+
+
+{block name='script'}
+<script>
+    require(['ckeditor'], function () {
+        var editor;
+        setTimeout(function () {
+            if (editor) editor.destroy();
+            editor = window.createEditor('[name="content"]');
+        }, 100);
+    });
+</script>
+{/block}

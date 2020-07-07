@@ -1,0 +1,62 @@
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow" style="overflow: hidden;">
+        <div class="cj_status">
+            当前任务共有{$totalPage}页数据，当前完成了第{$curr}页的数据采集，还有{$totalPage-$curr}页数据没有采集
+        </div>
+        <table class="layui-hide" id="collect_content"></table>
+        <fieldset id="finish" class="layui-form-item" style="margin-top: 20px; display: none">
+            <legend>恭喜：数据采集完成！</legend>
+            <p style="padding: 20px;">
+                <!--{if auth("showlist")}-->
+                <a class="layui-btn layui-btn-sm layui-btn-primary" data-title="查看采集结果" data-open='{:url("showlist")}?id={$id}'>查看采集结果</a>
+                <!--{/if}-->
+                <!--{if auth("import")}-->
+                <a class="layui-btn layui-btn-sm" data-title="导入采集数据" data-open='{:url("import")}?id={$id}'>导入采集数据</a>
+                <!--{/if}-->
+            </p>
+        </fieldset>
+    </div>
+</div>
+
+{block name='script'}
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        var totalPage = {$totalPage};
+        var curr = {$curr};
+
+        table.render({
+            elem: '#collect_content'
+            , loading: true
+            , url: '{:url("dojob",["curr"=>$curr,"id"=>$id,"action"=>"list"])}'
+            ,request: {
+                currName: 'curr'
+            }
+            , cellMinWidth: 80
+            , cols: [[
+                {field: 'title', width: 500, title: '标题'}
+                , {field: 'url', title: '原站URL'}
+                , {field: 'status', title: '状态'}
+            ]]
+            , done: function (res, currpage, count) {
+                res.data.forEach((ele, index) => {
+                    $('tr[data-index=' + index + ']').find('td:eq(2)>div').html('文章内容待采集.....');
+                    $.ajax({
+                        url: '{:url("dojob")}?action=content&id={$id}&url=' + ele.url,
+                        method: 'GET',
+                        success: function (res) {
+                            $('tr[data-index=' + index + ']').find('td:eq(2)>div').html('<span style="color: green">文章内容采集完成</span>');
+                            if (index == (count - 1) && (totalPage > curr)) {
+                                location.href = 'admin.html#{:url("dojob",["id"=>$id,"curr"=>($curr+1),"spm"=>input("spm")])}';
+                            }
+                            if(index == (count - 1) && (totalPage == curr)){
+                                $('#finish').show();
+                            }
+                        }
+                    })
+                });
+            }
+        });
+    });
+</script>
+{/block}

@@ -1,0 +1,113 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("index")}' data-title="返回任务列表" class='layui-btn layui-btn-sm layui-btn-primary'>返回任务列表</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择栏目</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="catid" id="catid" value="">
+                <input type="text" id="cascader_catid" class="layui-input" readonly="readonly">
+                <p class="help-block">必填，请选择数据导入的栏目</p>
+            </div>
+        </div>
+
+        <div class="hr-line-dashed"></div>
+        <input type="hidden" name="collect_id" id="collect_id" value="{$id}">
+        <div class="layui-form-item text-center" id="opt_buttons">
+            <button class="layui-btn doImportButton" lay-submit lay-filter="savejob">执行导入</button>
+        </div>
+
+        <!-- 导入进度 -->
+        <div class="import_status" style="display: none;">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>导入状态</legend>
+            </fieldset>
+
+            <div id="collect_status"></div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name='script'}
+<link rel="stylesheet" href="/static/plugs/layui/mods/cascader.css">
+<script>
+    layui.form.render();
+    layui.config({
+        base: "/static/plugs/layui/mods/"
+    });
+    layui.use(['jquery', "cascader", 'form', 'slider'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery
+            , slider = layui.slider
+            , form = layui.form
+            , cascader = layui.cascader;
+
+        form.on('submit(savejob)', function (data) {
+            var obj = $(this);
+            var formData = {};
+            formData.collect_id = $('#collect_id').val();
+            formData.catid = $('#catid').val();
+            if (formData.catid == '') {
+                $.msg.error('请先选择导入的栏目，然后执行导入任务');
+            } else {
+                obj.addClass('layui-btn-disabled');
+                obj.attr('disabled', true);
+                obj.text('数据正在导入...')
+                $.ajax({
+                    url: '{:url("import")}',
+                    data: formData,
+                    method: 'POST',
+                    success: function (res) {
+                        if (res.code == 1) {
+                            $('.import_status').show();
+                            doimport(res.data.jobid, formData.collect_id);
+                        }
+                    }
+                })
+            }
+            return false;
+        })
+
+        cascader({
+            elem: "#cascader_catid",
+            data: {$categorys | raw},
+            success:function (valData, labelData) {
+            $("#catid").val(valData);
+            }
+        });
+
+        //默认滑块
+        var ins1 = slider.render({
+            elem: '#collect_status',
+            disabled: true, //禁用滑块
+            theme: '#1E9FFF' //主题色
+        });
+
+        function doimport(jobid, id, page = 1) {
+            $.ajax({
+                url: '{:url("import")}',
+                data: {id: id, jobid: jobid, page: page},
+                method: 'GET',
+                success: function (res) {
+                    if (!res.data.hasFinish) {
+                        doimport(res.data.jobid, res.data.collect_id, page + 1);
+                        ins1.setValue(Math.round((res.data.imports / res.data.total) * 100) * page)
+                    } else {
+                        ins1.setValue(100);
+                        $('.doImportButton').text('导入完成');
+                        $('#opt_buttons').append('<a class="layui-btn layui-btn-sm layui-btn-normal" data-title="查看数据" data-open=\'{:url("cms/content/index",["spm"=>"m-69-71"])}\'>查看数据</a>');
+                    }
+                }
+            })
+        }
+    });
+</script>
+{/block}

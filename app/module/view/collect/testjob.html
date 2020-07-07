@@ -1,17 +1,12 @@
 
 <div class="layui-tab layui-tab-card think-bg-white">
-    <div class="layui-tab-content think-box-shadow">
+    <div class="layui-tab-content think-box-shadow" style="overflow: hidden;">
+        {if $type eq 'list'}
         <table class="layui-table margin-top-10" lay-skin="line">
             {notempty name='list'}
             <thead>
             <tr>
-                <th class='text-left nowrap' width="120px">标题</th>
-                <th class='text-left nowrap' width="150px">URL</th>
-                <th class='text-left nowrap'>作者</th>
-                <th>缩略图</th>
-                <th>来源</th>
-                <th>发布时间</th>
-                <th>摘要</th>
+                <th class='text-left nowrap' width="120px">标题/URL</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -20,29 +15,12 @@
             {foreach $list as $key=>$vo}
             <tr>
                 <td class='text-left nowrap'>
-                    {$vo.title}
-                </td>
-                <td class='text-left nowrap'>
-                   {$vo.url}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.auth}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.thumb}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.comfrom}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.create_at}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.description}
+                    {$vo.title|mb_substr=0,100}<br />
+                    {$vo.url}
                 </td>
                 <td class='text-left nowrap'>
                     <!--{if auth("testjob")}-->
-                    <a class="layui-btn layui-btn-sm" data-title="编辑任务" data-modal='{:url("testjob")}?url={$vo.url}&type=content'>采集内容</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-normal" href='{:url("testjob")}?id={$id}&url={$vo.url}&type=content' target="_blank">查看采集内容</a>
                     <!--{/if}-->
                 </td>
             </tr>
@@ -50,6 +28,9 @@
             </tbody>
         </table>
         {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+        {else}
+        {$data.content|raw}
+        {/if}
     </div>
 </div>
 

@@ -57,6 +57,14 @@
                                 <span class="help-block">采集列表页面的结束分页页码！</span>
                             </label>
                         </div>
+                        <div class="layui-col-xs2">
+                            <label class="relative block label-required-prev">
+                                <span class="color-green font-w7">列表范围选择器</span>
+                                <span class="color-desc margin-left-5">List Range</span>
+                                <input name="range_list" required placeholder="请输入列表页范围选择器" value='{$vo.range_list|default=""}' class="layui-input">
+                                <span class="help-block">列表页范围选择器</span>
+                            </label>
+                        </div>
                     </div>
 
                     <label class="layui-form-item block relative">
@@ -66,7 +74,7 @@
                 </div>
                 <div class="layui-tab-item">
                     <fieldset class="layui-form-item">
-                        <legend style="color: red;">文章标题</legend>
+                        <legend style="color: red;">文章标题 Title</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block label-required-prev">
@@ -96,7 +104,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend style="color: red;">文章详情链接</legend>
+                        <legend style="color: red;">文章详情链接 Url</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block label-required-prev">
@@ -126,7 +134,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend style="color: red;">文章内容</legend>
+                        <legend style="color: red;">文章内容 Content</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block label-required-prev">
@@ -156,7 +164,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend>文章摘要</legend>
+                        <legend>文章摘要 Description</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block">
@@ -186,7 +194,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend>缩略图</legend>
+                        <legend>缩略图 Thumb</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block">
@@ -217,7 +225,7 @@
 
 
                     <fieldset class="layui-form-item">
-                        <legend>文章作者</legend>
+                        <legend>文章作者 Author</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block">
@@ -248,27 +256,27 @@
 
 
                     <fieldset class="layui-form-item">
-                        <legend>文章来源</legend>
+                        <legend>文章来源 ComeFrom</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block">
                                     <span class="color-green font-w7">标签选择器</span>
                                     <span class="color-desc margin-left-5">Tag Selector</span>
-                                    <input name="comeform_selector" placeholder="请输入文章来源标签选择器" value='{$vo.comeform_selector|default=""}' class="layui-input">
+                                    <input name="comefrom_selector" placeholder="请输入文章来源标签选择器" value='{$vo.comefrom_selector|default=""}' class="layui-input">
                                 </label>
                             </div>
                             <div class="layui-col-xs3">
                                 <label class="relative block">
                                     <span class="color-green font-w7">标签属性</span>
                                     <span class="color-desc margin-left-5">Tag Attr</span>
-                                    <input name="comeform_attr" placeholder="请输入文章来源标签属性" value='{$vo.comeform_attr|default="text"}' class="layui-input">
+                                    <input name="comefrom_attr" placeholder="请输入文章来源标签属性" value='{$vo.comefrom_attr|default="text"}' class="layui-input">
                                 </label>
                             </div>
                             <div class="layui-col-xs5">
                                 <label class="relative block">
                                     <span class="color-green font-w7">过滤选项</span>
                                     <span class="color-desc margin-left-5">Filter</span>
-                                    <input name="comeform_filter" placeholder="请输入文章来源过滤选项" value='{$vo.comeform_filter|default=""}' class="layui-input">
+                                    <input name="comefrom_filter" placeholder="请输入文章来源过滤选项" value='{$vo.comefrom_filter|default=""}' class="layui-input">
                                 </label>
                             </div>
                             <div class="layui-col-xs1 filterTag">
@@ -278,7 +286,7 @@
                     </fieldset>
 
                     <fieldset class="layui-form-item">
-                        <legend>发布时间</legend>
+                        <legend>发布时间 Created Time</legend>
                         <div class="layui-form-item layui-row layui-col-space15">
                             <div class="layui-col-xs3">
                                 <label class="relative block">

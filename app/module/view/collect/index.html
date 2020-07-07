@@ -16,12 +16,6 @@
                 <th class='text-left nowrap' width="120px">任务名称</th>
                 <th class='text-left nowrap' width="150px">任务URL</th>
                 <th class='text-left nowrap'>任务描述</th>
-                <th>标题规则</th>
-                <th>作者规则</th>
-                <th>来源规则</th>
-                <th>时间规则</th>
-                <th>内容规则</th>
-                <th>创建时间</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -39,35 +33,23 @@
                     {$vo.description}
                 </td>
                 <td class='text-left nowrap'>
-                    {$vo.title_selector}[{$vo.title_attr}]
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.author_selector} {$vo.author_attr}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.comeform_selector} {$vo.comeform_attr}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.time_selector} {$vo.time_attr}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.content_selector} {$vo.content_attr}
-                </td>
-                <td class='text-left nowrap'>
-                    {$vo.create_at|format_datetime}
-                </td>
-                <td class='text-left nowrap'>
                     <!--{if auth("edit")}-->
                     <a class="layui-btn layui-btn-sm" data-title="编辑任务" data-open='{:url("edit")}?id={$vo.id}'>编 辑</a>
-                    <!--{/if}-->
-                    <!--{if auth("remove")}-->
-                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此任务吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
                     <!--{/if}-->
                     <!--{if auth("testjob")}-->
                     <a class="layui-btn layui-btn-sm layui-btn-normal" data-title="测试任务" data-modal='{:url("testjob")}?id={$vo.id}'>测试采集</a>
                     <!--{/if}-->
                     <!--{if auth("dojob")}-->
                     <a class="layui-btn layui-btn-sm layui-btn-warm" data-title="执行采集" data-open='{:url("dojob")}?id={$vo.id}'>执行采集</a>
+                    <!--{/if}-->
+                    <!--{if auth("showlist")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-primary" data-title="查看采集结果" data-open='{:url("showlist")}?id={$vo.id}'>查看采集结果</a>
+                    <!--{/if}-->
+                    <!--{if auth("import")}-->
+                    <a class="layui-btn layui-btn-sm" data-title="导入采集数据" data-open='{:url("import")}?id={$vo.id}'>导入采集数据</a>
+                    <!--{/if}-->
+                    <!--{if auth("remove")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此任务吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
                     <!--{/if}-->
                 </td>
             </tr>
