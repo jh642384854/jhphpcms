@@ -1,6 +1,7 @@
 <?php
 return [
     'DefaultImg' => '/static/theme/img/image.png',
+    'WaterImg' => 'static/theme/img/water.png',
     'CryptionKey' => 'TKu*LRUK$&*F5#Bx', //加密的key
     'UploadTips' => '文件最大2Mb，支持bmp/png/jpeg/jpg/gif格式',
     'advCatType' => [

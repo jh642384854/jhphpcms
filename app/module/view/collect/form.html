@@ -26,6 +26,7 @@
                     <label class="layui-form-item block relative">
                         <span class="color-green font-w7">采集网址</span><span class="color-des cmargin-left-5">Url</span>
                         <input type="text" name="url" value='{$vo.url|default=""}' required placeholder="请输入采集网址" class="layui-input">
+                        <p>分页码请用{page}来代替</p>
                     </label>
 
                     <div class="layui-form-item layui-row layui-col-space15">
@@ -70,6 +71,12 @@
                     <label class="layui-form-item block relative">
                         <span class="color-green font-w7">任务描述</span><span class="color-desc">Description</span>
                         <textarea placeholder="请输入任务描述" class="layui-textarea" name="description">{$vo.description|default=""}</textarea>
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">替换关键字</span><span class="color-desc">Replace Keyword</span>
+                        <textarea placeholder="请输入替换关键字" class="layui-textarea" name="replace_words">{$vo.replace_words|default=""}</textarea>
+                        <p>这个会将采集的标题、描述、内容中出现的关键字替换。格式为：关键字|被替换的字。每行一条规则</p>
                     </label>
                 </div>
                 <div class="layui-tab-item">
@@ -132,6 +139,67 @@
                             </div>
                         </div>
                     </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend style="color: red;">文章SEO关键字 SEO Keywords</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="seo_keywords_selector" required placeholder="请输入摘要标签选择器" value='{$vo.seo_keywords_selector|default="meta[name=keywords]"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="seo_keywords_attr" required placeholder="请输入摘要标签" value='{$vo.seo_keywords_attr|default="content"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="seo_keywords_filter" placeholder="请输入内容过滤选项" value='{$vo.seo_keywords_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="layui-form-item">
+                        <legend style="color: red;">文章SEO描述 SEO Description</legend>
+                        <div class="layui-form-item layui-row layui-col-space15">
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签选择器</span>
+                                    <span class="color-desc margin-left-5">Tag Selector</span>
+                                    <input name="seo_description_selector" required placeholder="请输入摘要标签选择器" value='{$vo.seo_description_selector|default="meta[name=description]"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs3">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">标签属性</span>
+                                    <span class="color-desc margin-left-5">Tag Attr</span>
+                                    <input name="seo_description_attr" required placeholder="请输入摘要标签" value='{$vo.seo_description_attr|default="content"}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs5">
+                                <label class="relative block">
+                                    <span class="color-green font-w7">过滤选项</span>
+                                    <span class="color-desc margin-left-5">Filter</span>
+                                    <input name="seo_description_filter" placeholder="请输入内容过滤选项" value='{$vo.seo_description_filter|default=""}' class="layui-input">
+                                </label>
+                            </div>
+                            <div class="layui-col-xs1 filterTag">
+                                <span class="layui-btn layui-btn-sm layui-btn-normal chooseDefaultFilter" type='button'>选择</span>
+                            </div>
+                        </div>
+                    </fieldset>
+
 
                     <fieldset class="layui-form-item">
                         <legend style="color: red;">文章内容 Content</legend>
@@ -335,6 +403,18 @@
                         <input type="radio" name="is_filter_url" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
                         <!--{/if}-->
                         {/foreach}
+                    </label>
+
+                    <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">是否提取内容第一张图片为缩略图</span><span class="color-desc margin-left-5">First Image</span><br />
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.is_first_img) and $k eq '1') or (isset($vo.is_first_img) and $vo.is_first_img eq $k)}-->
+                        <input type="radio" name="is_first_img" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="is_first_img" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                        <p>当缩略图为空时候才应用这个配置功能</p>
                     </label>
 
                     <label class="layui-form-item block relative">

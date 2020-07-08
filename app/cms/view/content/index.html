@@ -81,7 +81,7 @@
             data: {$categoryTree|raw},
             click:function(obj){
                 var addButton = '';
-                if(typeof(obj.data.children) == 'undefined'){
+                if(obj.data.children.length == 0){
                     addButton = '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" data-open="{:url(\'add\')}?catid='+obj.data.id+'" data-title="添加文章" >添加文章</button>';
                 }
                 table.reload('articleTable', {

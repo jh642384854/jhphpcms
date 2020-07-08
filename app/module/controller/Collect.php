@@ -7,6 +7,7 @@ use ql\DownloadImage;
 use QL\Ext\AbsoluteUrl;
 use QL\QueryList;
 use think\admin\Controller;
+use think\admin\storage\LocalStorage;
 
 /**
  * 采集管理
@@ -104,6 +105,8 @@ class Collect extends Controller
                         $url = str_replace('{page}', 1, $collectConfig['url']);
                         $parseUrlInfo = parse_url($url);
                         unset($rules['content']);
+                        unset($rules['seo_keywords']);
+                        unset($rules['seo_description']);
                         $ql = QueryList::getInstance();
                         $ql->use(AbsoluteUrl::class);
                         $this->id = $id;
@@ -145,7 +148,12 @@ class Collect extends Controller
             'title' => [$config['title_selector'], $config['title_attr'], $config['title_filter']],
             'url' => [$config['page_url_selector'], $config['page_url_attr'], $config['page_url_filter']],
             'content' => [$config['content_selector'], $config['content_attr'], $config['content_filter']],
+            'seo_keywords' => [$config['seo_keywords_selector'], $config['seo_keywords_attr'], $config['seo_keywords_filter']],
+            'seo_description' => [$config['seo_description_selector'], $config['seo_description_attr'], $config['seo_description_filter']]
         ];
+        if ($config['thumb_selector'] != '') {
+            $rules['thumb'] = [$config['thumb_selector'], $config['thumb_attr'], $config['thumb_filter']];
+        }
         if ($config['thumb_selector'] != '') {
             $rules['thumb'] = [$config['thumb_selector'], $config['thumb_attr'], $config['thumb_filter']];
         }
@@ -188,8 +196,17 @@ class Collect extends Controller
                 //详情页URL地址
                 $url = input('url', '', 'trim');
                 //采集内容
-                $content = $this->collectContent($url, $collectConfig);
-                $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->save(['content' => $content]);
+                $updateContent = $this->collectContent($url, $collectConfig);
+                $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->column('thumb');
+                //自动提取内容页的首张图片作为缩略图
+                if($collectConfig['is_first_img'] && $cjdata[0] == ''){
+                    $ql = QueryList::html($updateContent['content']);
+                    $thumb = $ql->find('img:eq(0)')->src;
+                    if($thumb != ''){
+                        $updateContent['thumb'] = $thumb;
+                    }
+                }
+                $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->save($updateContent);
                 return json(['code' => 0, 'msg' => '内容采集成功']);
             }
         } else {
@@ -219,8 +236,29 @@ class Collect extends Controller
         $ql = QueryList::getInstance();
         $ql->use(AbsoluteUrl::class);
         unset($rules['content']);
-        $articles = $ql->get($url)->rules($rules)->range($collectConfig['range_list'])->query()->getData(function ($item) use ($ql, $parseUrlInfo, $collect_id) {
+        $articles = $ql->get($url)->rules($rules)->range($collectConfig['range_list'])->query()->getData(function ($item) use ($ql, $parseUrlInfo, $collect_id,$collectConfig) {
             $item['collect_id'] = $collect_id;
+            if(isset($item['thumb']) && $item['thumb'] != ''){
+                //将图片下载到本地
+                //todo 这个下载远程图片比较耗时，需要优化处理
+                if($collectConfig['is_download_img']) {
+                    $local = LocalStorage::instance();
+                    $newFileInfo = $local::down($item['thumb']);
+                    $imgurl = ltrim($newFileInfo['url'],'/');
+                    //给图片加水印
+                    if($collectConfig['is_watermark_img']) {
+                        try {
+                            $imgInfo = pathinfo($imgurl);
+                            $waterFilePath = $imgInfo['dirname'] . DIRECTORY_SEPARATOR . $imgInfo['basename'];
+                            $imgRes = \think\Image::open($imgurl);
+                            $imgRes->water(config('constant.WaterImg'))->save($waterFilePath);
+                        } catch (\think\image\Exception $e) {
+                            sysoplog('图片水印', '图片水印添加失败'.$e->getMessage());
+                        }
+                    }
+                    $item['thumb'] = $imgurl;
+                }
+            }
             //判断采集的url地址是相对还是绝对地址
             if (!strpos($item['url'], 'http')) {
                 //使用帮助函数单独转换某个链接
@@ -243,12 +281,34 @@ class Collect extends Controller
             $rules = $this->dorule($collectConfig);
             $ql = QueryList::use(DownloadImage::class);
             $parseUrlInfo = parse_url($url);
-            $contentData = $ql->get($url)->rules(['content' => $rules['content']])->query()->getData(function ($item) use ($ql, $parseUrlInfo, $url) {
-                $item['content'] = $ql->downloadImage($item['content'], $parseUrlInfo['host'], $url);
+            $conditionRules = [
+                'seo_keywords' => $rules['seo_keywords'],
+                'seo_description' => $rules['seo_description'],
+                'content' => $rules['content'],
+            ];
+            $contentData = $ql->get($url)->rules($conditionRules)->query()->getData(function ($item) use ($ql, $parseUrlInfo, $url,$collectConfig) {
+                $content = $ql->downloadImage($item['content'], $parseUrlInfo['host'], $url,$collectConfig);
+                if($collectConfig['replace_words'] != ''){
+                    $replaceArr = explode("\r\n", $collectConfig['replace_words']);
+                    $replaces = [];
+                    foreach ($replaceArr as $replace){
+                        $tpm = explode('|',$replace);
+                        if(count($tpm) == 2){
+                            $replaces[$tpm[0]] = $tpm[1];
+                        }
+                    }
+                    if(count($replaces)>0){
+                        $item['seo_keywords'] = str_ireplace(array_keys($replaces),array_values($replaces),$item['seo_keywords']);
+                        $item['seo_description'] = str_ireplace(array_keys($replaces),array_values($replaces),$item['seo_description']);
+                        $item['content'] = str_ireplace(array_keys($replaces),array_values($replaces),$content);
+                    }
+                }else{
+                    $item['content'] = $content;
+                }
                 return $item;
             });
             $ql->destruct();
-            return $contentData->all()['content'];
+            return $contentData->all();
         } else {
             return '';
         }
@@ -296,44 +356,48 @@ class Collect extends Controller
             $jobid = input('jobid', 0, 'intval');
             $this->id = $collect_id;
             if ($collect_id > 0) {
-                if ($jobid > 0) {
-                    $limit = 5;//每次导入100条数据
-                    $hasFinish = false; //是否完成了导入操作
-                    $map = [
-                        ['id', '=', $jobid]
-                    ];
-                    $jobdata = $this->app->db->name('module_collect_job')->where($map)->find();
-                    if ($jobdata) {
-                        $collect_map = ['collect_id' => $collect_id];
-                        $count = $this->app->db->name('module_collect_data')->where($collect_map)->count();
-                        if ($count == $jobdata['records']) {
-                            $hasFinish = true;
-                            $imports = $count;
-                        } else {
-                            //得到栏目信息
-                            $category = CategoryService::instance()->getCategoryByCatid($jobdata["catid"]);
-                            if (count($category) > 0) {
-                                $modelid = $category['modelid'];
-                            } else {
-                                $modelid = 1;
-                            }
-                            $collectData = $this->app->db->name('module_collect_data')->field(['title', 'description', 'thumb', 'author', 'comefrom', 'content', 'UNIX_TIMESTAMP(`time`)' => 'create_at'])
-                                ->fieldRaw("'" . $jobdata["catid"] . "' as 'catid','" . $modelid . "' as 'modelid'")->where($collect_map)->limit($jobdata['records'], $limit)->select()->all();
-                            $imports = count($collectData);
-                            if ($limit > $count) {
+                $collect_map = ['collect_id' => $collect_id];
+                $count = $this->app->db->name('module_collect_data')->where($collect_map)->count();
+                if($count>0){
+                    if ($jobid > 0) {
+                        $limit = 100;//每次导入100条数据
+                        $hasFinish = false; //是否完成了导入操作
+                        $map = [
+                            ['id', '=', $jobid]
+                        ];
+                        $jobdata = $this->app->db->name('module_collect_job')->where($map)->find();
+                        if ($jobdata) {
+                            if ($count == $jobdata['records']) {
                                 $hasFinish = true;
+                                $imports = $count;
+                            } else {
+                                //得到栏目信息
+                                $category = CategoryService::instance()->getCategoryByCatid($jobdata["catid"]);
+                                if (count($category) > 0) {
+                                    $modelid = $category['modelid'];
+                                } else {
+                                    $modelid = 1;
+                                }
+                                $collectData = $this->app->db->name('module_collect_data')->field(['title', 'description', 'thumb', 'author', 'comefrom', 'content', 'UNIX_TIMESTAMP(`time`)' => 'create_at'])
+                                    ->fieldRaw("'" . $jobdata["catid"] . "' as 'catid','" . $modelid . "' as 'modelid'")->where($collect_map)->limit($jobdata['records'], $limit)->select()->all();
+                                $imports = count($collectData);
+                                if ($limit > $count) {
+                                    $hasFinish = true;
+                                }
+                                $this->app->db->name('cms_article')->insertAll($collectData);
+                                //更新导入的进度
+                                $this->app->db->name('module_collect_job')->where($map)->inc('records', $imports)->update();
                             }
-                            $this->app->db->name('cms_article')->insertAll($collectData);
-                            //更新导入的进度
-                            $this->app->db->name('module_collect_job')->where($map)->inc('records', $imports)->update();
+                            $this->success('导入成功', ['hasFinish' => $hasFinish, 'page' => input('page', 1, 'intval'), 'total' => $count, 'imports' => $imports, 'jobid' => $jobid, 'collect_id' => $collect_id]);
+                        } else {
+                            $this->error('数据错误');
                         }
-                        $this->success('导入成功', ['hasFinish' => $hasFinish, 'page' => input('page', 1, 'intval'), 'total' => $count, 'imports' => $imports, 'jobid' => $jobid, 'collect_id' => $collect_id]);
                     } else {
-                        $this->error('数据错误');
+                        $this->categorys = json_encode(CategoryService::instance()->getAllCategoryTree(0, true), true);
+                        $this->fetch();
                     }
-                } else {
-                    $this->categorys = json_encode(CategoryService::instance()->getAllCategoryTree(0, true), true);
-                    $this->fetch();
+                }else{
+                    $this->error('没有采集数据，无法导入');
                 }
             } else {
                 $this->error('数据错误');
@@ -371,5 +435,12 @@ class Collect extends Controller
     {
         $this->_applyFormToken();
         $this->_delete($this->table);
+    }
+
+    public function jhtest()
+    {
+        $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => 1, 'url' => 'https://www.php.cn/toutiao-448737.html'])->column('thumb');
+        dump($cjdata[0]);exit;
+
     }
 }
