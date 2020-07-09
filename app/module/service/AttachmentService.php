@@ -17,4 +17,5 @@ class AttachmentService extends Service
             return $this->app->db->name('module_attachment')->insert($data);
         }
     }
+
 }

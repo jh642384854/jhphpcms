@@ -31,6 +31,7 @@
             </fieldset>
 
             <div id="collect_status"></div>
+
         </div>
     </div>
 </div>
@@ -50,6 +51,7 @@
             , form = layui.form
             , cascader = layui.cascader;
 
+        //保存导入任务，并执行导入数据操作
         form.on('submit(savejob)', function (data) {
             var obj = $(this);
             var formData = {};
@@ -76,6 +78,7 @@
             return false;
         })
 
+        //级联栏目选择器
         cascader({
             elem: "#cascader_catid",
             data: {$categorys | raw},
@@ -84,13 +87,14 @@
             }
         });
 
-        //默认滑块
+        //导入进入滑块
         var ins1 = slider.render({
             elem: '#collect_status',
             disabled: true, //禁用滑块
             theme: '#1E9FFF' //主题色
         });
 
+        //真正执行导入操作
         function doimport(jobid, id, page = 1) {
             $.ajax({
                 url: '{:url("import")}',
@@ -102,12 +106,57 @@
                         ins1.setValue(Math.round((res.data.imports / res.data.total) * 100) * page)
                     } else {
                         ins1.setValue(100);
+                        finishImport(res.data.jobid);
                         $('.doImportButton').text('导入完成');
-                        $('#opt_buttons').append('<a class="layui-btn layui-btn-sm layui-btn-normal" data-title="查看数据" data-open=\'{:url("cms/content/index",["spm"=>"m-69-71"])}\'>查看数据</a>');
+                        $('#opt_buttons').append('<button class="layui-btn layui-btn-sm layui-btn-normal" data-title="查看数据" data-open=\'{:url("cms/content/index",["spm"=>"m-69-71"])}\'>查看数据</button>');
+                        $('#opt_buttons').append('<button class="layui-btn layui-btn-danger layui-btn-sm" lay-submit lay-filter="clearData">清空采集数据</button>');
                     }
                 }
             })
         }
+
+        /**
+         * 完成数据导入后的操作
+         */
+        function finishImport(jobid){
+            $.ajax({
+                url: '{:url("finshimport")}',
+                data: {jobid: jobid},
+                method: 'POST',
+                success: function (res) {
+                    console.log(res);
+                }
+            })
+        }
+
+        //清空采集数据
+        form.on('submit(clearData)', function (data) {
+            var obj = $(this);
+            layer.confirm('确定要删除采集的数据吗', function(index){
+                var formData = {};
+                formData.collect_id = $('#collect_id').val();
+                formData.id = 'all';
+                formData._csrf_ = "{:systoken('del_content')}";
+                obj.addClass('layui-btn-disabled');
+                obj.attr('disabled', true);
+                obj.text('数据删除中......')
+                $.ajax({
+                    url: '{:url("del_content")}',
+                    data: formData,
+                    method: 'POST',
+                    success: function (res) {
+                        if (res.code == 1) {
+                            $.msg.success(res.info);
+                            $('#opt_buttons').find("button:eq(1)").remove();
+                            $('#opt_buttons').append('<button class="layui-btn layui-btn-sm layui-btn-normal" data-title="返回采集列表" data-open=\'{:url("index",["spm"=>input("spm")])}\'>返回采集列表</button>');
+                            obj.text('清空采集数据')
+                        }
+                    }
+                })
+                layer.close(index);
+            });
+            return false;
+        })
     });
 </script>
 {/block}

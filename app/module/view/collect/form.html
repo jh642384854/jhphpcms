@@ -406,6 +406,26 @@
                     </label>
 
                     <label class="layui-form-item block relative">
+                        <span class="color-green font-w7">是否自动摘要</span><span class="color-desc margin-left-5">Auto Description</span><br />
+                        <div class="layui-row layui-col-space15">
+                            <div class="layui-col-xs2">
+                                {foreach :config('constant.YesOrNo') as $k=>$v}
+                                <!--{if (!isset($vo.is_auto_description) and $k eq '1') or (isset($vo.is_auto_description) and $vo.is_auto_description eq $k)}-->
+                                <input type="radio" name="is_auto_description" checked value="{$k}" title="{$v}" lay-filter="auto_description" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                                <!--{else}-->
+                                <input type="radio" name="is_auto_description" value="{$k}" title="{$v}" lay-filter="auto_description" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                                <!--{/if}-->
+                                {/foreach}
+                            </div>
+                            <div class="layui-col-xs4" id="autoDescriptionLenBlock" {if (isset($vo.is_auto_description) and $vo.is_auto_description eq 0)} style="display: none"{/if}>
+                                自动摘要内容长度 <input name="auto_description_length" placeholder="请输入自动摘要内容长度" value='{$vo.auto_description_length|default="200"}' class="layui-input" style="display: inline;width: 100px;">
+                                长度最大值为255
+                            </div>
+                        </div><br />
+                        <p>当采集列表摘要为空时候才应用这个配置功能</p>
+                    </label>
+
+                    <label class="layui-form-item block relative">
                         <span class="color-green font-w7">是否提取内容第一张图片为缩略图</span><span class="color-desc margin-left-5">First Image</span><br />
                         {foreach :config('constant.YesOrNo') as $k=>$v}
                         <!--{if (!isset($vo.is_first_img) and $k eq '1') or (isset($vo.is_first_img) and $vo.is_first_img eq $k)}-->
@@ -522,7 +542,6 @@
             form = layui.form;
 
         $(function(){
-
             //创建新采集规则
             $('.newrule').click(function () {
                 $('#diyconfigrule').append($('#diyruletpl').html());
@@ -562,6 +581,14 @@
                         })
                     }
                 });
+            });
+
+            form.on("radio(auto_description)", function (data) {
+                if(parseInt(data.value)){
+                    $('#autoDescriptionLenBlock').show();
+                }else{
+                    $('#autoDescriptionLenBlock').hide();
+                }
             });
         })
     });

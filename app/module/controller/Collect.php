@@ -3,6 +3,7 @@
 namespace app\module\controller;
 
 use app\cms\service\CategoryService;
+use app\module\service\AttachmentService;
 use ql\DownloadImage;
 use QL\Ext\AbsoluteUrl;
 use QL\QueryList;
@@ -81,6 +82,13 @@ class Collect extends Controller
                 }
                 $data['custom_config'] = json_encode($newrule);
                 unset($data['customconfig']);
+            }
+            if ($data['is_auto_description']) {
+                $auto_length = intval($data['auto_description_length']);
+                //设置自动摘要的最大长度
+                if($auto_length<0 || $auto_length > 255){
+                    $data['auto_description_length'] = 255;
+                }
             }
         }
     }
@@ -197,13 +205,42 @@ class Collect extends Controller
                 $url = input('url', '', 'trim');
                 //采集内容
                 $updateContent = $this->collectContent($url, $collectConfig);
-                $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->column('thumb');
+                $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->column('thumb,description');
+                //自动提取摘要
+                if($collectConfig['is_auto_description'] && $cjdata[0]['description'] == ''){
+                    $first_sentence = str_replace(PHP_EOL,'',explode('。',strip_tags($updateContent['content']))[0]);
+                    //这里做一个控制，保证自动摘要内容不会少于50个字符
+                    if(mb_strlen($first_sentence) < 50){
+                        $updateContent['description'] = msubstr(strip_tags($updateContent['content']),$collectConfig['auto_description_length'],0,false);
+                    }else{
+                        $updateContent['description'] = msubstr($first_sentence,$collectConfig['auto_description_length'],0,false);
+                    }
+                }
                 //自动提取内容页的首张图片作为缩略图
-                if($collectConfig['is_first_img'] && $cjdata[0] == ''){
+                if($collectConfig['is_first_img'] && $cjdata[0]['thumb'] == ''){
                     $ql = QueryList::html($updateContent['content']);
                     $thumb = $ql->find('img:eq(0)')->src;
                     if($thumb != ''){
                         $updateContent['thumb'] = $thumb;
+                    }
+                }else{
+                    //将缩略图片下载到本地(采集获取的缩略图并没有下载到本地)
+                    if($collectConfig['is_download_img']) {
+                        $local = LocalStorage::instance();
+                        $newFileInfo = $local::down($cjdata[0]['thumb']);
+                        $imgurl = ltrim($newFileInfo['url'],'/');
+                        //给图片加水印
+                        if($collectConfig['is_watermark_img']) {
+                            try {
+                                $imgInfo = pathinfo($imgurl);
+                                $waterFilePath = $imgInfo['dirname'] . DIRECTORY_SEPARATOR . $imgInfo['basename'];
+                                $imgRes = \think\Image::open($imgurl);
+                                $imgRes->water(config('constant.WaterImg'))->save($waterFilePath);
+                            } catch (\think\image\Exception $e) {
+                                sysoplog('图片水印', '图片水印添加失败'.$e->getMessage());
+                            }
+                        }
+                        $updateContent['thumb'] = $imgurl;
                     }
                 }
                 $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->save($updateContent);
@@ -238,26 +275,10 @@ class Collect extends Controller
         unset($rules['content']);
         $articles = $ql->get($url)->rules($rules)->range($collectConfig['range_list'])->query()->getData(function ($item) use ($ql, $parseUrlInfo, $collect_id,$collectConfig) {
             $item['collect_id'] = $collect_id;
-            if(isset($item['thumb']) && $item['thumb'] != ''){
-                //将图片下载到本地
-                //todo 这个下载远程图片比较耗时，需要优化处理
-                if($collectConfig['is_download_img']) {
-                    $local = LocalStorage::instance();
-                    $newFileInfo = $local::down($item['thumb']);
-                    $imgurl = ltrim($newFileInfo['url'],'/');
-                    //给图片加水印
-                    if($collectConfig['is_watermark_img']) {
-                        try {
-                            $imgInfo = pathinfo($imgurl);
-                            $waterFilePath = $imgInfo['dirname'] . DIRECTORY_SEPARATOR . $imgInfo['basename'];
-                            $imgRes = \think\Image::open($imgurl);
-                            $imgRes->water(config('constant.WaterImg'))->save($waterFilePath);
-                        } catch (\think\image\Exception $e) {
-                            sysoplog('图片水印', '图片水印添加失败'.$e->getMessage());
-                        }
-                    }
-                    $item['thumb'] = $imgurl;
-                }
+            //关键字替换
+            $replaces = $this->getReplaceKeywords($collectConfig['replace_words']);
+            if(count($replaces)>0 && isset($item['description']) && $item['description'] != ''){
+                $item['description'] = str_ireplace(array_keys($replaces),array_values($replaces),$item['description']);
             }
             //判断采集的url地址是相对还是绝对地址
             if (!strpos($item['url'], 'http')) {
@@ -289,14 +310,7 @@ class Collect extends Controller
             $contentData = $ql->get($url)->rules($conditionRules)->query()->getData(function ($item) use ($ql, $parseUrlInfo, $url,$collectConfig) {
                 $content = $ql->downloadImage($item['content'], $parseUrlInfo['host'], $url,$collectConfig);
                 if($collectConfig['replace_words'] != ''){
-                    $replaceArr = explode("\r\n", $collectConfig['replace_words']);
-                    $replaces = [];
-                    foreach ($replaceArr as $replace){
-                        $tpm = explode('|',$replace);
-                        if(count($tpm) == 2){
-                            $replaces[$tpm[0]] = $tpm[1];
-                        }
-                    }
+                    $replaces = $this->getReplaceKeywords($collectConfig['replace_words']);
                     if(count($replaces)>0){
                         $item['seo_keywords'] = str_ireplace(array_keys($replaces),array_values($replaces),$item['seo_keywords']);
                         $item['seo_description'] = str_ireplace(array_keys($replaces),array_values($replaces),$item['seo_description']);
@@ -312,6 +326,24 @@ class Collect extends Controller
         } else {
             return '';
         }
+    }
+
+    /**
+     * 得到关键字替换的配置信息
+     * @param $replace_words
+     * @return array
+     */
+    private function getReplaceKeywords($replace_words)
+    {
+        $replaceArr = explode("\r\n", $replace_words);
+        $replaces = [];
+        foreach ($replaceArr as $replace){
+            $tpm = explode('|',$replace);
+            if(count($tpm) == 2){
+                $replaces[$tpm[0]] = $tpm[1];
+            }
+        }
+        return $replaces;
     }
 
     /**
@@ -344,7 +376,7 @@ class Collect extends Controller
             }
             $data['create_at'] = date('Y-m-d H:i:s');
             //保存采集任务
-            $hasExec = $this->app->db->name('module_collect_job')->where(['catid' => $data['catid'], 'collect_id' => $data['collect_id']])->find();
+            $hasExec = $this->app->db->name('module_collect_job')->where(['catid' => $data['catid'], 'collect_id' => $data['collect_id'],'status'=>0])->find();
             if (!$hasExec) {
                 $jobid = $this->app->db->name('module_collect_job')->insertGetId($data);
             } else {
@@ -378,13 +410,15 @@ class Collect extends Controller
                                 } else {
                                     $modelid = 1;
                                 }
-                                $collectData = $this->app->db->name('module_collect_data')->field(['title', 'description', 'thumb', 'author', 'comefrom', 'content', 'UNIX_TIMESTAMP(`time`)' => 'create_at'])
+                                $collectData = $this->app->db->name('module_collect_data')->field(['title','seo_keywords','seo_description', 'description', 'thumb', 'author', 'comefrom', 'content', 'UNIX_TIMESTAMP(`time`)' => 'create_at'])
                                     ->fieldRaw("'" . $jobdata["catid"] . "' as 'catid','" . $modelid . "' as 'modelid'")->where($collect_map)->limit($jobdata['records'], $limit)->select()->all();
                                 $imports = count($collectData);
                                 if ($limit > $count) {
                                     $hasFinish = true;
                                 }
                                 $this->app->db->name('cms_article')->insertAll($collectData);
+                                //将采集的图片信息也写入到附件表中
+                                $this->addAttach($collectData);
                                 //更新导入的进度
                                 $this->app->db->name('module_collect_job')->where($map)->inc('records', $imports)->update();
                             }
@@ -401,6 +435,55 @@ class Collect extends Controller
                 }
             } else {
                 $this->error('数据错误');
+            }
+        }
+    }
+
+    /**
+     * 完成数据导入执行的操作
+     * @login true
+     */
+    public function finshimport()
+    {
+        if($this->request->isAjax()){
+            $job_id = input('jobid',0,'intval');
+            if($job_id>0){
+                $map = ['id'=>$job_id];
+                $result = $this->app->db->name('module_collect_job')->where($map)->update(['status'=>1]);
+                if($result){
+                    $this->success('导入完成');
+                }else{
+                    $this->success('数据操作失败');
+                }
+            }
+        }
+    }
+
+    /**
+     * 将图片信息写入到附件表中
+     * @param $articles
+     */
+    private function addAttach($articles)
+    {
+        if(count($articles)>0){
+            foreach ($articles as $article){
+                $thumb = $article['thumb'];
+                $contentImags = QueryList::html($article['content'])->find('img')->attrs('src')->all();
+                array_push($contentImags,$thumb);
+                if(count($contentImags)>0){
+                    foreach ($contentImags as $imag){
+                        $attachData = getFileInfoByFilepath($imag);
+                        if(count($attachData)>0){
+                            $attachData['modelid'] = $article['modelid'];
+                            $attachData['catid'] = $article['catid'];
+                            $attachData['userid'] = session('user.id');
+                            $attachData['uploadtime'] = time();
+                            $attachData['uploadip'] = $this->request->ip();
+                            //将附件数据写入到附件表中
+                            AttachmentService::instance()->addAttachment($attachData);
+                        }
+                    }
+                }
             }
         }
     }
@@ -423,7 +506,13 @@ class Collect extends Controller
     public function del_content()
     {
         $this->_applyFormToken();
-        $this->_delete('module_collect_data');
+        $collect_id = input('collect_id',0,'intval');
+        if(input('id','','trim') == 'all' && input('collect_id',0,'intval') > 0){
+            $this->app->db->name('module_collect_data')->where(['collect_id'=>$collect_id])->delete();
+            $this->success('采集数据已经清空');
+        }else{
+            $this->_delete('module_collect_data');
+        }
     }
 
     /**
@@ -439,8 +528,7 @@ class Collect extends Controller
 
     public function jhtest()
     {
-        $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => 1, 'url' => 'https://www.php.cn/toutiao-448737.html'])->column('thumb');
-        dump($cjdata[0]);exit;
-
+        $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => 1, 'url' => 'https://www.php.cn/toutiao-453216.html'])->column('thumb,description');
+        dump($cjdata);
     }
 }
