@@ -24,7 +24,7 @@ class Message extends Controller
     public function index()
     {
         $this->title = '留言列表';
-        $this->_query($this->table)->where(['is_deleted' => 0])->order('id desc')->page();
+        $this->_query($this->table)->like('title,phone,email')->dateBetween('create_at')->where(['is_deleted' => 0])->order('id desc')->page();
     }
 
 

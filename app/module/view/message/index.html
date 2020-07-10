@@ -1,9 +1,7 @@
 {extend name="../../admin/view/main"}
 
 {block name="button"}
-<!--{if auth("formconfig")}-->
-<button data-open='{:url("formconfig")}' data-title="表单配置" class='layui-btn layui-btn-sm layui-btn-primary'>表单配置</button>
-<!--{/if}-->
+<button data-title="表单字段" class='layui-btn layui-btn-sm layui-btn-primary messageconfig'>表单字段</button>
 <!--{if auth("delete")}-->
 <a data-confirm="确定要删除这些留言吗？" data-action='{:url("delete")}' data-rule="id#{key}" data-csrf="{:systoken('delete')}" class='layui-btn layui-btn-sm layui-btn-danger'>批量删除</a>
 <!--{/if}-->
@@ -12,6 +10,7 @@
 {block name="content"}
 <div class="layui-tab layui-tab-card think-bg-white">
     <div class="layui-tab-content think-box-shadow">
+        {include file='message/index_search'}
         <table class="layui-table margin-top-10" lay-skin="line">
             {notempty name='list'}
             <thead>
@@ -58,8 +57,8 @@
                     {$vo.create_at|format_datetime}
                 </td>
                 <td class='text-left nowrap'>
-                    <!--{if auth("edit")}-->
-                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑评论" data-modal='{:url("edit",["id"=>$vo.id])}'>编 辑</a>
+                    <!--{if auth("view")}-->
+                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="查看" data-modal='{:url("edit",["id"=>$vo.id])}'>查 看</a>
                     <!--{/if}-->
                     <!--{if auth("delete")}-->
                     <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要永久删除此评论吗？" data-action="{:url('delete')}" data-value="id#{$vo.id}" data-csrf="{:systoken('delete')}">删 除</a>
@@ -72,4 +71,17 @@
         {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
     </div>
 </div>
+{/block}
+
+{block name='script'}
+<script>
+    layui.use(['layer', 'jquery', 'form'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+        $('.messageconfig').click(function(){
+            $.msg.success('请移步到【自定义表单】菜单页面去配置');
+        })
+    });
+</script>
 {/block}
