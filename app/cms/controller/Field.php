@@ -146,9 +146,9 @@ class Field extends Controller
                         $fieldInfo['defaultvalue'] = $setting['defaultvalue'];
                     }
                     if ($data['formtype'] == 'number') {
-                        if(isset($setting['precision'])){
+                        if (isset($setting['precision'])) {
                             $fieldInfo['precision'] = $setting['precision'];
-                        }else{
+                        } else {
                             $fieldInfo['precision'] = 2;
                         }
                     }
@@ -208,30 +208,4 @@ class Field extends Controller
             echo '';
         }
     }
-
-    public function jhtest()
-    {
-        $new = '{"pattern":"fdsf","width":"120","css":"layui-input2","tips":"请输入文章标题22"}';
-        $old = '{"width":"100","length":"255","chartype":"varchar","css":"layui-input","min":1,"tips":"请输入文章标题","errortips":"请输入正确的文章标题"}';
-
-        $newArr = json_decode($new, true);
-        $oldArr = json_decode($old, true);
-
-        foreach ($oldArr as $key => $val) {
-            if (in_array($key, array_keys($newArr))) {
-                $oldArr[$key] = $newArr[$key];
-            }
-        }
-        foreach ($newArr as $key => $val) {
-            if (!in_array($key, array_keys($oldArr))) {
-                $oldArr[$key] = $newArr[$key];
-            }
-        }
-        dump($oldArr);
-
-        dump(array_merge($oldArr, $newArr));
-
-        dump($oldArr + $newArr);
-    }
-
 }

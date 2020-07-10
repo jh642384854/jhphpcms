@@ -1,36 +1,35 @@
 <?php
-namespace app\cms\controller;
 
+namespace app\module\controller;
 
 use think\admin\Controller;
-
 /**
- * 评论管理
- * Class Comment
- * @package app\cms\controller
+ * 在线留言管理
+ * Class Message
+ * @package app\module\controller
  */
-class Comment extends Controller
+class Message extends Controller
 {
     /**
      * 当前操作数据表
      * @var string
      */
-    protected $table = 'cms_comment';
+    protected $table = 'module_message';
 
     /**
-     * 评论列表
+     * 留言列表
      * @auth true
      * @menu true
      */
     public function index()
     {
-        $this->title = '评论列表';
+        $this->title = '留言列表';
         $this->_query($this->table)->where(['is_deleted' => 0])->order('id desc')->page();
     }
 
 
     /**
-     * 编辑评论
+     * 编辑留言
      * @auth true
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
@@ -38,13 +37,13 @@ class Comment extends Controller
      */
     public function edit()
     {
-        $this->title = '编辑评论';
+        $this->title = '编辑留言';
         $this->_applyFormToken();
         $this->_form($this->table, 'form');
     }
 
     /**
-     * 删除评论
+     * 删除留言
      * @auth true
      */
     public function delete()
@@ -52,5 +51,6 @@ class Comment extends Controller
         $this->_applyFormToken();
         $this->_delete($this->table);
     }
+
 
 }

@@ -1,0 +1,208 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("index")}' data-title="字段列表" class='layui-btn layui-btn-sm layui-btn-primary'>字段列表</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md2">
+            <div class="block_title">字段类型</div>
+            <div class="fields_show">
+                <div class="fields_select">
+                    {foreach :config('constant.modelFieldType') as $key => $field}
+                    {eq name='key' value='$vo.formtype|default="text"'}
+                    <input type="radio" name="formtype" value="{$key}" lay-filter="formtype_filter" {notempty name='vo.id'}disabled{/notempty} title="{$field.name}" checked> <br />
+                    {else}
+                    <input type="radio" name="formtype" value="{$key}" lay-filter="formtype_filter" {notempty name='vo.id'}disabled{/notempty} title="{$field.name}"><br />
+                    {/eq}
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md10">
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">表单类型</label>
+                    <div class="layui-input-block">
+                        <select name='typeid' class='layui-select' lay-search required>
+                            {foreach $diyformlist as $diyform}
+                            {eq name='diyform.id' value='$vo.typeid|default=0'}
+                            <option selected value='{$diyform.id}'>{$diyform.name}</option>
+                            {else}
+                            <option value='{$diyform.id}'>{$diyform.name}</option>
+                            {/eq}
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">作为系统字段</label>
+                    <div class="layui-input-block">
+                        {notempty name='vo.id'}
+                        <div class="form_txt_show">{:config('constant.YesOrNo')[$vo.issystem]}</div>
+                        {else}
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.issystem) and $k eq '1') or (isset($vo.issystem) and $vo.issystem eq $k)}-->
+                        <input type="radio" name="issystem" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{else}-->
+                        <input type="radio" name="issystem" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+                        <!--{/if}-->
+                        {/foreach}
+                        <p class="help-block">必填，新创建的字段在主表或是附加表上面。系统字段不能被删除和禁用</p>
+                        {/notempty}
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">字段名</label>
+                    <div class="layui-input-block">
+                        {notempty name='vo.id'}
+                        <div class="form_txt_show">{$vo.field|default=""}</div>
+                        {else}
+                        <input name="field" value='{$vo.field|default=""}' pattern="^[A-Za-z0-9_-]+$" required placeholder="请输入表字段名称，注意是非中文字符" class="layui-input">
+                        <p class="help-block">必填，请填写表字段名称，建议字符不要太长，一般4-20个英文字符</p>
+                        {/notempty}
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">字段标题</label>
+                    <div class="layui-input-block">
+                        <input name="title" value='{$vo.title|default=""}' required placeholder="请输入表字段名称" class="layui-input">
+                        <p class="help-block">必填，请填写字段标题名称，建议字符不要太长，一般4-20个字符</p>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">字段提示</label>
+                    <div class="layui-input-block">
+                        {php}
+                        if(isset($vo['setting'])){
+                        $settings = json_decode($vo['setting'],true);
+                        }else{
+                        $settings['tips'] = '';
+                        $settings['pattern'] = '';
+                        }
+                        {/php}
+                        <input name="setting[tips]" value='{$settings.tips|default=""}'  placeholder="请输入表字段提示" class="layui-input">
+                        <p class="help-block">选填，显示在字段别名下方作为表单输入提示</p>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">相关参数</label>
+                    <div class="layui-input-block">
+                        <div id="field_settings"></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数据校验正则</label>
+                    <div class="layui-input-block">
+                        <div class="layui-col-xs6">
+                            <input name="setting[pattern]" value='{$settings.pattern|default=""}'  placeholder="请输入表字段提示" class="layui-input">
+                        </div>
+                        <div class="layui-col-xs6">
+                            <select id="common_pattern" class='layui-select' lay-filter="common_pattern" lay-search>
+                                <option value="">请选择常用正则表达式</option>
+                                {foreach :config('constant.modelPattern') as $key => $pattern}
+                                <option value='{$pattern.rule}'>{$pattern.name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <p class="help-block">选填，系统将通过此正则校验表单提交的数据合法性，如果不想校验数据请留空</p>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否在页面显示</label>
+                    <div class="layui-input-block">
+                        {foreach :config('constant.YesOrNo') as $k=>$v}
+                        <!--{if (!isset($vo.isshow) and $k eq '1') or (isset($vo.isshow) and $vo.isshow eq $k)}-->
+                        <input type="radio" name="isshow" checked value="{$k}" title="{$v}">
+                        <!--{else}-->
+                        <input type="radio" name="isshow" value="{$k}" title="{$v}">
+                        <!--{/if}-->
+                        {/foreach}
+                        <p class="help-block">选填，是否将该字段显示在页面上面</p>
+                    </div>
+                </div>
+
+                <div class="hr-line-dashed"></div>
+                {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+                <div class="layui-form-item text-center">
+                    <button class="layui-btn" type='submit'>保存数据</button>
+                    <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{/block}
+
+{block name='style'}
+<style>
+    .block_title{
+        height: 30px;
+        line-height: 30px;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 10px;
+        padding-bottom: 0;
+        color: #fff;
+        background: #009688;
+        border-color: #009688;
+    }
+    .fields_select{ padding-left: 45px;}
+    .form_txt_show{
+        line-height: 20px;
+        height: 20px;
+        padding: 9px 15px;
+        font-size: 14px;
+    }
+    .hidden{ display: none;}
+    #field_settings{ }
+</style>
+{/block}
+{block name='script'}
+<script>
+    layui.form.render();
+    layui.use(['layer', 'jquery', 'form','colorpicker'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        //监听字段类型选择变化
+        form.on('radio(formtype_filter)',function (data) {
+            loadFildSetting(data.value)
+        })
+        //监听正则表达式选择变化
+        form.on('select(common_pattern)', function(data){
+            $('input[name="setting[pattern]"]').val(data.value)
+        });
+
+        loadFildSetting("{$vo.formtype|default='text'}");
+    });
+
+    //加载模型字段的额外设置
+    function loadFildSetting(fileType='text') {
+        var fieldID = $('input[name=id]').val();
+        var dataObj = {type:fileType};
+        if(typeof fieldID != "undefined"){
+            dataObj.id = fieldID
+        }
+        $.ajax({
+            url:'{:url("cms/field/field_settings")}',
+            data:dataObj,
+            method:'GET',
+            success:function(res){
+                $('#field_settings').html(res);
+            }
+        })
+    }
+</script>
+{/block}

@@ -1,0 +1,41 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">表单名称</span><span class="color-desc margin-left-5">Form Name</span>
+            <input type="text" name="name" value='{$vo.name|default=""}' required placeholder="请输入表单名称" class="layui-input">
+        </label>
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">数据表名称</span><span class="color-desc margin-left-5">Table Name</span>
+            <input type="text" name="tablename" value='{$vo.tablename|default=""}'  pattern="^[A-Za-z0-9_-]+$" required placeholder="请输入数据表名称" class="layui-input">
+        </label>
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">是否为系统功能</span><span class="color-desc margin-left-5">Is System</span><br />
+            {foreach :config('constant.YesOrNo') as $k=>$v}
+            <!--{if (!isset($vo.issystem) and $k eq '1') or (isset($vo.issystem) and $vo.issystem eq $k)}-->
+            <input type="radio" name="issystem" checked value="{$k}" title="{$v}"  {notempty name='vo.id'} readonly="readonly"{/notempty}>
+            <!--{else}-->
+            <input type="radio" name="issystem" value="{$k}" title="{$v}" {notempty name='vo.id'} readonly="readonly"{/notempty}>
+            <!--{/if}-->
+            {/foreach}
+        </label>
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">表单描述</span><span class="color-desc">Description</span>
+            <textarea placeholder="请输入表单描述" class="layui-textarea" name="description">{$vo.description|default=""}</textarea>
+        </label>
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}

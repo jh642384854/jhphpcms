@@ -3,26 +3,14 @@
 <div class="layui-tab layui-tab-card think-bg-white">
     <form class="layui-form layui-card" action="" data-auto="true" method="post" autocomplete="off">
         <div class="layui-row layui-col-space10" style="padding: 30px 0px;">
-            <div class="layui-col-md8">
-                {foreach $formFields['base'] as $key=>$vo}
-                <div class="layui-form-item">
-                    <label class="layui-form-label">{$vo.title}</label>
-                    <div class="layui-input-block">
-                        {$vo.form|raw}
-                    </div>
+            {foreach $formFields['base'] as $key=>$vo}
+            <div class="layui-form-item">
+                <label class="layui-form-label">{$vo.title}</label>
+                <div class="layui-input-block">
+                    {$vo.form|raw}
                 </div>
-                {/foreach}
             </div>
-            <div class="layui-col-md4">
-                {foreach $formFields['extend'] as $key=>$vo}
-                <div class="layui-form-item">
-                    <label class="layui-form-label">{$vo.title}</label>
-                    <div class="layui-input-block">
-                        {$vo.form|raw}
-                    </div>
-                </div>
-                {/foreach}
-            </div>
+            {/foreach}
         </div>
         <div class="hr-line-dashed"></div>
         {notempty name='id'}<input type='hidden' value='{$id}' name='id'>{/notempty}
@@ -54,17 +42,11 @@
         form.on('submit(saveData)', function (data) {
             {$formValidator|raw}
             {$formData|raw}
-            {notempty name='id'}
-            formData.id = $('input[name="id"]').val();
-            $.form.load('{:url("edit")}',formData,'post');
-            {else/}
-            $.form.load('{:url("add")}',formData,'post');
-            {/notempty}
+            $.msg.success('模拟表单提交成功');
             //拦截layui自带的提交
             return false;
-        })
+        });
     });
-
 
 </script>
 {/block}

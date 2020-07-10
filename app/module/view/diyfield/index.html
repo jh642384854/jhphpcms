@@ -1,0 +1,69 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+{if input('typeid',0,'intval') gt 0}
+<!--{if auth("preview")}-->
+<button data-modal='{:url("preview",["typeid"=>input("typeid")])}' data-title="预览表单" class='layui-btn layui-btn-sm layui-btn-primary'>预览表单</button>
+<!--{/if}-->
+{/if}
+<!--{if auth("add")}-->
+<button data-open='{:url("add",["typeid"=>input("typeid")])}' data-title="添加字段" class='layui-btn layui-btn-sm layui-btn-normal'>添加字段</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-sort-td'>
+                    <button type="button" data-reload class="layui-btn layui-btn-xs">刷 新</button>
+                </th>
+                <th class='text-left nowrap' width="120px">字段名</th>
+                <th class='text-left nowrap' width="120px">标题</th>
+                <th class='text-left nowrap' width="150px">类型</th>
+                <th class='text-left nowrap' width="150px">是否显示</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr data-dbclick>
+                <td class='list-table-sort-td'>
+                    <label><input data-action-blur="{:request()->url()}" data-value="id#{$vo.id};action#sort;sort#{value}" data-loading="false" value="{$vo.sort}" class="list-sort-input"></label>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.field}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.title}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.formtype}
+                </td>
+                <td class='text-left nowrap'>
+                    {:config('constant.YesOrNo')[$vo.isshow]}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.create_at|format_datetime}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--{if auth("edit")}-->
+                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑字段" data-open='{:url("edit",["id"=>$vo.id])}'>编 辑</a>
+                    <!--{/if}-->
+                    <!--{if auth("remove") && !$vo.issystem }-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此字段吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+{/block}

@@ -83,7 +83,6 @@ class Content extends Controller
                     $this->_applyFormToken();
                     $catdata = $cagetorys[$catid];
                     $this->allFields($catid, $catdata['modelid'], ['catid' => str_replace('-', ',', substr($catdata['path'], 2))]);
-
                 } else {
                     $this->redirect(url('index'));
                 }
