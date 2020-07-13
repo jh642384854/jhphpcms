@@ -21,6 +21,7 @@ class Jhcms extends TagLib
         'recommend' => ['attr' => 'cid,name,limit,order,fields,where', 'close' => 1],
         'menu' => ['attr' => 'name,limit,order', 'close' => 1],
         'tag' => ['attr' => 'name,limit,order,fields', 'close' => 1],
+        'form' => ['attr' => 'name,limit,order,fields', 'close' => 0],  //自定义表单
     ];
 
     // 这是一个闭合标签的简单演示
@@ -69,11 +70,26 @@ class Jhcms extends TagLib
     }
 
     /**
-     * 碎片标签
+     * 自定义表单标签
      * @param $tag
      * @return string
      */
     public function tagBlock($tag)
+    {
+        $name = $tag['name'];
+        $parse = '<?php ';
+        $parse .= ' $__DATA__ = \think\facade\Db::name("module_diy_form")->where("tablename",\'' . $name . '\')->column("id");';
+        $parse .= 'echo get_block_content($__DATA__);';
+        $parse .= '?>';
+        return $parse;
+    }
+
+    /**
+     * 碎片标签
+     * @param $tag
+     * @return string
+     */
+    public function tagForm($tag)
     {
         $name = $tag['name'];
         $parse = '<?php ';

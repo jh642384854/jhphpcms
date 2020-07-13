@@ -27,6 +27,7 @@ class Diyfield extends Controller
     public function index()
     {
         $this->title = '表单字段列表';
+        $this->diyformlist = DiyformService::instance()->getAllDiyForm();
         $this->_query('module_diy_field')->equal('typeid')->order('id desc')->page();
     }
 
@@ -70,21 +71,23 @@ class Diyfield extends Controller
     protected function _form_filter(&$vo)
     {
         if ($this->request->isPost()) {
-            //①、判断字段名是否重复
-            $fieldService = DiyfieldService::instance();
-            if ($fieldService->checkFieldEixts($vo['field'])) {
-                $this->error('字段名称重复，请更换新字段名！');
+            //①、判断字段名是否重复，只针对新增操作，修改不会提交字段名，也就不用检查字段名称了
+            if(empty($vo['id'])){
+                $fieldService = DiyfieldService::instance();
+                if ($fieldService->checkFieldEixts($vo['field'])) {
+                    $this->error('字段名称重复，请更换新字段名！');
+                }
+                $vo['field'] = strtolower($vo['field']);
             }
             //②、过滤空值
             $settings = array_filter($vo['setting'], function ($val) {
                 return ($val === '' || $val === null) ? false : true;
             });
-            $vo['field'] = strtolower($vo['field']);
             if (!empty($vo['id'])) {
                 //更新操作。要获取原来的setting配置信息，保留里面的一些必要配置信息
                 $oldSettings = $this->app->db->name('module_diy_field')->field('setting')->where(['id' => $vo['id']])->find();
                 $oldSettingsData = json_decode($oldSettings['setting'], true);
-                $settings['length'] = $oldSettingsData['length'];
+                $settings['length'] = isset($oldSettingsData['length'])?$oldSettingsData['length']:'';
                 $settings['chartype'] = $oldSettingsData['chartype'];
                 if (isset($oldSettingsData['defaultvalue'])) {
                     $settings['defaultvalue'] = $oldSettingsData['defaultvalue'];
@@ -141,12 +144,12 @@ class Diyfield extends Controller
             }
             if ($flag) {
                 $location = 'javascript:history.back()';
-                $this->success('恭喜, 字段创建成功！', $location);
+                $this->success('恭喜, 字段保存成功！', $location);
             } else {
-                $this->error('字段创建失败，请重试！');
+                $this->error('字段保存失败，请重试！');
             }
         } else {
-            $this->error('字段创建失败, 请稍候再试！');
+            $this->error('字段保存失败, 请稍候再试！');
         }
     }
 
@@ -161,6 +164,25 @@ class Diyfield extends Controller
         $this->_delete($this->table);
     }
 
+    protected function _delete_filter()
+    {
+        $id = input('id', 0, 'intval');
+        $fieldData = $this->app->db->name('module_diy_field')->where(['id'=>$id])->find();
+        if($fieldData){
+            $formData = $this->app->db->name('module_diy_form')->where(['id'=>$fieldData['typeid']])->find();
+            if($formData){
+                $tableOpt = new TableOpt();
+                if(!$tableOpt->deleteField($formData['tablename'],$fieldData['field'])){
+                    $this->error('操作失败');
+                }
+            }else{
+                $this->error('参数错误');
+            }
+        }else{
+            $this->error('参数错误');
+        }
+    }
+
     /**
      * 预览表单
      * @auth true
@@ -169,20 +191,24 @@ class Diyfield extends Controller
     {
         $typeid = input('typeid',0,'intval');
         if($typeid){
-            $allFiels = $this->app->db->name('module_diy_field')->where(['typeid' => $typeid,'isshow'=>1])->order('sort asc')->select();
-            $form = new \form\Form(0, 0, $allFiels);
-            $this->formFields = $form->get();
-            $this->formValidator = $form->formValidator;
-            $this->dependJS = $form->dependJS;
-            $this->formData = $form->formData;
-            $layuiJsModel = array_unique($form->layuiJsModule);
-            $layuiJSinit = '';
-            foreach ($layuiJsModel as $value) {
-                $layuiJSinit .= $value . ' = layui.' . $value . ',';
+            $allFiels = $this->app->db->name('module_diy_field')->where(['typeid' => $typeid,'isshow'=>1])->order('sort asc')->select()->all();
+            if(count($allFiels)>0){
+                $form = new \form\Form(0, 0, $allFiels);
+                $this->formFields = $form->get();
+                $this->formValidator = $form->formValidator;
+                $this->dependJS = $form->dependJS;
+                $this->formData = $form->formData;
+                $layuiJsModel = array_unique($form->layuiJsModule);
+                $layuiJSinit = '';
+                foreach ($layuiJsModel as $value) {
+                    $layuiJSinit .= $value . ' = layui.' . $value . ',';
+                }
+                $this->layuiJsModels = implode('","', $layuiJsModel);
+                $this->layuiJSinit = $layuiJSinit;
+                $this->fetch();
+            }else{
+                $this->error('该表单下面没有字段，请先创建字段');
             }
-            $this->layuiJsModels = implode('","', $layuiJsModel);
-            $this->layuiJSinit = $layuiJSinit;
-            $this->fetch();
         }else{
             $this->error('参数错误');
         }

@@ -1,7 +1,7 @@
 {extend name="../../admin/view/main"}
 
 {block name="button"}
-{if input('typeid',0,'intval') gt 0}
+{if input('typeid',0,'intval') gt 0 && count($list) gt 0}
 <!--{if auth("preview")}-->
 <button data-modal='{:url("preview",["typeid"=>input("typeid")])}' data-title="预览表单" class='layui-btn layui-btn-sm layui-btn-primary'>预览表单</button>
 <!--{/if}-->
@@ -14,6 +14,32 @@
 {block name="content"}
 <div class="layui-tab layui-tab-card think-bg-white">
     <div class="layui-tab-content think-box-shadow">
+        <fieldset>
+            <legend>条件搜索</legend>
+            <form class="layui-form layui-form-pane form-search" action="{:request()->url()}" onsubmit="return false" method="get" autocomplete="off">
+                <div class="layui-form-item layui-inline">
+                    <label class="layui-form-label">表单类型</label>
+                    <div class="layui-input-inline">
+                        <select name='typeid' class='layui-select' lay-search>
+                            <option value="">-- 全部 --</option>
+                            {foreach $diyformlist as $diyform}
+                            {if $diyform.id eq input('typeid',0,'intval')}
+                            <option selected value='{$diyform.id}'>{$diyform.name}</option>
+                            {else}
+                            <option value='{$diyform.id}'>{$diyform.name}</option>
+                            {/if}
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-inline">
+                    <button class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                </div>
+            </form>
+
+        </fieldset>
+
         <table class="layui-table margin-top-10" lay-skin="line">
             {notempty name='list'}
             <thead>
@@ -66,4 +92,8 @@
         {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
     </div>
 </div>
+{/block}
+
+{block name="script"}
+<script>form.render()</script>
 {/block}

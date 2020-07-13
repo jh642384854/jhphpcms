@@ -16,6 +16,7 @@
             <tr>
                 <th class='text-left nowrap' width="120px">表单名称</th>
                 <th class='text-left nowrap' width="120px">数据表名称</th>
+                <th class='text-left nowrap' width="120px">调用代码</th>
                 <th class='text-left nowrap' width="150px">描述</th>
                 <th class='text-left nowrap'>是否为系统功能</th>
                 <th>创建时间</th>
@@ -33,6 +34,9 @@
                    {$vo.tablename}
                 </td>
                 <td class='text-left nowrap'>
+                    {jhcms:form name='{$vo.tablename}' /}
+                </td>
+                <td class='text-left nowrap'>
                     {$vo.description}
                 </td>
                 <td class='text-left nowrap'>
@@ -45,8 +49,11 @@
                     <!--{if auth("edit")}-->
                     <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑自定义表单" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
                     <!--{/if}-->
+                    <!--{if auth("module/diyfield/preview")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-primary" data-title="预览表单" data-modal='{:url("module/diyfield/preview")}?typeid={$vo.id}'>预览表单</a>
+                    <!--{/if}-->
                     <!--{if auth("module/diyfield/index")}-->
-                    <button data-open='{:url("module/diyfield/index",["typeid"=>$vo.id])}' data-title="管理字段" class='layui-btn layui-btn-sm layui-btn-normal'>管理字段</button>
+                    <button data-open='{:url("module/diyfield/index",["typeid"=>$vo.id,"spm"=>$spm])}' data-title="管理字段" class='layui-btn layui-btn-sm layui-btn-normal'>管理字段</button>
                     <!--{/if}-->
                     <!--{if auth("remove") && !$vo.issystem}-->
                     <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要删除此自定义表单吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>

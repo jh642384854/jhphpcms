@@ -2,9 +2,9 @@
     <div class="layui-card-body">
 
         <div class="layui-form-item">
-            <label class="layui-form-label">评论内容</label>
+            <label class="layui-form-label">留言内容</label>
             <div class="layui-input-block">
-                <textarea name='content'>{$vo.content|default=""}</textarea>
+                {$vo.content|default=""}
             </div>
         </div>
 
@@ -18,6 +18,13 @@
                 <input type="radio" name="status" value="{$k}" title="{$v}">
                 <!--{/if}-->
                 {/foreach}
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">回复留言</label>
+            <div class="layui-input-block">
+                <textarea name='reply_content'>{$vo.reply_content|default=""}</textarea>
             </div>
         </div>
 
@@ -37,7 +44,7 @@
         var editor;
         setTimeout(function () {
             if (editor) editor.destroy();
-            editor = window.createEditor('[name="content"]');
+            editor = window.createEditor('[name="reply_content"]');
         }, 100);
 
     });
