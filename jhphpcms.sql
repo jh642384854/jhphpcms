@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2020-07-10 15:18:13
+Date: 2020-07-15 17:27:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -1024,7 +1024,7 @@ CREATE TABLE `module_attachment` (
   PRIMARY KEY (`id`),
   KEY `filemd5` (`filemd5`) USING BTREE,
   KEY `fileext` (`fileext`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Records of module_attachment
@@ -1036,6 +1036,7 @@ INSERT INTO `module_attachment` VALUES ('5', '1', '8', 'news3.flv', '2019/0618/2
 INSERT INTO `module_attachment` VALUES ('6', '1', '9', 'a4c768cb4af5b29f4082854063bf5c.jpg', 'upload/88/a4c768cb4af5b29f4082854063bf5c.jpg', '610647', 'jpg', '2', '1', '1560839005', '127.0.0.1', '1', 'c31e5b23dac2cf27f4a09d36d1b86fa7', '1');
 INSERT INTO `module_attachment` VALUES ('7', '1', '10', '999.xlsx', '2019/0618/20190618022543583.jpg', '30726', 'xlsx', '0', '1', '1560839142', '127.0.0.1', '-1', 'b2aa724ff0bb5575ec18a79d6017b7f3', '1');
 INSERT INTO `module_attachment` VALUES ('19', '1', '0', 'thumb.jpg', '/upload/8c/7b385d1bf176a0a208e1333908b7be.jpg', '2490', 'jpg', '0', '10000', '1592807480', '127.0.0.1', '0', '8c7b385d1bf176a0a208e1333908b7be', '0');
+INSERT INTO `module_attachment` VALUES ('20', '1', '0', 'level_icon.png', '/upload/01/d901d9af8c272dd4004708aee3d506.png', '2273', 'png', '0', '10000', '1594780615', '127.0.0.1', '0', '01d901d9af8c272dd4004708aee3d506', '0');
 
 -- ----------------------------
 -- Table structure for module_collect
@@ -1118,7 +1119,7 @@ CREATE TABLE `module_collect_data` (
   `comefrom` char(50) NOT NULL,
   `time` char(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=949 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of module_collect_data
@@ -1192,7 +1193,7 @@ CREATE TABLE `module_diy_field` (
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `field` (`field`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='cms 自定义字段';
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='cms 自定义字段';
 
 -- ----------------------------
 -- Records of module_diy_field
@@ -1206,6 +1207,7 @@ INSERT INTO `module_diy_field` VALUES ('7', '3', 'status', '状态', '0', '0', '
 INSERT INTO `module_diy_field` VALUES ('8', '3', 'create_at', '提交时间', '0', '0', 'datetime', 0x7B227769647468223A22313030222C22637373223A226C617975692D696E707574222C226D696E223A2231222C226368617274797065223A22696E74222C226C656E677468223A223130227D, '1', '0', '1', '0', '7', '2020-07-10 14:35:33');
 INSERT INTO `module_diy_field` VALUES ('9', '3', 'ip', 'IP地址', '0', '0', 'text', 0x7B226D696E223A2230222C226368617274797065223A2276617263686172222C226C656E677468223A223135222C2269735F70617373776F7264223A2230227D, '1', '0', '1', '0', '8', '2020-07-10 14:36:10');
 INSERT INTO `module_diy_field` VALUES ('10', '3', 'is_deleted', '是否删除', '0', '0', 'text', 0x7B226D696E223A2230222C226368617274797065223A2274696E79696E74222C226C656E677468223A2231222C2269735F70617373776F7264223A2230227D, '1', '0', '1', '0', '9', '2020-07-10 14:36:53');
+INSERT INTO `module_diy_field` VALUES ('11', '3', 'reply_content', '留言回复', '0', '0', 'richtext', 0x7B227769647468223A22313030222C22686569676874223A22323030222C226D696E223A2230222C226C656E677468223A22222C226368617274797065223A2274657874227D, '1', '0', '1', '0', '9', '2020-07-13 11:16:34');
 
 -- ----------------------------
 -- Table structure for module_diy_form
@@ -1225,7 +1227,7 @@ CREATE TABLE `module_diy_form` (
 -- Records of module_diy_form
 -- ----------------------------
 INSERT INTO `module_diy_form` VALUES ('3', '在线留言', 'module_message', '在线留言', '1', '1594352442');
-INSERT INTO `module_diy_form` VALUES ('4', '在线报名', 'baoming', '在线报名', '0', '1594352442');
+INSERT INTO `module_diy_form` VALUES ('4', '在线报名', 'module_baoming', '在线报名', '0', '1594352442');
 
 -- ----------------------------
 -- Table structure for module_link
@@ -1270,13 +1272,14 @@ CREATE TABLE `module_message` (
   `create_at` int(10) NOT NULL COMMENT '提交时间',
   `ip` varchar(15) NOT NULL COMMENT 'IP地址',
   `is_deleted` tinyint(1) NOT NULL COMMENT '是否删除(1删除,0未删)',
+  `reply_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '留言回复',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='module 在线留言';
 
 -- ----------------------------
 -- Records of module_message
 -- ----------------------------
-INSERT INTO `module_message` VALUES ('1', '张三', '15124523625', '45125@qq.com', '测试留言', '测试留言内容', '1', '1592558159', '127.0.0.1', '0');
+INSERT INTO `module_message` VALUES ('1', '张三', '15124523625', '45125@qq.com', '测试留言', '测试留言内容', '1', '1592558159', '127.0.0.1', '0', 0x3C703EE694B6E588B0E79599E8A880EFBC8CE8B0A2E8B0A2E58F8DE9A6883C2F703E);
 
 -- ----------------------------
 -- Table structure for system_auth
@@ -1310,11 +1313,19 @@ CREATE TABLE `system_auth_node` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_system_auth_auth` (`auth`) USING BTREE,
   KEY `idx_system_auth_node` (`node`(191)) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统-授权';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COMMENT='系统-授权';
 
 -- ----------------------------
 -- Records of system_auth_node
 -- ----------------------------
+INSERT INTO `system_auth_node` VALUES ('1', '1', 'admin');
+INSERT INTO `system_auth_node` VALUES ('2', '1', 'admin/auth');
+INSERT INTO `system_auth_node` VALUES ('3', '1', 'admin/auth/index');
+INSERT INTO `system_auth_node` VALUES ('4', '1', 'admin/auth/add');
+INSERT INTO `system_auth_node` VALUES ('5', '1', 'admin/auth/edit');
+INSERT INTO `system_auth_node` VALUES ('6', '1', 'admin/auth/state');
+INSERT INTO `system_auth_node` VALUES ('7', '1', 'admin/auth/apply');
+INSERT INTO `system_auth_node` VALUES ('8', '1', 'admin/auth/remove');
 
 -- ----------------------------
 -- Table structure for system_config
@@ -1331,11 +1342,11 @@ CREATE TABLE `system_config` (
 -- ----------------------------
 -- Records of system_config
 -- ----------------------------
-INSERT INTO `system_config` VALUES ('base', 'site_name', 'ThinkAdmin');
+INSERT INTO `system_config` VALUES ('base', 'site_name', 'Jhphpcms');
 INSERT INTO `system_config` VALUES ('base', 'site_icon', 'https://v6.thinkadmin.top/upload/f47b8fe06e38ae99/08e8398da45583b9.png');
 INSERT INTO `system_config` VALUES ('base', 'site_copy', '©版权所有 2019-2020 楚才科技');
-INSERT INTO `system_config` VALUES ('base', 'app_name', 'ThinkAdmin');
-INSERT INTO `system_config` VALUES ('base', 'app_version', 'v6.0');
+INSERT INTO `system_config` VALUES ('base', 'app_name', 'jhphpcms');
+INSERT INTO `system_config` VALUES ('base', 'app_version', 'v1.0');
 INSERT INTO `system_config` VALUES ('base', 'miitbeian', '粤ICP备16006642号-2');
 INSERT INTO `system_config` VALUES ('storage', 'qiniu_http_protocol', 'http');
 INSERT INTO `system_config` VALUES ('storage', 'type', 'local');
@@ -1378,6 +1389,11 @@ INSERT INTO `system_config` VALUES ('base', 'testuser', '');
 INSERT INTO `system_config` VALUES ('base', 'site_url', 'http://www.jhphpcms.com/');
 INSERT INTO `system_config` VALUES ('base', 'xpath', 'admin');
 INSERT INTO `system_config` VALUES ('base', 'beian', '');
+INSERT INTO `system_config` VALUES ('member', 'open_reg', '1');
+INSERT INTO `system_config` VALUES ('member', 'open_login', '1');
+INSERT INTO `system_config` VALUES ('member', 'reg_validation', '1');
+INSERT INTO `system_config` VALUES ('member', 'find_pass', '1');
+INSERT INTO `system_config` VALUES ('member', 'reg_notallow', 'jhphpcms,admin');
 
 -- ----------------------------
 -- Table structure for system_data
@@ -1394,6 +1410,130 @@ CREATE TABLE `system_data` (
 -- ----------------------------
 -- Records of system_data
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for system_member
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member`;
+CREATE TABLE `system_member` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` smallint(5) NOT NULL COMMENT '用户组',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `nickname` varchar(50) NOT NULL COMMENT '用户昵称',
+  `passwd` char(32) NOT NULL COMMENT '密码',
+  `authorize` varchar(255) NOT NULL COMMENT '权限授权',
+  `email` varchar(100) NOT NULL COMMENT '邮箱',
+  `phone` char(11) NOT NULL COMMENT '电话',
+  `wx_code` varchar(100) NOT NULL COMMENT '微信号',
+  `qq` char(11) NOT NULL,
+  `avator` varchar(100) NOT NULL COMMENT '用户头像',
+  `level_id` tinyint(2) NOT NULL COMMENT '用户等级',
+  `credits` int(10) NOT NULL COMMENT '用户积分',
+  `description` varchar(255) NOT NULL COMMENT '描述',
+  `login_at` int(10) NOT NULL COMMENT '登录时间',
+  `login_ip` char(15) NOT NULL COMMENT '登陆IP',
+  `create_at` int(10) NOT NULL COMMENT '注册时间',
+  `create_ip` char(15) NOT NULL COMMENT '注册IP',
+  `status` tinyint(1) NOT NULL COMMENT '用户状态',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除(1删除,0未删)',
+  PRIMARY KEY (`id`),
+  KEY `username` (`username`) USING BTREE,
+  KEY `role_id` (`role_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='system 会员表';
+
+-- ----------------------------
+-- Records of system_member
+-- ----------------------------
+INSERT INTO `system_member` VALUES ('1', '0', 'zhangsan', '小张', '', '1', 'xiaozhang@jhphpcms.com', '15124523625', 'zhagnsan', '652452452', '', '1', '0', '用户描述', '1594803405', '127.0.0.1', '1594803405', '127.0.0.1', '1', '0');
+
+-- ----------------------------
+-- Table structure for system_member_group
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_group`;
+CREATE TABLE `system_member_group` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT '' COMMENT '权限名称',
+  `desc` varchar(500) DEFAULT '' COMMENT '备注说明',
+  `sort` bigint(20) unsigned DEFAULT '0' COMMENT '排序权重',
+  `status` tinyint(1) unsigned DEFAULT '1' COMMENT '权限状态(1使用,0禁用)',
+  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_system_auth_title` (`title`) USING BTREE,
+  KEY `idx_system_auth_status` (`status`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统-权限';
+
+-- ----------------------------
+-- Records of system_member_group
+-- ----------------------------
+INSERT INTO `system_member_group` VALUES ('1', '默认组', '会员默认分组', '0', '1', '2020-05-20 11:57:18');
+
+-- ----------------------------
+-- Table structure for system_member_group_node
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_group_node`;
+CREATE TABLE `system_member_group_node` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `auth` bigint(20) unsigned DEFAULT '0' COMMENT '角色',
+  `node` varchar(200) DEFAULT '' COMMENT '节点',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_system_auth_auth` (`auth`) USING BTREE,
+  KEY `idx_system_auth_node` (`node`(191)) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COMMENT='系统-授权';
+
+-- ----------------------------
+-- Records of system_member_group_node
+-- ----------------------------
+INSERT INTO `system_member_group_node` VALUES ('6', '1', 'member');
+INSERT INTO `system_member_group_node` VALUES ('7', '1', 'member/index/info');
+
+-- ----------------------------
+-- Table structure for system_member_level
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_level`;
+CREATE TABLE `system_member_level` (
+  `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL COMMENT '级别名称',
+  `min_credits` int(10) NOT NULL COMMENT '最小积分数',
+  `max_credits` int(10) NOT NULL COMMENT '最大积分数',
+  `icon` varchar(100) NOT NULL COMMENT '级别ICON图标',
+  `description` varchar(255) NOT NULL COMMENT '级别描述',
+  `is_deleted` tinyint(1) NOT NULL COMMENT '是否删除(1删除,0未删)',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='admin 会员级别表';
+
+-- ----------------------------
+-- Records of system_member_level
+-- ----------------------------
+INSERT INTO `system_member_level` VALUES ('1', 'SVIP1', '0', '100', '/upload/01/d901d9af8c272dd4004708aee3d506.png', '等级描述', '0');
+INSERT INTO `system_member_level` VALUES ('2', 'SVIP2', '101', '500', '', '级别二描述', '0');
+
+-- ----------------------------
+-- Table structure for system_member_menu
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_menu`;
+CREATE TABLE `system_member_menu` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `pid` bigint(20) unsigned DEFAULT '0' COMMENT '上级ID',
+  `title` varchar(100) DEFAULT '' COMMENT '菜单名称',
+  `icon` varchar(100) DEFAULT '' COMMENT '菜单图标',
+  `node` varchar(100) DEFAULT '' COMMENT '节点代码',
+  `url` varchar(400) DEFAULT '' COMMENT '链接节点',
+  `params` varchar(500) DEFAULT '' COMMENT '链接参数',
+  `target` varchar(20) DEFAULT '_self' COMMENT '打开方式',
+  `sort` int(11) unsigned DEFAULT '0' COMMENT '排序权重',
+  `status` tinyint(1) unsigned DEFAULT '1' COMMENT '状态(0:禁用,1:启用)',
+  `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_system_menu_node` (`node`) USING BTREE,
+  KEY `idx_system_menu_status` (`status`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='系统-会员菜单';
+
+-- ----------------------------
+-- Records of system_member_menu
+-- ----------------------------
+INSERT INTO `system_member_menu` VALUES ('1', '0', '会员模块', 'layui-icon layui-icon-username', '', 'member', '', '_self', '0', '1', '2020-07-15 15:13:40');
+INSERT INTO `system_member_menu` VALUES ('2', '1', '个人资料', 'layui-icon layui-icon-tips', '', 'member/index/info', '', '_self', '2', '1', '2020-07-15 15:14:24');
+INSERT INTO `system_member_menu` VALUES ('3', '1', '会员中心首页', 'layui-icon layui-icon-home', '', 'member/index/index', '', '_self', '1', '1', '2020-07-15 15:15:39');
 
 -- ----------------------------
 -- Table structure for system_menu
@@ -1414,7 +1554,7 @@ CREATE TABLE `system_menu` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_system_menu_node` (`node`) USING BTREE,
   KEY `idx_system_menu_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COMMENT='系统-菜单';
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4 COMMENT='系统-菜单';
 
 -- ----------------------------
 -- Records of system_menu
@@ -1469,6 +1609,14 @@ INSERT INTO `system_menu` VALUES ('97', '73', '基础模型字段配置', '', ''
 INSERT INTO `system_menu` VALUES ('98', '67', '留言管理', 'fa fa-commenting', '', 'module/message/index', '', '_self', '0', '1', '2020-07-10 09:38:45');
 INSERT INTO `system_menu` VALUES ('99', '67', '自定义表单', 'fa fa-pencil', '', 'module/diyform/index', '', '_self', '0', '1', '2020-07-10 11:17:26');
 INSERT INTO `system_menu` VALUES ('100', '67', '自定义表单字段管理', 'layui-icon layui-icon-survey', '', 'module/diyfield/index', '', '_self', '0', '1', '2020-07-10 11:48:16');
+INSERT INTO `system_menu` VALUES ('101', '0', '会员管理', '', '', '#', '', '_self', '0', '1', '2020-07-15 09:30:57');
+INSERT INTO `system_menu` VALUES ('102', '101', '会员列表', 'layui-icon layui-icon-username', '', 'admin/member/index', '', '_self', '0', '1', '2020-07-15 09:31:36');
+INSERT INTO `system_menu` VALUES ('104', '101', '会员功能配置', 'layui-icon layui-icon-set', '', 'admin/member/config', '', '_self', '0', '1', '2020-07-15 09:44:14');
+INSERT INTO `system_menu` VALUES ('105', '101', '会员积分管理', 'layui-icon layui-icon-dollar', '', 'admin/member_credits/index', '', '_self', '0', '1', '2020-07-15 09:45:06');
+INSERT INTO `system_menu` VALUES ('106', '101', '会员分组管理', 'layui-icon layui-icon-app', '', 'admin/member_group/index', '', '_self', '0', '1', '2020-07-15 09:45:44');
+INSERT INTO `system_menu` VALUES ('107', '101', '会员等级管理', 'layui-icon layui-icon-align-center', '', 'admin/member_level/index', '', '_self', '0', '1', '2020-07-15 09:46:21');
+INSERT INTO `system_menu` VALUES ('108', '101', '会员前台菜单管理', 'fa fa-bars', '', 'admin/member_menu/index', '', '_self', '0', '1', '2020-07-15 09:47:18');
+INSERT INTO `system_menu` VALUES ('109', '101', '会员通知管理', 'layui-icon layui-icon-speaker', '', 'admin/member_notice/index', '', '_self', '0', '1', '2020-07-15 09:48:00');
 
 -- ----------------------------
 -- Table structure for system_oplog
@@ -1483,139 +1631,21 @@ CREATE TABLE `system_oplog` (
   `username` varchar(50) NOT NULL DEFAULT '' COMMENT '操作人用户名',
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8mb4 COMMENT='系统-日志';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COMMENT='系统-日志';
 
 -- ----------------------------
 -- Records of system_oplog
 -- ----------------------------
-INSERT INTO `system_oplog` VALUES ('1', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-18 17:44:54');
-INSERT INTO `system_oplog` VALUES ('2', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-19 08:52:02');
-INSERT INTO `system_oplog` VALUES ('3', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-19 09:31:04');
-INSERT INTO `system_oplog` VALUES ('4', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-19 13:01:21');
-INSERT INTO `system_oplog` VALUES ('5', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-20 09:03:54');
-INSERT INTO `system_oplog` VALUES ('6', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-20 10:25:48');
-INSERT INTO `system_oplog` VALUES ('7', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-20 11:15:45');
-INSERT INTO `system_oplog` VALUES ('8', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-20 12:39:58');
-INSERT INTO `system_oplog` VALUES ('9', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-20 13:28:44');
-INSERT INTO `system_oplog` VALUES ('10', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-20 17:48:17');
-INSERT INTO `system_oplog` VALUES ('11', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-21 10:15:38');
-INSERT INTO `system_oplog` VALUES ('12', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-21 10:54:46');
-INSERT INTO `system_oplog` VALUES ('13', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-21 16:20:27');
-INSERT INTO `system_oplog` VALUES ('14', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-22 08:53:34');
-INSERT INTO `system_oplog` VALUES ('15', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-22 13:47:48');
-INSERT INTO `system_oplog` VALUES ('16', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-22 17:34:04');
-INSERT INTO `system_oplog` VALUES ('17', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-25 10:07:26');
-INSERT INTO `system_oplog` VALUES ('18', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-25 11:25:12');
-INSERT INTO `system_oplog` VALUES ('19', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-25 12:54:18');
-INSERT INTO `system_oplog` VALUES ('20', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-25 13:56:24');
-INSERT INTO `system_oplog` VALUES ('21', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-25 14:28:39');
-INSERT INTO `system_oplog` VALUES ('22', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-25 17:13:01');
-INSERT INTO `system_oplog` VALUES ('23', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-26 09:33:36');
-INSERT INTO `system_oplog` VALUES ('24', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-26 13:00:27');
-INSERT INTO `system_oplog` VALUES ('25', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-26 14:03:36');
-INSERT INTO `system_oplog` VALUES ('26', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-26 17:38:17');
-INSERT INTO `system_oplog` VALUES ('27', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-27 10:50:32');
-INSERT INTO `system_oplog` VALUES ('28', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-27 16:09:47');
-INSERT INTO `system_oplog` VALUES ('29', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-28 08:35:56');
-INSERT INTO `system_oplog` VALUES ('30', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-28 13:02:07');
-INSERT INTO `system_oplog` VALUES ('31', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-28 14:03:55');
-INSERT INTO `system_oplog` VALUES ('32', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-29 09:18:00');
-INSERT INTO `system_oplog` VALUES ('33', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-29 10:45:08');
-INSERT INTO `system_oplog` VALUES ('34', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-29 13:55:17');
-INSERT INTO `system_oplog` VALUES ('35', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-05-29 17:52:48');
-INSERT INTO `system_oplog` VALUES ('36', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-01 08:54:00');
-INSERT INTO `system_oplog` VALUES ('37', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-01 12:25:50');
-INSERT INTO `system_oplog` VALUES ('38', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-01 14:34:51');
-INSERT INTO `system_oplog` VALUES ('39', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-02 10:09:53');
-INSERT INTO `system_oplog` VALUES ('40', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-02 13:26:25');
-INSERT INTO `system_oplog` VALUES ('41', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-02 15:22:46');
-INSERT INTO `system_oplog` VALUES ('42', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-02 17:06:16');
-INSERT INTO `system_oplog` VALUES ('43', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-02 21:37:41');
-INSERT INTO `system_oplog` VALUES ('44', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-03 08:55:36');
-INSERT INTO `system_oplog` VALUES ('45', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-03 13:56:12');
-INSERT INTO `system_oplog` VALUES ('46', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-04 08:40:36');
-INSERT INTO `system_oplog` VALUES ('47', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-04 10:26:35');
-INSERT INTO `system_oplog` VALUES ('48', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-04 12:44:44');
-INSERT INTO `system_oplog` VALUES ('49', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-04 14:04:40');
-INSERT INTO `system_oplog` VALUES ('50', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-05 08:52:08');
-INSERT INTO `system_oplog` VALUES ('51', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-05 09:54:41');
-INSERT INTO `system_oplog` VALUES ('52', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-05 11:51:17');
-INSERT INTO `system_oplog` VALUES ('53', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-05 13:59:53');
-INSERT INTO `system_oplog` VALUES ('54', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-08 09:11:14');
-INSERT INTO `system_oplog` VALUES ('55', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-08 10:02:45');
-INSERT INTO `system_oplog` VALUES ('56', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-08 13:35:19');
-INSERT INTO `system_oplog` VALUES ('57', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-09 08:51:29');
-INSERT INTO `system_oplog` VALUES ('58', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-09 13:41:48');
-INSERT INTO `system_oplog` VALUES ('59', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-10 10:33:49');
-INSERT INTO `system_oplog` VALUES ('60', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-10 11:49:32');
-INSERT INTO `system_oplog` VALUES ('61', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-10 14:14:48');
-INSERT INTO `system_oplog` VALUES ('62', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-10 14:56:35');
-INSERT INTO `system_oplog` VALUES ('63', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-10 17:39:41');
-INSERT INTO `system_oplog` VALUES ('64', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-11 09:49:09');
-INSERT INTO `system_oplog` VALUES ('65', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-11 11:28:25');
-INSERT INTO `system_oplog` VALUES ('66', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-11 13:34:52');
-INSERT INTO `system_oplog` VALUES ('67', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-11 16:23:42');
-INSERT INTO `system_oplog` VALUES ('68', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-11 17:29:01');
-INSERT INTO `system_oplog` VALUES ('69', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-12 10:37:14');
-INSERT INTO `system_oplog` VALUES ('70', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-12 14:02:10');
-INSERT INTO `system_oplog` VALUES ('71', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-12 14:50:17');
-INSERT INTO `system_oplog` VALUES ('72', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-12 16:52:10');
-INSERT INTO `system_oplog` VALUES ('73', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-15 09:23:52');
-INSERT INTO `system_oplog` VALUES ('74', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-15 10:26:12');
-INSERT INTO `system_oplog` VALUES ('75', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-15 13:53:46');
-INSERT INTO `system_oplog` VALUES ('76', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 08:47:34');
-INSERT INTO `system_oplog` VALUES ('77', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 09:35:27');
-INSERT INTO `system_oplog` VALUES ('78', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 14:02:42');
-INSERT INTO `system_oplog` VALUES ('79', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 14:09:46');
-INSERT INTO `system_oplog` VALUES ('80', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 14:15:50');
-INSERT INTO `system_oplog` VALUES ('81', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 14:31:08');
-INSERT INTO `system_oplog` VALUES ('82', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 16:19:13');
-INSERT INTO `system_oplog` VALUES ('83', 'admin/login/index', '192.168.20.226', '用户登录', '登录系统后台成功', 'admin', '2020-06-16 17:32:44');
-INSERT INTO `system_oplog` VALUES ('84', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-19 11:04:02');
-INSERT INTO `system_oplog` VALUES ('85', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-19 11:19:03');
-INSERT INTO `system_oplog` VALUES ('86', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-19 11:35:04');
-INSERT INTO `system_oplog` VALUES ('87', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-19 12:45:30');
-INSERT INTO `system_oplog` VALUES ('88', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-19 13:50:59');
-INSERT INTO `system_oplog` VALUES ('89', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-19 17:02:02');
-INSERT INTO `system_oplog` VALUES ('90', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-22 08:52:24');
-INSERT INTO `system_oplog` VALUES ('91', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-22 10:10:56');
-INSERT INTO `system_oplog` VALUES ('92', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-22 14:01:22');
-INSERT INTO `system_oplog` VALUES ('93', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-23 16:08:22');
-INSERT INTO `system_oplog` VALUES ('94', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-29 09:04:42');
-INSERT INTO `system_oplog` VALUES ('95', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-29 10:44:01');
-INSERT INTO `system_oplog` VALUES ('96', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-29 16:47:41');
-INSERT INTO `system_oplog` VALUES ('97', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-29 17:11:53');
-INSERT INTO `system_oplog` VALUES ('98', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-30 09:47:24');
-INSERT INTO `system_oplog` VALUES ('99', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-06-30 15:20:16');
-INSERT INTO `system_oplog` VALUES ('100', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-01 08:49:54');
-INSERT INTO `system_oplog` VALUES ('101', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-01 08:55:31');
-INSERT INTO `system_oplog` VALUES ('102', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-01 10:03:44');
-INSERT INTO `system_oplog` VALUES ('103', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-02 10:48:39');
-INSERT INTO `system_oplog` VALUES ('104', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-02 14:57:46');
-INSERT INTO `system_oplog` VALUES ('105', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-02 17:07:03');
-INSERT INTO `system_oplog` VALUES ('106', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-03 08:39:23');
-INSERT INTO `system_oplog` VALUES ('107', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-03 14:06:02');
-INSERT INTO `system_oplog` VALUES ('108', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-03 16:10:07');
-INSERT INTO `system_oplog` VALUES ('109', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-06 09:09:12');
-INSERT INTO `system_oplog` VALUES ('110', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-06 14:10:40');
-INSERT INTO `system_oplog` VALUES ('111', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-06 15:29:13');
-INSERT INTO `system_oplog` VALUES ('112', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-07 09:14:12');
-INSERT INTO `system_oplog` VALUES ('113', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-07 14:15:00');
-INSERT INTO `system_oplog` VALUES ('114', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-08 09:42:22');
-INSERT INTO `system_oplog` VALUES ('115', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-08 11:26:58');
-INSERT INTO `system_oplog` VALUES ('116', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-08 14:07:27');
-INSERT INTO `system_oplog` VALUES ('117', 'module/collect/dojob', '127.0.0.1', '图片水印', '图片水印添加失败Illegal image file', 'admin', '2020-07-08 14:09:05');
-INSERT INTO `system_oplog` VALUES ('118', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-08 15:00:15');
-INSERT INTO `system_oplog` VALUES ('119', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-08 16:47:46');
-INSERT INTO `system_oplog` VALUES ('120', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-09 09:22:09');
-INSERT INTO `system_oplog` VALUES ('121', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-09 14:12:15');
-INSERT INTO `system_oplog` VALUES ('122', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-09 16:21:03');
-INSERT INTO `system_oplog` VALUES ('123', 'admin/login/index', '192.168.20.226', '用户登录', '登录系统后台成功', 'admin', '2020-07-09 16:52:05');
-INSERT INTO `system_oplog` VALUES ('124', 'admin/login/index', '192.168.20.226', '用户登录', '登录系统后台成功', 'admin', '2020-07-09 17:58:38');
-INSERT INTO `system_oplog` VALUES ('125', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-10 08:52:08');
-INSERT INTO `system_oplog` VALUES ('126', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-10 09:26:21');
-INSERT INTO `system_oplog` VALUES ('127', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-10 11:15:12');
-INSERT INTO `system_oplog` VALUES ('128', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-10 14:05:50');
+INSERT INTO `system_oplog` VALUES ('1', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-13 15:36:26');
+INSERT INTO `system_oplog` VALUES ('2', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-13 16:41:05');
+INSERT INTO `system_oplog` VALUES ('3', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-13 17:55:13');
+INSERT INTO `system_oplog` VALUES ('4', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-14 08:53:37');
+INSERT INTO `system_oplog` VALUES ('5', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-14 11:03:53');
+INSERT INTO `system_oplog` VALUES ('6', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-14 11:11:52');
+INSERT INTO `system_oplog` VALUES ('7', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 09:27:07');
+INSERT INTO `system_oplog` VALUES ('8', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 09:30:03');
+INSERT INTO `system_oplog` VALUES ('9', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 10:29:43');
+INSERT INTO `system_oplog` VALUES ('10', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 13:55:00');
 
 -- ----------------------------
 -- Table structure for system_queue
@@ -1682,8 +1712,8 @@ CREATE TABLE `system_user` (
 -- ----------------------------
 -- Records of system_user
 -- ----------------------------
-INSERT INTO `system_user` VALUES ('10000', 'admin', '21232f297a57a5a743894a0e4a801fc3', '系统管理员', '', '', '', '', '', '127.0.0.1', '2020-07-10 14:05:49', '1184', '', '1', '0', '0', '2015-11-13 15:14:22');
-INSERT INTO `system_user` VALUES ('10001', 'test', '', '测试账户', '', '', '', '', '', '', '', '0', '', '1', '0', '0', '2020-05-20 11:56:49');
+INSERT INTO `system_user` VALUES ('10000', 'admin', '21232f297a57a5a743894a0e4a801fc3', '系统管理员', '', '', '', '', '', '127.0.0.1', '2020-07-15 13:55:00', '1198', '', '1', '0', '0', '2015-11-13 15:14:22');
+INSERT INTO `system_user` VALUES ('10001', 'test', '', '测试账户', '', '1', '', '', '', '', '', '0', '', '1', '0', '0', '2020-05-20 11:56:49');
 
 -- ----------------------------
 -- Table structure for wechat_fans

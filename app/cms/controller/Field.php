@@ -95,21 +95,23 @@ class Field extends Controller
     protected function _form_filter(&$vo)
     {
         if ($this->request->isPost()) {
-            //①、判断字段名是否重复
-            $fieldService = FieldService::instance();
-            if ($fieldService->checkFieldEixts($vo['modelid'], $vo['field'])) {
-                $this->error('字段名称重复，请更换新字段名！');
+            //①、判断字段名是否重复,只针对新增操作，修改不会提交字段名，也就不用检查字段名称了
+            if(empty($vo['id'])) {
+                $fieldService = FieldService::instance();
+                if ($fieldService->checkFieldEixts($vo['modelid'], $vo['field'])) {
+                    $this->error('字段名称重复，请更换新字段名！');
+                }
+                $vo['field'] = strtolower($vo['field']);
             }
             //②、过滤空值
             $settings = array_filter($vo['setting'], function ($val) {
                 return ($val === '' || $val === null) ? false : true;
             });
-            $vo['field'] = strtolower($vo['field']);
             if (!empty($vo['id'])) {
                 //更新操作。要获取原来的setting配置信息，保留里面的一些必要配置信息
                 $oldSettings = $this->app->db->name($this->table)->field('setting')->where(['id' => $vo['id']])->find();
                 $oldSettingsData = json_decode($oldSettings['setting'], true);
-                $settings['length'] = $oldSettingsData['length'];
+                $settings['length'] = isset($oldSettingsData['length'])?$oldSettingsData['length']:'';
                 $settings['chartype'] = $oldSettingsData['chartype'];
                 if (isset($oldSettingsData['defaultvalue'])) {
                     $settings['defaultvalue'] = $oldSettingsData['defaultvalue'];

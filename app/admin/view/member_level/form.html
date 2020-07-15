@@ -1,0 +1,38 @@
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">名称</span><span class="color-desc margin-left-5">Level Name</span>
+            <input type="text" name="name" value='{$vo.name|default=""}' required placeholder="请输入名称" class="layui-input">
+        </label>
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">最小积分数</span><span class="color-desc margin-left-5">Min Credits</span>
+            <input type="text" name="min_credits" value='{$vo.min_credits|default="0"}' pattern="^\d+$" required placeholder="请输入最小积分数" class="layui-input">
+        </label>
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">最大积分数</span><span class="color-desc margin-left-5">Max Credits</span>
+            <input type="text" name="max_credits" value='{$vo.max_credits|default="99999"}' pattern="^\d+$" required placeholder="请输入最大积分数" class="layui-input">
+        </label>
+
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">级别图标</span>
+            <span class="color-desc margin-left-5">Icon</span>
+            <input class="layui-input" placeholder="请上传会员级别图标" value="{$vo.icon|default=''}" name="icon">
+            <a class="input-right-icon layui-icon layui-icon-upload-circle" style="top:25px" data-file="btn" data-type="ico,png" data-field="icon"></a>
+        </label>
+
+
+        <label class="layui-form-item block relative">
+            <span class="color-green font-w7">用户描述</span><span class="color-desc">Description</span>
+            <textarea placeholder="请输入用户描述" class="layui-textarea" name="description">{$vo.description|default=""}</textarea>
+        </label>
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>

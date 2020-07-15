@@ -1,0 +1,78 @@
+{extend name="main"}
+{block name="button"}
+
+{/block}
+{block name="content"}
+<form onsubmit="return false" data-auto="true" action="{:request()->url()}" method="post" class='layui-form layui-card' autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-form-item">
+            <span class="color-green font-w7 label-required-prev">是否开启注册</span>
+            <span class="color-desc margin-left-5">Register</span><br />
+            {foreach :config('constant.YesOrNo') as $key=>$pro}
+            <label class="think-radio">
+                {if sysconf('member.open_reg') eq $key}
+                <input checked type="radio" name="member.open_reg" value="{$key}" lay-ignore> {$pro}
+                {else}
+                <input type="radio" name="member.open_reg" value="{$key}" lay-ignore> {$pro}
+                {/if}
+            </label>
+            {/foreach}
+        </div>
+        <div class="layui-form-item">
+            <span class="color-green font-w7 label-required-prev">是否开启登录</span>
+            <span class="color-desc margin-left-5">Login</span><br />
+            {foreach :config('constant.YesOrNo') as $key=>$pro}
+            <label class="think-radio">
+                {if sysconf('member.open_login') eq $key}
+                <input checked type="radio" name="member.open_login" value="{$key}" lay-ignore> {$pro}
+                {else}
+                <input type="radio" name="member.open_login" value="{$key}" lay-ignore> {$pro}
+                {/if}
+            </label>
+            {/foreach}
+        </div>
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">注册验证</span>
+            <span class="color-desc margin-left-5">Reg validation</span>
+            <select name="member.reg_validation" lay-vertype="tips" lay-verify="required" required="">
+                {foreach :config('constant.Member.RegValidation') as $key=>$val}
+                {if sysconf('member.reg_validation') eq $key}
+                <option selected value="{$key}">{$val}</option>
+                {else}
+                <option value="{$key}">{$val}</option>
+                {/if}
+                {/foreach}
+            </select>
+        </label>
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">找回密码</span>
+            <span class="color-desc margin-left-5">Find Password</span>
+            <select name="member.find_pass" lay-vertype="tips" lay-verify="required" required="">
+                {foreach :config('constant.Member.FindPass') as $key=>$val}
+                {if sysconf('member.find_pass') eq $key}
+                <option selected value="{$key}">{$val}</option>
+                {else}
+                <option value="{$key}">{$val}</option>
+                {/if}
+                {/foreach}
+            </select>
+        </label>
+        <label class="layui-form-item relative block">
+            <span class="color-green font-w7">禁止注册用户名</span>
+            <span class="color-desc margin-left-5">Forbid Username</span>
+            <textarea name="member.reg_notallow" placeholder="建议不超过200个字符" class="layui-textarea">{:sysconf('member.reg_notallow')}</textarea>
+        </label>
+        <div class="hr-line-dashed "></div>
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type="submit">保存配置</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消修改吗？" data-close>取消修改</button>
+        </div>
+    </div>
+</form>
+{/block}
+
+{block name='script'}
+<script>
+    layui.form.render();
+</script>
+{/block}

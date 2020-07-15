@@ -1,0 +1,71 @@
+{extend name='main'}
+
+{block name="button"}
+<!--{if auth("add")}-->
+<button data-modal='{:url("add")}' data-title="添加会员等级" class='layui-btn layui-btn-sm layui-btn-primary'>添加会员等级</button>
+<!--{/if}-->
+<!--{if auth("remove")}-->
+<a data-confirm="确定要永久删除这些会员等级吗？" data-action='{:url("remove")}' data-rule="id#{key}" data-csrf="{:systoken('remove')}" class='layui-btn layui-btn-sm layui-btn-primary'>批量删除</a>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <div class="layui-tab-content think-box-shadow">
+        <table class="layui-table margin-top-10" lay-skin="line">
+            {notempty name='list'}
+            <thead>
+            <tr>
+                <th class='list-table-check-td think-checkbox'>
+                    <label><input data-auto-none data-check-target='.list-check-box' type='checkbox'></label>
+                </th>
+                <th class='text-left nowrap' width="180px">等级名称</th>
+                <th class='text-left nowrap' width="150px">积分最小值</th>
+                <th class='text-left nowrap'>积分最大值</th>
+                <th>等级图标</th>
+                <th>描述</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            {/notempty}
+            <tbody>
+            {foreach $list as $key=>$vo}
+            <tr data-dbclick>
+                <td class='list-table-check-td think-checkbox'>
+                    <label><input class="list-check-box" value='{$vo.id}' type='checkbox'></label>
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.name}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.min_credits}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.max_credits}
+                </td>
+                <td class='text-left nowrap'>
+                    {if $vo.icon neq ''}
+                    <img src="{$vo.icon}" width="50" alt="">
+                    {else}
+                    无
+                    {/if}
+                </td>
+                <td class='text-left nowrap'>
+                    {$vo.description}
+                </td>
+                <td class='text-left nowrap'>
+                    <!--{if auth("edit")}-->
+                    <a data-dbclick class="layui-btn layui-btn-sm" data-title="编辑" data-modal='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                    <!--{/if}-->
+                    <!--{if auth("remove")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要永久删除此级别吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
+                    <!--{/if}-->
+                </td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        {empty name='list'}<span class="notdata">没有记录哦</span>{else}{$pagehtml|raw|default=''}{/empty}
+    </div>
+</div>
+{/block}

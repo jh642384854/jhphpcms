@@ -204,6 +204,19 @@ return [
         '1' => '是',
         '0' => '否'
     ],
+    //会员模块配置
+    'Member' => [
+        //注册验证方式
+        'RegValidation' => [
+            0 => '不验证',
+            1 => '后台审核',
+            2 => '邮件验证'
+        ],
+        //找回密码方式
+        'FindPass' => [
+            1 => '邮件验证'
+        ]
+    ],
     //select下拉框数据来源
     'selectFieldDataSource' => [
         'diyconfig' => '系统通用配置',
