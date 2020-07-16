@@ -1,0 +1,40 @@
+<form onsubmit="return false" data-auto="true" action="{:request()->url()}" method="post" class='layui-form layui-card' autocomplete="off">
+    <div class="layui-card-body padding-left-40">
+        <div class="layui-form-item">
+            <label class="layui-form-label">会员注册</label>
+            <div class="layui-input-block">
+                <input name="membercredits.reg" value='{:sysconf("membercredits.reg")}' pattern="^\d+$" required placeholder="请输入会员注册赠送积分数" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">会员每天登录</label>
+            <div class="layui-input-block">
+                <input name="membercredits.login" value='{:sysconf("membercredits.login")}' pattern="^\d+$" required placeholder="请输入会员登录赠送积分数" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邀请注册</label>
+            <div class="layui-input-block">
+                <input name="membercredits.invitation" value='{:sysconf("membercredits.invitation")}' pattern="^\d+$" required placeholder="请输入邀请注册赠送积分数" class="layui-input">
+                <p class="help-block">邀请非会员注册时给邀请人的积分数</p>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">写原创文章</label>
+            <div class="layui-input-block">
+                <input name="membercredits.article" value='{:sysconf("membercredits.article")}' pattern="^\d+$" required placeholder="请输入写原创文章赠送积分数" class="layui-input">
+            </div>
+        </div>
+
+        <div class="hr-line-dashed "></div>
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type="submit">保存配置</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消修改吗？" data-close>取消修改</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    layui.form.render();
+</script>

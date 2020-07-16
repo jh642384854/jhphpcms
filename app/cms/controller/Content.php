@@ -228,4 +228,19 @@ class Content extends Controller
         $this->_applyFormToken();
         $this->_delete($this->table);
     }
+
+    public function markdown()
+    {
+        return $this->fetch();
+    }
+
+    public function markdown2()
+    {
+        return $this->fetch();
+    }
+
+    public function highlight()
+    {
+        return $this->fetch();
+    }
 }

@@ -1,0 +1,56 @@
+{extend name="../../admin/view/main"}
+{block name="content"}
+<div class="layui-tab layui-tab-card think-bg-white">
+    <pre class='hljs'>
+            <code class="php">
+     public function edit()
+    {
+        $id = $this->request->request('id', 0, 'intval');
+        if ($id > 0) {
+            if ($this->app->request->isGet()) {
+                $data = $this->app->db->name($this->table)->where(['is_deleted' => 0, 'id' => $id])->find();
+                if ($data) {
+                    $categoryService = CategoryService::instance();
+                    $cagetorys = $categoryService->getAllCategoryFromCache();
+                    if ($this->request->isGet()) {
+                        $this->title = '修改文章';
+                        $catid = $data['catid'];
+                        if ($catid > 0) {
+                            if (isset($cagetorys[$catid])) {
+                                $this->_applyFormToken();
+                                $catdata = $cagetorys[$catid];
+                                $data['catid'] = str_replace('-', ',', substr($catdata['path'], 2));
+                                $this->allFields($catid, $data['modelid'], $data);
+                            } else {
+                                $this->redirect(url('index'));
+                            }
+                        } else {
+                            $this->redirect(url('index'));
+                        }
+                    }
+                    $this->id = $id;
+                }
+            }
+            $this->_form($this->table, 'form');
+        }
+    }
+            </code>
+        </pre>
+</div>
+{/block}
+{block name='style'}
+<link rel="stylesheet" href="__ROOT__/static/plugs/highlight/styles/gruvbox-dark.css">
+{/block}
+{block name='script'}
+<script src="__ROOT__/static/plugs/highlight/highlight.pack.js"></script>
+<script>
+    hljs.initHighlighting();
+    //hljs.initHighlightingOnLoad();
+    /*hljs.configure({useBR: true});
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    });*/
+</script>
+{/block}

@@ -26,6 +26,7 @@ class MemberGroup extends Controller
     public function index()
     {
         $this->title = '会员组权限管理';
+
         $query = $this->_query($this->table)->dateBetween('create_at');
         $query->like('title,desc')->equal('status')->order('sort desc,id desc')->page();
     }

@@ -31,21 +31,14 @@ require.config({
     baseUrl: baseRoot,
     map: {'*': {css: baseRoot + 'plugs/require/css.js'}},
     paths: {
-        'marked':['plugs/editormd/lib/marked.min'],
-        'prettify':['plugs/editormd/lib/prettify.min'],
-        'raphael':['plugs/editormd/lib/raphael.min'],
-        'underscore':['plugs/editormd/lib/underscore.min'],
-        'flowchart':['plugs/editormd/lib/flowchart.min'],
-        'jqueryflowchart':['plugs/editormd/lib/jquery.flowchart.min'],
-        'sequenceDiagram':['plugs/editormd/lib/sequence-diagram.min'],
-        'katex':"//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.1.1/katex.min",
-        'editormd': ['plugs/editormd/editormd.amd'],
+        //'editormd': ['plugs/editormd/editormd'],
         'md5': ['plugs/jquery/md5.min'],
         'json': ['plugs/jquery/json.min'],
         'michat': ['plugs/michat/michat'],
         'base64': ['plugs/jquery/base64.min'],
         'upload': [tapiRoot + '/api.upload?.js'],
         'echarts': ['plugs/echarts/echarts.min'],
+        'echarts_china_map': ['plugs/echarts/map/js/china'], //Echarts中国地图JS
         'angular': ['plugs/angular/angular.min'],
         'ckeditor': ['plugs/ckeditor/ckeditor'],
         'websocket': ['plugs/socket/websocket'],
@@ -811,9 +804,12 @@ $(function () {
 
     /*! 注册 data-iframe 事件行为 */
     $body.on('click', '[data-iframe]', function () {
+        let area = undefined;
+        if($(this).attr('data-area')){
+            area = eval($(this).attr('data-area'));
+        }
         $(this).attr('data-index', $.form.iframe(
-            $(this).attr('data-iframe'), $(this).attr('data-title') || '窗口',
-            $(this).attr('data-area') || undefined)
+            $(this).attr('data-iframe'), $(this).attr('data-title') || '窗口',area)
         );
     });
 

@@ -160,8 +160,4 @@ class Member extends Controller
             $this->success('会员配置成功！');
         }
     }
-
-
-
-
 }
