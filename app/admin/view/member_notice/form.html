@@ -1,4 +1,10 @@
-{extend name='full'}
+{extend name='main'}
+
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("index")}' data-title="通知列表" class='layui-btn layui-btn-sm layui-btn-primary'>通知列表</button>
+<!--{/if}-->
+{/block}
 
 {block name="content"}
 <form onsubmit="return false" data-auto="true" action="{:request()->url()}" method="post" class='layui-form layui-card' autocomplete="off">
@@ -54,10 +60,11 @@
                 <textarea name='content'>{$vo.content|default=""}</textarea>
             </div>
         </div>
-
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
         <div class="hr-line-dashed "></div>
         <div class="layui-form-item text-center">
-            <button class="layui-btn" type="submit">保存配置</button>
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
         </div>
     </div>
 </form>

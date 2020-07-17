@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50553
 File Encoding         : 65001
 
-Date: 2020-07-15 17:27:21
+Date: 2020-07-17 14:34:42
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -1394,6 +1394,10 @@ INSERT INTO `system_config` VALUES ('member', 'open_login', '1');
 INSERT INTO `system_config` VALUES ('member', 'reg_validation', '1');
 INSERT INTO `system_config` VALUES ('member', 'find_pass', '1');
 INSERT INTO `system_config` VALUES ('member', 'reg_notallow', 'jhphpcms,admin');
+INSERT INTO `system_config` VALUES ('membercredits', 'reg', '10');
+INSERT INTO `system_config` VALUES ('membercredits', 'login', '2');
+INSERT INTO `system_config` VALUES ('membercredits', 'invitation', '20');
+INSERT INTO `system_config` VALUES ('membercredits', 'article', '5');
 
 -- ----------------------------
 -- Table structure for system_data
@@ -1439,12 +1443,32 @@ CREATE TABLE `system_member` (
   PRIMARY KEY (`id`),
   KEY `username` (`username`) USING BTREE,
   KEY `role_id` (`role_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='system 会员表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='会员-会员表';
 
 -- ----------------------------
 -- Records of system_member
 -- ----------------------------
-INSERT INTO `system_member` VALUES ('1', '0', 'zhangsan', '小张', '', '1', 'xiaozhang@jhphpcms.com', '15124523625', 'zhagnsan', '652452452', '', '1', '0', '用户描述', '1594803405', '127.0.0.1', '1594803405', '127.0.0.1', '1', '0');
+INSERT INTO `system_member` VALUES ('1', '0', 'zhangsan', '小张', '', '1', 'xiaozhang@jhphpcms.com', '15124523625', 'zhagnsan', '652452452', '', '1', '10', '用户描述', '1594803405', '127.0.0.1', '1594803405', '127.0.0.1', '1', '0');
+
+-- ----------------------------
+-- Table structure for system_member_credits
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_credits`;
+CREATE TABLE `system_member_credits` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `credits` smallint(3) NOT NULL COMMENT '积分数',
+  `come_from` tinyint(2) NOT NULL COMMENT '积分来源',
+  `credits_type` tinyint(1) NOT NULL COMMENT '积分类型(1增加0减少)',
+  `create_at` int(10) NOT NULL COMMENT '添加时间',
+  PRIMARY KEY (`id`),
+  KEY `username` (`username`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='会员-积分';
+
+-- ----------------------------
+-- Records of system_member_credits
+-- ----------------------------
+INSERT INTO `system_member_credits` VALUES ('1', 'zhansan', '10', '1', '1', '1592191917');
 
 -- ----------------------------
 -- Table structure for system_member_group
@@ -1460,7 +1484,7 @@ CREATE TABLE `system_member_group` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_system_auth_title` (`title`) USING BTREE,
   KEY `idx_system_auth_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='系统-权限';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='会员-权限分组';
 
 -- ----------------------------
 -- Records of system_member_group
@@ -1478,7 +1502,7 @@ CREATE TABLE `system_member_group_node` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_system_auth_auth` (`auth`) USING BTREE,
   KEY `idx_system_auth_node` (`node`(191)) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COMMENT='系统-授权';
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COMMENT='会员-授权节点';
 
 -- ----------------------------
 -- Records of system_member_group_node
@@ -1499,7 +1523,7 @@ CREATE TABLE `system_member_level` (
   `description` varchar(255) NOT NULL COMMENT '级别描述',
   `is_deleted` tinyint(1) NOT NULL COMMENT '是否删除(1删除,0未删)',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='admin 会员级别表';
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COMMENT='会员 会员级别表';
 
 -- ----------------------------
 -- Records of system_member_level
@@ -1526,14 +1550,84 @@ CREATE TABLE `system_member_menu` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_system_menu_node` (`node`) USING BTREE,
   KEY `idx_system_menu_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='系统-会员菜单';
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COMMENT='会员-会员菜单';
 
 -- ----------------------------
 -- Records of system_member_menu
 -- ----------------------------
 INSERT INTO `system_member_menu` VALUES ('1', '0', '会员模块', 'layui-icon layui-icon-username', '', 'member', '', '_self', '0', '1', '2020-07-15 15:13:40');
 INSERT INTO `system_member_menu` VALUES ('2', '1', '个人资料', 'layui-icon layui-icon-tips', '', 'member/index/info', '', '_self', '2', '1', '2020-07-15 15:14:24');
-INSERT INTO `system_member_menu` VALUES ('3', '1', '会员中心首页', 'layui-icon layui-icon-home', '', 'member/index/index', '', '_self', '1', '1', '2020-07-15 15:15:39');
+INSERT INTO `system_member_menu` VALUES ('3', '1', '账户安全', 'layui-icon layui-icon-home', '', 'member/safe/inex', '', '_self', '1', '1', '2020-07-15 15:15:39');
+INSERT INTO `system_member_menu` VALUES ('5', '2', '个人信息', 'layui-icon layui-icon-light', '', 'member/user/info', '', '_self', '0', '1', '2020-07-16 14:08:01');
+INSERT INTO `system_member_menu` VALUES ('6', '2', '头像设置', 'layui-icon layui-icon-face-surprised', '', 'member/index/avator', '', '_self', '0', '1', '2020-07-16 14:08:34');
+INSERT INTO `system_member_menu` VALUES ('7', '3', '手机绑定', 'layui-icon layui-icon-cellphone', '', 'member/safe/bindphone', '', '_self', '0', '1', '2020-07-16 14:09:23');
+INSERT INTO `system_member_menu` VALUES ('8', '3', '邮箱绑定', 'fa fa-at', '', 'member/safe/bindemail', '', '_self', '0', '1', '2020-07-16 14:10:34');
+INSERT INTO `system_member_menu` VALUES ('9', '3', '登录密码', 'fa fa-heart', '', 'member/safe/passwd', '', '_self', '0', '1', '2020-07-16 14:11:25');
+INSERT INTO `system_member_menu` VALUES ('10', '3', '支付密码', 'layui-icon layui-icon-gift', '', 'member/safe/paypass', '', '_self', '0', '1', '2020-07-16 14:11:54');
+INSERT INTO `system_member_menu` VALUES ('11', '3', '密保问题', 'layui-icon layui-icon-survey', '', 'member/safe/passquestion', '', '_self', '0', '1', '2020-07-16 14:12:22');
+INSERT INTO `system_member_menu` VALUES ('12', '1', '我的财务', 'layui-icon layui-icon-rmb', '', 'member/financial', '', '_self', '0', '1', '2020-07-16 14:12:52');
+INSERT INTO `system_member_menu` VALUES ('13', '12', '我的积分', 'layui-icon layui-icon-dollar', '', 'member/financial/credits', '', '_self', '0', '1', '2020-07-16 14:14:52');
+INSERT INTO `system_member_menu` VALUES ('14', '12', '自助充值', 'layui-icon layui-icon-face-smile-b', '', 'member/financial/recharge', '', '_self', '0', '1', '2020-07-16 14:16:03');
+
+-- ----------------------------
+-- Table structure for system_member_notice
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_notice`;
+CREATE TABLE `system_member_notice` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `send_type` tinyint(1) NOT NULL COMMENT '通知类型',
+  `title` varchar(100) NOT NULL COMMENT '通知标题',
+  `users` varchar(255) NOT NULL COMMENT '通知用户',
+  `content` text NOT NULL COMMENT '通知内容',
+  `create_at` int(10) NOT NULL COMMENT '创建时间',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除(1删除,0未删)',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='会员-通知';
+
+-- ----------------------------
+-- Records of system_member_notice
+-- ----------------------------
+INSERT INTO `system_member_notice` VALUES ('1', '0', '指定用户的通知', 'zhangsan,lisi', '<p>指定用户的通知内容</p>', '1594892971', '0');
+INSERT INTO `system_member_notice` VALUES ('2', '1', '指定用户组通知', '1', '<p>指定用户组通知内容</p>', '1594893024', '0');
+INSERT INTO `system_member_notice` VALUES ('3', '2', '所有用户都会收到通知', 'all', '<p>所有用户都会收到通知</p>', '1594893052', '0');
+
+-- ----------------------------
+-- Table structure for system_member_notice_read
+-- ----------------------------
+DROP TABLE IF EXISTS `system_member_notice_read`;
+CREATE TABLE `system_member_notice_read` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `notice_id` int(10) NOT NULL COMMENT '通知ID',
+  `username` varchar(50) NOT NULL COMMENT '会员名',
+  `create_at` int(10) NOT NULL COMMENT '查看时间',
+  PRIMARY KEY (`id`),
+  KEY `notice_user` (`notice_id`,`username`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COMMENT='会员-通知查看表';
+
+-- ----------------------------
+-- Records of system_member_notice_read
+-- ----------------------------
+INSERT INTO `system_member_notice_read` VALUES ('1', '1', 'zhangsan', '1592191917');
+INSERT INTO `system_member_notice_read` VALUES ('2', '1', 'lisi', '1592191917');
+INSERT INTO `system_member_notice_read` VALUES ('3', '1', 'wangwu', '1592212921');
+INSERT INTO `system_member_notice_read` VALUES ('4', '1', 'zhangliu', '1592268652');
+INSERT INTO `system_member_notice_read` VALUES ('5', '1', 'ksjdfk', '1592558159');
+INSERT INTO `system_member_notice_read` VALUES ('6', '1', 'ewuuifd', '1592791864');
+INSERT INTO `system_member_notice_read` VALUES ('7', '1', 'dwefs', '1592797316');
+INSERT INTO `system_member_notice_read` VALUES ('8', '1', 'etgfdg', '1592755200');
+INSERT INTO `system_member_notice_read` VALUES ('9', '1', 'htrhfdgh', '1591027200');
+INSERT INTO `system_member_notice_read` VALUES ('10', '1', 'yjdfg', '1591027200');
+INSERT INTO `system_member_notice_read` VALUES ('11', '1', 'gfhtht', '1591027200');
+INSERT INTO `system_member_notice_read` VALUES ('12', '1', 'gfdgf', '1590681600');
+INSERT INTO `system_member_notice_read` VALUES ('13', '1', 'oiopj', '1590595200');
+INSERT INTO `system_member_notice_read` VALUES ('14', '1', 'erwrer', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('15', '1', 'wervd', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('16', '1', 'qwew', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('17', '1', 'tyjy', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('18', '1', 'qwef', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('19', '1', 'htjhgd', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('20', '1', 'pio', '1590163200');
+INSERT INTO `system_member_notice_read` VALUES ('21', '1', 'qwew', '1590163200');
 
 -- ----------------------------
 -- Table structure for system_menu
@@ -1631,7 +1725,7 @@ CREATE TABLE `system_oplog` (
   `username` varchar(50) NOT NULL DEFAULT '' COMMENT '操作人用户名',
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COMMENT='系统-日志';
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COMMENT='系统-日志';
 
 -- ----------------------------
 -- Records of system_oplog
@@ -1646,6 +1740,13 @@ INSERT INTO `system_oplog` VALUES ('7', 'admin/login/index', '127.0.0.1', '用�
 INSERT INTO `system_oplog` VALUES ('8', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 09:30:03');
 INSERT INTO `system_oplog` VALUES ('9', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 10:29:43');
 INSERT INTO `system_oplog` VALUES ('10', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 13:55:00');
+INSERT INTO `system_oplog` VALUES ('11', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-15 22:53:38');
+INSERT INTO `system_oplog` VALUES ('12', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-16 09:48:50');
+INSERT INTO `system_oplog` VALUES ('13', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-16 12:49:14');
+INSERT INTO `system_oplog` VALUES ('14', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-16 13:46:42');
+INSERT INTO `system_oplog` VALUES ('15', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-16 15:31:25');
+INSERT INTO `system_oplog` VALUES ('16', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-16 16:41:07');
+INSERT INTO `system_oplog` VALUES ('17', 'admin/login/index', '127.0.0.1', '用户登录', '登录系统后台成功', 'admin', '2020-07-17 10:23:44');
 
 -- ----------------------------
 -- Table structure for system_queue
@@ -1712,7 +1813,7 @@ CREATE TABLE `system_user` (
 -- ----------------------------
 -- Records of system_user
 -- ----------------------------
-INSERT INTO `system_user` VALUES ('10000', 'admin', '21232f297a57a5a743894a0e4a801fc3', '系统管理员', '', '', '', '', '', '127.0.0.1', '2020-07-15 13:55:00', '1198', '', '1', '0', '0', '2015-11-13 15:14:22');
+INSERT INTO `system_user` VALUES ('10000', 'admin', '21232f297a57a5a743894a0e4a801fc3', '系统管理员', '', '', '', '', '', '127.0.0.1', '2020-07-17 10:23:44', '1205', '', '1', '0', '0', '2015-11-13 15:14:22');
 INSERT INTO `system_user` VALUES ('10001', 'test', '', '测试账户', '', '1', '', '', '', '', '', '0', '', '1', '0', '0', '2020-05-20 11:56:49');
 
 -- ----------------------------

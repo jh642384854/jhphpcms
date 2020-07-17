@@ -19,6 +19,7 @@
             <div class="article_list think-bg-white">
                 {include file='content/index_search'}
                 <div class="operator">
+                    <a data-iframe="{:url('markdown2')}" class="layui-btn layui-btn-xs layui-btn-normal" title="ifram">ifram</a>
                     {if isset($catid)}
                     <button type="button" class="layui-btn layui-btn-sm layui-btn-primary" data-open='{:url("add",["catid"=>$catid])}' data-title="添加文章" >添加</button>
                     <button type="button" class="layui-btn layui-btn-sm">移动</button>

@@ -2,7 +2,7 @@
 
 {block name="button"}
 <!--{if auth("add")}-->
-<button data-iframe='{:url("add")}' data-area="['1200px', '580px']" data-title="添加通知" class='layui-btn layui-btn-sm layui-btn-primary'>添加通知</button>
+<button data-open='{:url("add")}' data-title="添加通知" class='layui-btn layui-btn-sm layui-btn-primary'>添加通知</button>
 <!--{/if}-->
 <!--{if auth("remove")}-->
 <a data-confirm="确定要永久删除这些通知吗？" data-action='{:url("remove")}' data-rule="id#{key}" data-csrf="{:systoken('remove')}" class='layui-btn layui-btn-sm layui-btn-primary'>批量删除</a>
@@ -83,7 +83,10 @@
                 </td>
                 <td class='text-left nowrap'>
                     <!--{if auth("edit")}-->
-                    <a data-dbclick class="layui-btn layui-btn-sm"  data-area="['1200px', '580px']" data-title="编辑" data-iframe='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                    <a data-dbclick class="layui-btn layui-btn-sm"  data-title="编辑" data-open='{:url("edit")}?id={$vo.id}'>编 辑</a>
+                    <!--{/if}-->
+                    <!--{if auth("viewread")}-->
+                    <a class="layui-btn layui-btn-sm layui-btn-primary"  data-title="查看已阅读通知用户" data-iframe='{:url("viewread")}?id={$vo.id}'>查看已阅读用户</a>
                     <!--{/if}-->
                     <!--{if auth("remove")}-->
                     <a class="layui-btn layui-btn-sm layui-btn-danger" data-confirm="确定要永久删除此通知吗？" data-action="{:url('remove')}" data-value="id#{$vo.id}" data-csrf="{:systoken('remove')}">删 除</a>
