@@ -1,0 +1,184 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+<!--{if auth("index")}-->
+<button data-open='{:url("index")}' data-title="栏目列表" class='layui-btn layui-btn-sm layui-btn-primary'>栏目列表</button>
+<!--{/if}-->
+{/block}
+
+{block name="content"}
+<form class="layui-form layui-card" action="{:request()->url()}" data-auto="true" method="post" autocomplete="off">
+    <div class="layui-card-body">
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">基本属性</li>
+                <li>SEO设置</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-row layui-col-space15">
+                        <div class="layui-col-xs9">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label label-required-next">所属分类</label>
+                                <div class="layui-input-block">
+                                    <select  class="layui-input" name="parent_id" required>
+                                        <option value="0">作为一级分类</option>
+                                        {$categoriesTree|raw}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">栏目名称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="name" value='{$vo.name|default=""}' required placeholder="请输入栏目名称" class="layui-input">
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">路径地址</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="url_path" value='{$vo.url_path|default=""}' required pattern="^[A-Za-z0-9_-\s]+$"  placeholder="请输入栏目英文名称" class="layui-input">
+                                    <input type="checkbox" name="usepy" lay-filter="urlpath_filter" lay-skin="switch" lay-text="ON|OFF"> 使用栏目名称首拼
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">栏目描述</label>
+                                <div class="layui-input-block">
+                                    <textarea name="description" placeholder="请输入描述" class="layui-textarea">{$vo.description|default=""}</textarea>
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">是否作为导航菜单</label>
+                                <div class="layui-input-block">
+                                    {foreach :config('constant.YesOrNo') as $k=>$v}
+                                    <!--{if (!isset($vo.is_menu) and $k eq '0') or (isset($vo.is_menu) and $vo.is_menu eq $k)}-->
+                                    <input type="radio" name="is_menu" checked value="{$k}" title="{$v}">
+                                    <!--{else}-->
+                                    <input type="radio" name="is_menu" value="{$k}" title="{$v}">
+                                    <!--{/if}-->
+                                    {/foreach}
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">是否为外链</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-col-space15" style="content: none">
+                                        <div class="layui-col-xs2">
+                                            {foreach :config('constant.YesOrNo') as $k=>$v}
+                                            <!--{if (!isset($vo.is_link) and $k eq '0') or (isset($vo.is_link) and $vo.is_link eq $k)}-->
+                                            <input type="radio" name="is_link" lay-filter="islink_filter" checked value="{$k}" title="{$v}">
+                                            <!--{else}-->
+                                            <input type="radio" name="is_link" lay-filter="islink_filter" value="{$k}" title="{$v}">
+                                            <!--{/if}-->
+                                            {/foreach}
+                                        </div>
+                                        <div class="layui-col-xs8" id="category_link_url" style="display: none;">
+                                            <input type="text" name="link_url" value='{$vo.link_url|default=""}' pattern="^(http:\/\/|^https:\/\/|^\/\/)((\w|=|\?|\.|\/|&|-)+)" placeholder="请输入跳转链接地址" class="layui-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="layui-col-xs3" style="overflow: hidden">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">栏目图片</label>
+                                <div class="layui-input-block">
+                                    <input class="layui-input" onchange="$(this).nextAll('img').attr('src', this.value)" value="{$vo.image|default=''}" name="image" placeholder="请上传图片或输入图片URL地址">
+                                    <a data-file="btn" data-type="bmp,png,jpeg,jpg,gif" data-field="image" class="input-group-addon"><i class="layui-icon layui-icon-upload"></i></a>
+                                    <p class="help-block">{:config('constant.UploadTips')}</p>
+                                    <img data-tips-image src='{$vo.image|default=""}' alt="image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--SEO配置-->
+                <div class="layui-tab-item">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">标题</label>
+                        <div class="layui-input-block">
+                            <input name="seo_title" value='{$vo.seo_title|default=""}' placeholder="请输入模型描述" class="layui-input">
+                            <p class="help-block">针对搜索引擎设置的标题</p>
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">关键字</label>
+                        <div class="layui-input-block">
+                            <input name="seo_keywords" value='{$vo.seo_keywords|default=""}' placeholder="请输入模型表名称" class="layui-input">
+                            <p class="help-block">关键字中间用半角逗号隔开	</p>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">描述</label>
+                        <div class="layui-input-block">
+                            <textarea name="seo_description" placeholder="请输入描述" class="layui-textarea">{$vo.seo_description|default=""}</textarea>
+                            <p class="help-block">针对搜索引擎设置的网页描述</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" type='submit'>保存数据</button>
+            <button class="layui-btn layui-btn-danger" type='button' data-confirm="确定要取消编辑吗？" data-close>取消编辑</button>
+        </div>
+    </div>
+</form>
+{/block}
+
+{block name='style'}
+<style>
+.layui-tab-item{ min-height: 400px;}
+.input-group-addon {
+    top: 0;
+    right: 0;
+    color: #eee;
+    width: 25px;
+    padding: 7px;
+    position: absolute;
+    margin-top: -1px;
+    text-align: center;
+    background: #393D49;
+}
+</style>
+{/block}
+{block name='script'}
+<script>
+    layui.form.render();
+    layui.use(['layer', 'jquery', 'form','element'], function () {
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form,
+            element = layui.element;
+
+        //监听是否为跳转链接的选择变化
+        form.on("radio(islink_filter)", function (data) {
+            if(parseInt(data.value)){
+                $('#category_link_url').show();
+            }else{
+                $('#category_link_url').hide();
+            }
+        });
+        //监听指定开关
+        form.on('switch(urlpath_filter)', function(data){
+            if(this.checked){
+                $(this).parent('.layui-input-block').prev().removeClass('label-required-next');
+                $('input[name="url_path"]').next('span').hide();
+                $('input[name="url_path"]').removeAttr('required').attr('disabled',true);
+            }else{
+                $(this).parent('.layui-input-block').prev().addClass('label-required-next');
+                $('input[name="url_path"]').next('span').show();
+                $('input[name="url_path"]').removeAttr('disabled').attr('required',true);
+            }
+        });
+    });
+</script>
+{/block}

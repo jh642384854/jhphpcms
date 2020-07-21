@@ -1,15 +1,12 @@
 <?php
+namespace app\note\controller;
 
-namespace app\cms\controller;
-
-use app\cms\service\CategoryService;
-use app\cms\service\ModelService;
 use think\admin\Controller;
-
+use app\note\service\CategoryService;
 /**
- * 栏目管理
+ * 笔记栏目管理
  * Class Category
- * @package app\cms\controller
+ * @package app\notes\controller
  */
 class Category extends Controller
 {
@@ -17,7 +14,7 @@ class Category extends Controller
      * 绑定数据表
      * @var string
      */
-    protected $table = 'CmsCategory';
+    protected $table = 'NoteCategory';
 
     /**
      * 文章栏目管理
@@ -34,24 +31,16 @@ class Category extends Controller
                 $this->success(lang('think_library_sort_success'), '');
             }
         } else {
-            $this->title = '栏目列表';
-            $categories = CategoryService::instance()->getAllCategoryFromCache();
-            $models = ModelService::instance()->getAllModelsFromCache();
-            $categoryData = [];
-            if (count($categories) > 0) {
-                foreach ($categories as $key => $cate) {
-                    $categoryData[$key] = $cate;
-                    if (in_array($cate['modelid'], array_keys($models))) {
-                        $categoryData[$key]['modelname'] = $models[$cate['modelid']]['name'];
-                    } else if ($cate['modelid'] == 0) {
-                        $categoryData[$key]['modelname'] = '单页模型';
-                    } else {
-                        $categoryData[$key]['modelname'] = '未知模型';
-                    }
-                }
+            $action = input('action','','trim');
+            if($action != '' && $action = 'getdata'){
+                $categories = $this->app->db->name($this->table)->select()->all();
+                $this->data = json_encode($categories);
+                return json(['code'=>0,'msg'=>'','count'=>1,'data'=>$categories]);
+            }else{
+                $this->title = '栏目列表';
+                $this->fetch();
             }
-            $this->data = json_encode(['code'=>0,'msg'=>'','count'=>1,'data'=>array_values($categoryData)]);
-            $this->fetch();
+
         }
     }
 
@@ -69,17 +58,6 @@ class Category extends Controller
         $type = $this->request->request('type', 'category', 'trim');
         $this->type = $type;
         $categoryService = CategoryService::instance();
-        $tpls = $categoryService->getCategoryTemplate();
-        if ($type === 'page') {
-            $this->categoryTpls = isset($tpls['page']) ? $tpls['page'] : [];
-        } else {
-            //①、获取模版列表
-            $this->categoryTpls = isset($tpls['category']) ? $tpls['category'] : [];
-            $this->listTpls = isset($tpls['list']) ? $tpls['list'] : [];
-            $this->showTpls = isset($tpls['show']) ? $tpls['show'] : [];
-            //②、获取模型列表
-            $this->models = ModelService::instance()->getAllModelsFromCache();
-        }
         $this->parentid = $this->request->param('pid', 0, 'intval');
         //③、获取栏目列表树形结构
         $this->categoriesTree = $categoryService->getCategoryTree($this->parentid);
@@ -101,19 +79,6 @@ class Category extends Controller
         $this->mid = $this->request->param('mid', 0, 'intval');       //当前栏目模型ID
         $this->_applyFormToken();
         $categoryService = CategoryService::instance();
-        $tpls = $categoryService->getCategoryTemplate();
-        if ($this->mid > 0) {
-            $this->type = 'category';
-            //①、获取模版列表
-            $this->categoryTpls = isset($tpls['category']) ? $tpls['category'] : [];
-            $this->listTpls = isset($tpls['list']) ? $tpls['list'] : [];
-            $this->showTpls = isset($tpls['show']) ? $tpls['show'] : [];
-            //②、获取模型列表
-            $this->models = ModelService::instance()->getAllModelsFromCache();
-        } else {
-            $this->type = 'page';
-            $this->categoryTpls = isset($tpls['page']) ? $tpls['page'] : [];
-        }
         //③、获取栏目列表树形结构
         $this->categoriesTree = $categoryService->getCategoryTree($this->parentid, $this->id);
         $this->_form($this->table, 'form');
@@ -138,7 +103,6 @@ class Category extends Controller
             }
             $map = [];
             if (!empty($vo['id'])) {
-                unset($vo['modelid']);
                 $map[] = ['id', '<>', $vo['id']];
             }
             if ($checkUrlpath) {
@@ -242,11 +206,9 @@ class Category extends Controller
                 $this->error('该分类有子栏目无法删除！');
             } else {
                 //③、判断当前栏目下面是否有数据
-                $modelData = ModelService::instance()->getAllModelsFromCache();
-                $modelTable = $modelData[$category['modelid']]['tablename'];
-                $articleCount = $this->app->db->table($modelTable)->where(['catid' => $id])->count();
+                $articleCount = $this->app->db->table('note_content')->where(['catid' => $id])->count();
                 if ($articleCount > 0) {
-                    $this->error('此栏目有文章无法删除!');
+                    $this->error('此栏目有笔记无法删除!');
                 }
             }
         } else {

@@ -6,4 +6,5 @@
 /safefile
 /nbproject
 /public/upload
+/public/notes/node_modules
 /composer.lock

@@ -1,0 +1,151 @@
+{extend name="../../admin/view/main"}
+
+{block name="button"}
+
+{/block}
+
+{block name="content"}
+<div class="layui-tab">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md2">
+            <div class="category_tree think-bg-white">
+                <div class="block_title">栏目列表</div>
+                <div class="tree_show">
+                    <ul id="categoryTree"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md10">
+            <div class="article_list think-bg-white">
+                {include file='content/index_search'}
+                <div class="operator">
+                    {if isset($catid)}
+                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary"  data-area="['90%', '90%']" data-iframe='{:url("add",["catid"=>$catid])}' data-title="添加笔记" >添加</button>
+                    <button type="button" class="layui-btn layui-btn-sm">移动</button>
+                    {/if}
+                </div>
+                <table class="layui-hide" id="articleTable" lay-filter="articleTable"></table>
+
+                <script type="text/html" id="toolbar">
+                    <div class="layui-btn-container">
+                        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+                        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+                    </div>
+                </script>
+
+                <script type="text/html" id="opbar">
+                    <!--{if auth("edit")}-->
+                    <a data-iframe="{:url('edit')}?id={{ d.id }}"  data-area="['90%', '90%']" class="layui-btn layui-btn-xs layui-btn-normal" title="修改">修改</a>
+                    <!--{/if}-->
+                    <!--{if auth("remove")}-->
+                    <a data-confirm="确定要永久删除此笔记吗？" data-action="{:url('remove')}"  data-value="id#{{ d.id }}" data-csrf="{:systoken('remove')}" class="layui-btn layui-btn-xs layui-btn-danger" title="删除">删除</a>
+                    <!--{/if}-->
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name='style'}
+<style>
+    .block_title{
+        height: 30px;
+        line-height: 30px;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 10px;
+        padding-bottom: 0;
+        color: #fff;
+        background: #009688;
+        border-color: #009688;
+    }
+    .operator{margin-top: 15px;}
+    .tree_show{padding: 5px 10px;}
+    .category_tree,.article_list{min-height: 650px;}
+    .article_list{padding: 0 10px;}
+</style>
+{/block}
+
+{block name='script'}
+<script>
+    var tableIns;
+    layui.use(['tree', 'table','laytpl'], function(){
+        var tree = layui.tree,
+            table = layui.table,
+            laytpl = layui.laytpl,
+            layer = layui.layer;
+        var tableToolBar = '<button data-action=\'{:url("remove")}\' data-rule="id#{key}" data-csrf="{:systoken(\'remove\')}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</button>';
+        //栏目列表
+        tree.render({
+                elem: '#categoryTree', //默认是点击节点可进行收缩
+                data: {$categoryTree|raw},
+            click:function(obj){
+            var addButton = '';
+            if(obj.data.children.length == 0){
+                addButton = '<button type="button" class="layui-btn layui-btn-sm layui-btn-normal"  data-area="[\'90%\', \'90%\']" data-iframe="{:url(\'add\')}?catid='+obj.data.id+'" data-title="添加笔记" >添加笔记</button>';
+            }
+            table.reload('articleTable', {
+                url: "{:url('index',['action'=>'getdata'])}",
+                where:{catid: obj.data.id},
+                page: {curr: 1},
+                toolbar:'<div class="layui-btn-container">'+addButton+tableToolBar+'</div>',
+                done: function(res, curr, count) {
+                    $('input[name="catid"]').val(res.catid);
+                }
+            });
+        }
+    });
+
+        //表格列表
+        tableIns = table.render({
+            elem: '#articleTable'
+            ,url:'{:url("index",["action"=>"getdata"])}'
+            ,toolbar: '<div class="layui-btn-container">'+tableToolBar+'</div>' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print']
+            ,title: '用户数据表'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'title', title:'标题'}
+                ,{field:'catname', title:'栏目', width:120}
+                ,{field:'sort', title:'排序', width:80, edit: 'text', sort: true}
+                ,{field:'status', title:'状态', width:100, sort: true}
+                ,{field:'views', title:'浏览数', width:100, sort: true}
+                ,{field:'create_at', title:'发布时间', width:200, sort: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#opbar', width:180}
+            ]]
+            ,page: true
+        });
+
+        table.on('edit(articleTable)', function(obj) {
+            if (obj.field == 'sort') {
+                $.form.load('{:url("index")}',{id:obj.data.id,sort: obj.value,action:'sort'})
+            }
+        });
+
+        //监听工具条
+        table.on('tool(articleTable)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                layer.msg('ID：'+ data.id + ' 的查看操作');
+            } else if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                console.log(data);
+            }
+        });
+    });
+
+    //这个是提供给iframe页面回调使用
+    window.tools = {
+        reloadData:function(){
+            layer.closeAll('iframe');
+            tableIns.reload();
+        }
+    }
+</script>
+{/block}

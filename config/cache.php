@@ -22,6 +22,10 @@ return [
             'key' => 'AllCategory',
             'describe' => '缓存所有栏目'
         ],
+        'notecategory' => [
+            'key' => 'AllNoteCategory',
+            'describe' => '缓存所有笔记栏目'
+        ],
         'model' => [
             'key' => 'AllModel',
             'describe' => '缓存所有的模型'

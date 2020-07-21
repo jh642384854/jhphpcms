@@ -1,0 +1,202 @@
+{extend name="../../admin/view/full2"}
+{block name="body"}
+<div class="layui-layout layui-layout-admin layui-layout-left-hide">
+    <div class="layui-body" style="top:0;overflow-x: hidden">
+    <form class="layui-form layui-card" action="" data-auto="true" method="post" autocomplete="off" data-listen="true" novalidate="novalidate">
+        <div class="layui-row layui-col-space10">
+            <div class="layui-tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">内容设置</li>
+                    <li>其他设置</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">所属栏目</label>
+                            <div class="layui-input-block">
+                                <input type="hidden" name="catpath" id="catpath" value="{$vo.catpath|default=''}">
+                                <input type="text" id="cascader_catid" class="layui-input" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label label-required-next">文章标题</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="title" id="title" value="{$vo.title|default=''}" required placeholder="请输入文章标题" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div id="test-editormd">
+                                <textarea name="content" style="display:none;">
+                                    {$vo.content|default=''}
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO关键字</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="seo_keywords" id="seo_keywords" value="{$vo.seo_keywords|default=''}" placeholder="请输入文章关键字" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">SEO描述</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="seo_description" id="seo_description" value="{$vo.seo_description|default=''}" placeholder="请输入文章摘要" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">排序</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="sort" id="sort" value="{$vo.sort|default=''}" placeholder="请输入文章排序" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <select name="status" id="status">
+                                    {foreach [0=>'不显示',1=>'显示'] as $key=>$pro}
+                                    {eq name='key' value='$vo.status|default=1'}
+                                    <option selected value="{$key}">{$pro}</option>
+                                    {else}
+                                    <option value="{$key}">{$pro}</option>
+                                    {/eq}
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">是否允许评论</label>
+                            <div class="layui-input-block">
+                                <select name="allow_comment" id="allow_comment">
+                                    {foreach [0=>'不允许',1=>'允许'] as $key=>$pro}
+                                    {eq name='key' value='$vo.status|default=1'}
+                                    <option selected value="{$key}">{$pro}</option>
+                                    {else}
+                                    <option value="{$key}">{$pro}</option>
+                                    {/eq}
+                                    {/foreach}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">标签</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="tags" id="tags" value="{$vo.tags|default=''}" placeholder="请输入标签，多个标签用,分割" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        {notempty name='vo.id'}<input type='hidden' value='{$vo.id}' name='id'>{/notempty}
+        <div class="layui-form-item text-center">
+            <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="saveData">保存数据</button>
+            <button class="layui-btn layui-btn-danger" type="button" data-confirm="确定要取消编辑吗？" data-close="">取消编辑</button>
+        </div>
+    </form>
+    </div>
+</div>
+{/block}
+{block name='style'}
+<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/formSelects-v4.css">
+<link rel="stylesheet" href="__ROOT__/static/plugs/layui/mods/cascader.css">
+<link rel="stylesheet" href="__ROOT__/static/plugs/editormd/css/editormd.css">
+<style>
+    .editormd-code-toolbar select{display: inline}
+</style>
+{/block}
+{block name='script'}
+<script src="__ROOT__/static/plugs/editormd/editormd.js"></script>
+<script src="__ROOT__/static/plugs/editormd/plugins/diy-notice-dialog/diynotice-dialog.js"></script>
+<script>
+    var testEditor;
+    $(function() {
+        testEditor = editormd("test-editormd", {
+            width   : "100%",
+            height  : 640,
+            syncScrolling : "single",
+            toolbarIcons : function() {
+                var fullIcon = editormd.toolbarModes['full'];
+                fullIcon.push('||',"diyNotice");
+                return fullIcon;
+            },
+            // 用于增加自定义工具栏的功能，可以直接插入HTML标签，不使用默认的元素创建图标
+            toolbarCustomIcons : {
+                diyNotice   : '<select id="diynotice" style="display: inline; padding-right: 10px;" class="layui-input layui-unselect" title="自定义容器类型">' +
+                '<option value="tip">提示</option><option value="warning">警告</option><option value="danger">危险</option><option value="details">详情</option>' +
+                '</select>'
+            },
+            lang : {
+                toolbar : {
+                    diyNotice : "自定义容器"
+                }
+            },
+            path    : "__ROOT__/static/plugs/editormd/lib/",
+            onload : function(){
+                $("#diynotice").bind("change", function(){
+                    if($(this).val() != ''){
+                        testEditor.cm.replaceSelection("::: "+$(this).val()+"\n" +
+                            "这是一个提示内容\n" +
+                            ":::");
+                    }
+                });
+            }
+        });
+
+        layui.config({
+            base: "/static/plugs/layui/mods/"
+        });
+        layui.use(['jquery', 'form', "laydate", "cascader"], function() {
+            var layer = layui.layer,
+                $ = layui.jquery,
+                cascader = layui.cascader,
+                form = layui.form;
+            cascader({
+                elem: "#cascader_catid",
+                data: {$categorys|raw},
+                id:[{$vo.catpath|default=''}],
+                success: function(valData, labelData) {
+                    $("#catpath").val(valData);
+                }
+            });
+            form.on('submit(saveData)', function(data) {
+                var fromData = data.field;
+                if(fromData.catpath == ''){
+                    layer.msg('请选择栏目', {icon: 2,  scrollbar: false, time: 1000, shadeClose: true});
+                    return false;
+                }
+                if(fromData.title == ''){
+                    layer.msg('请输入笔记标题', {icon: 2,  scrollbar: false, time: 1000, shadeClose: true});
+                    return false;
+                }
+                if(fromData.content == ''){
+                    layer.msg('请输入笔记内容', {icon: 2,  scrollbar: false, time: 1000, shadeClose: true});
+                    return false;
+                }
+                var headers = {};
+                if (typeof fromData === 'object' && typeof fromData['_token_'] === 'string') {
+                    headers['User-Form-Token'] = fromData['_token_'], delete fromData['_token_'];
+                }
+                $.ajax({
+                    data: fromData ,
+                    type: 'post',
+                    url: "{:request()->url()}",
+                    beforeSend: function (xhr, i) {
+                        if (typeof headers === 'object') for (i in headers) xhr.setRequestHeader(i, headers[i]);
+                    },
+                    success: function (ret,textStatus,request) {
+                        layer.msg('保存成功', {icon: 1, scrollbar: false, end: function(){
+                                parent.tools.reloadData();
+                            }, time: 2000, shadeClose: true});
+                    }
+                });
+                //拦截layui自带的提交
+                return false;
+            })
+        });
+    });
+
+</script>
+{/block}

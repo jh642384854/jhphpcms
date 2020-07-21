@@ -4,9 +4,6 @@
 <!--{if auth("add")}-->
 <button data-open='{:url("add")}' data-title="添加栏目" class='layui-btn layui-btn-sm layui-btn-primary'>添加栏目</button>
 <!--{/if}-->
-<!--{if auth("add")}-->
-<button data-open='{:url("add",["type"=>"page"])}' data-title="添加单页栏目" class='layui-btn layui-btn-sm layui-btn-primary layui-btn-warm'>添加单页栏目</button>
-<!--{/if}-->
 <!--{if auth("upcache")}-->
 <button data-load='{:url("upcache")}' data-title="更新栏目缓存" class='layui-btn layui-btn-sm layui-btn-normal'>更新栏目缓存</button>
 <!--{/if}-->
@@ -18,8 +15,7 @@
         <table class="layui-table margin-top-10" lay-skin="line" id="tree-table"></table>
     </div>
 </div>
-{/block}
-
+<!-- 表格操作列 -->
 <script type="text/html" id="tbBar">
     <!--{if auth("edit")}-->
     <a data-open="{:url('edit')}?id={{ d.id }}&pid={{ d.parent_id }}"  data-area="['90%', '90%']" class="layui-btn layui-btn-xs layui-btn-normal" title="修改">修改</a>
@@ -28,26 +24,37 @@
     <a data-confirm="确定要永久删除此分类吗？" data-action="{:url('remove')}"  data-value="id#{{ d.id }}" data-csrf="{:systoken('remove')}" class="layui-btn layui-btn-xs layui-btn-danger" title="删除">删除</a>
     <!--{/if}-->
 </script>
+{/block}
 
 {block name='style'}
 <style>
-.layui-tab-content{ min-height: 700px;}
+    .layui-table input {
+        width: 50px;
+        color: #666;
+        padding: 2px;
+        border: 1px solid #e6e6e6;
+        text-align: center;
+        font-size: 9pt;
+        line-height: 18px;
+    }
 </style>
 {/block}
-
 {block name='script'}
 <script>
-    var authAdd = '{:auth("add")}',authEdit = '{:auth("edit")}',authDisabled = '{:auth("disabled")}',authRemove = '{:auth("remove")}';
     layui.config({
         base: "__ROOT__/static/plugs/layui/mods/"
     }).extend({
         treeTable:'treetable-lay/treeTable'
-    })
-    layui.use(['layer', 'util', 'treeTable'], function(){
+    }).use(['layer', 'util', 'treeTable'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var util = layui.util;
         var treeTable = layui.treeTable;
+        $('body').removeClass('layui-hide');
+
         var insTb = treeTable.render({
             elem: '#tree-table',
-            data: {$data|raw},
+            url: '{:url("index",["action"=>"getdata"])}',
             height: 'full-200',
             toolbar: true,
             tree: {
@@ -62,7 +69,7 @@
                 {type: 'numbers'},
                 {field: 'sort', title: '排序', width: 120,templet:function(item){
                         return '<label><input data-action-blur="{:request()->url()}" data-value="id#'+item.id+';action#sort;sort#{value}" data-loading="false" value="'+item.sort+'" class="list-sort-input"></label>';
-                    }},
+                }},
                 {field: 'name', title: '菜单名称', minWidth: 165},
                 {field: 'url_path', title: '路径地址', width: 120},
                 {field: 'is_menu', title: '是否作为导航菜单', templet: '<p>{{d.is_menu?"是":"否"}}</p>', align: 'center', width: 150},
@@ -75,7 +82,6 @@
                 none: '<div style="padding: 18px 0;">没有记录哦~</div>'
             }
         });
-
     });
 </script>
 {/block}
