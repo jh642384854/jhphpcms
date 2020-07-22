@@ -47,6 +47,25 @@ class Content extends Controller
         }
     }
 
+    public function jhtest()
+    {
+        $id = 4;
+        $data = $this->app->db->name($this->table)->where(['id'=>$id])->find();
+        if($data){
+            $category_arr = CategoryService::instance()->getAllCategoryFromCache();
+            $catid = $data['catid'];
+            if(!isset($category_arr[$catid])) return '';
+            $dirArr = [];
+            $arrparentid = array_filter(explode(',', $category_arr[$catid]['arrparentid'].','.$catid));
+            foreach($arrparentid as $catid) {
+                array_push($dirArr,$category_arr[$catid]['url_path']);
+            }
+            echo implode('/',$dirArr).'<br />';
+
+        }
+
+    }
+
     /**
      * 对列表数据进行二次处理
      * @param $data
@@ -108,6 +127,20 @@ class Content extends Controller
         if($this->request->isGet()){
             $this->categorys = json_encode(CategoryService::instance()->getAllCategoryTree(0));
         }else if ($this->request->isPost()){
+            //判断文件名是否重复
+            if($data['filename'] != ''){
+                $map = [
+                    ['catid', '=', $data['catid']],
+                    ['filename', '=', $data['filename']]
+                ];
+                if(isset($data['id'])){
+                    $map[] = ['id', '<>', $data['id']];
+                }
+                $exit = $this->app->db->name($this->table)->where($map)->find();
+                if($exit){
+                    $this->error('文件名重复，请更换文件名');
+                }
+            }
             if (strrpos($data['catpath'], ',') > 0) {
                 $catid = substr($data['catpath'], strrpos($data['catpath'], ',') + 1);
                 $data['catid'] = $catid;
@@ -115,6 +148,19 @@ class Content extends Controller
             $data['tags'] = str_replace('，', ',', $data['tags']);
             $data['content'] = dealBadwords($data['content']);
             $data['create_at'] = time();
+        }
+    }
+
+
+    protected function _form_result($result,$data)
+    {
+        if ($result !== false) {
+            if($data['filename'] == '' && !isset($data['id'])){
+                $updateData = [
+                    'filename' => $this->app->pinyin->abbr($data['title']).'_'.$result
+                ];
+                $this->app->db->name($this->table)->where(['id'=>$result])->update($updateData);
+            }
         }
     }
 

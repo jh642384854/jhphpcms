@@ -18,12 +18,26 @@
                                 <input type="text" id="cascader_catid" class="layui-input" readonly="readonly">
                             </div>
                         </div>
-                        <div class="layui-form-item">
-                            <label class="layui-form-label label-required-next">文章标题</label>
-                            <div class="layui-input-block">
-                                <input type="text" name="title" id="title" value="{$vo.title|default=''}" required placeholder="请输入文章标题" class="layui-input">
+                        <div class="layui-row layui-col-space10">
+                            <div class="layui-col-md6">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label label-required-next">文章标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" id="title" value="{$vo.title|default=''}" required placeholder="请输入文章标题" class="layui-input">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-md6">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">文件名</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="filename" id="filename" value="{$vo.filename|default=''}" placeholder="请输入md生成的文件名" class="layui-input">
+                                        <p>如果不输入，默认就是标题的中文拼音首字母+笔记ID</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <div class="layui-form-item">
                             <div id="test-editormd">
                                 <textarea name="content" style="display:none;">

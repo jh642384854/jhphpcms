@@ -92,7 +92,7 @@ class CategoryService extends Service
      */
     public function cacheAllCategory()
     {
-        $fields = ['id', 'parent_id', 'name', 'url_path', 'link_url', 'sort', 'description', 'status', 'path', 'arrparentid', 'haschild', 'childids'];
+        $fields = ['id', 'parent_id', 'name', 'url_path', 'link_url', 'sort', 'description', 'status', 'path', 'arrparentid', 'haschild', 'childids','create_at'];
         $categories = $this->app->db->name('NoteCategory')->field($fields)->order('sort ASC')->select();
         $newCategories = [];
         if (count($categories) > 0) {

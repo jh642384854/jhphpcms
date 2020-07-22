@@ -60,6 +60,12 @@ define('jquery', [], function () {
 });
 
 $(function () {
+    //全局注册第三方组件
+    layui.config({
+        base: "/static/plugs/layui/mods/"
+    }).extend({
+        treeTable:'treetable-lay/treeTable'
+    })
     window.$body = $('body');
     /*! 消息组件实例 */
     $.msg = new function (that) {

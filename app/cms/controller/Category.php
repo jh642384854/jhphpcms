@@ -34,24 +34,28 @@ class Category extends Controller
                 $this->success(lang('think_library_sort_success'), '');
             }
         } else {
-            $this->title = '栏目列表';
-            $categories = CategoryService::instance()->getAllCategoryFromCache();
-            $models = ModelService::instance()->getAllModelsFromCache();
-            $categoryData = [];
-            if (count($categories) > 0) {
-                foreach ($categories as $key => $cate) {
-                    $categoryData[$key] = $cate;
-                    if (in_array($cate['modelid'], array_keys($models))) {
-                        $categoryData[$key]['modelname'] = $models[$cate['modelid']]['name'];
-                    } else if ($cate['modelid'] == 0) {
-                        $categoryData[$key]['modelname'] = '单页模型';
-                    } else {
-                        $categoryData[$key]['modelname'] = '未知模型';
+            $action = input('action','','trim');
+            if($action != '' && $action = 'getdata'){
+                $categories = CategoryService::instance()->getAllCategoryFromCache();
+                $models = ModelService::instance()->getAllModelsFromCache();
+                $categoryData = [];
+                if (count($categories) > 0) {
+                    foreach ($categories as $key => $cate) {
+                        $categoryData[$key] = $cate;
+                        if (in_array($cate['modelid'], array_keys($models))) {
+                            $categoryData[$key]['modelname'] = $models[$cate['modelid']]['name'];
+                        } else if ($cate['modelid'] == 0) {
+                            $categoryData[$key]['modelname'] = '单页模型';
+                        } else {
+                            $categoryData[$key]['modelname'] = '未知模型';
+                        }
                     }
                 }
+                return json(['code'=>0,'msg'=>'','count'=>1,'data'=>array_values($categoryData)]);
+            }else{
+                $this->title = '栏目列表';
+                $this->fetch();
             }
-            $this->data = json_encode(['code'=>0,'msg'=>'','count'=>1,'data'=>array_values($categoryData)]);
-            $this->fetch();
         }
     }
 

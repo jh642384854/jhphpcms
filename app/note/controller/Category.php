@@ -33,9 +33,8 @@ class Category extends Controller
         } else {
             $action = input('action','','trim');
             if($action != '' && $action = 'getdata'){
-                $categories = $this->app->db->name($this->table)->select()->all();
-                $this->data = json_encode($categories);
-                return json(['code'=>0,'msg'=>'','count'=>1,'data'=>$categories]);
+                $categories = CategoryService::instance()->getAllCategoryFromCache();
+                return json(['code'=>0,'msg'=>'','count'=>1,'data'=>array_values($categories)]);
             }else{
                 $this->title = '栏目列表';
                 $this->fetch();

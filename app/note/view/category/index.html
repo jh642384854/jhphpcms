@@ -17,6 +17,10 @@
 </div>
 <!-- 表格操作列 -->
 <script type="text/html" id="tbBar">
+    <!--{if auth("add")}-->
+    <a class="layui-btn layui-btn-warm layui-btn-xs" data-title="添加子类"  data-open='{:url("add")}?pid={{ d.id }}'>添加子类</a>
+    <!--{/if}-->
+
     <!--{if auth("edit")}-->
     <a data-open="{:url('edit')}?id={{ d.id }}&pid={{ d.parent_id }}"  data-area="['90%', '90%']" class="layui-btn layui-btn-xs layui-btn-normal" title="修改">修改</a>
     <!--{/if}-->
@@ -41,11 +45,7 @@
 {/block}
 {block name='script'}
 <script>
-    layui.config({
-        base: "__ROOT__/static/plugs/layui/mods/"
-    }).extend({
-        treeTable:'treetable-lay/treeTable'
-    }).use(['layer', 'util', 'treeTable'], function () {
+    layui.use(['layer', 'util', 'treeTable'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
         var util = layui.util;
@@ -75,7 +75,7 @@
                 {field: 'is_menu', title: '是否作为导航菜单', templet: '<p>{{d.is_menu?"是":"否"}}</p>', align: 'center', width: 150},
                 {field: 'is_link', title: '是否为外链', templet: '<p>{{d.is_link?"是":"否"}}</p>', align: 'center', width: 120},
                 {field: 'create_at', title: '创建时间', width: 150},
-                {align: 'center', toolbar: '#tbBar', title: '操作', width: 120}
+                {align: 'center', toolbar: '#tbBar', title: '操作', width: 200}
             ]],
             style: 'margin-top:0;',
             text: {

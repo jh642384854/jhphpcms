@@ -1,5 +1,7 @@
 <?php
 return [
+    //笔记文档根目录
+    'NoteRoot' => '/notes/docs/',
     'DefaultImg' => '/static/theme/img/image.png',
     'WaterImg' => 'static/theme/img/water.png',
     'CryptionKey' => 'TKu*LRUK$&*F5#Bx', //加密的key
