@@ -171,6 +171,7 @@
                               if (json.success === 1)
                               {
                                   dialog.find("[data-url]").val(json.url);
+                                  dialog.find("[data-alt]").val(json.alt);
                               }
                               else
                               {

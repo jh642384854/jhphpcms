@@ -125,7 +125,7 @@ class CategoryService extends Service
     public function getAllCategoryTree($selectId = 0)
     {
         $map[] = ['status', '=', 1];
-        $categories = $this->model->field('id,name,parent_id')->order('sort ASC')->where($map)->select();
+        $categories = $this->model->field('id,name,parent_id')->order('sort ASC,id ASC')->where($map)->select();
         $tree = new Tree();
         $newCategories = [];
         foreach ($categories as &$item) {

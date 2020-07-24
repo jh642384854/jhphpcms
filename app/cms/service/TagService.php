@@ -24,7 +24,8 @@ class TagService extends Service
         if($isUpdate){
             $this->app->db->name('cms_tag_data')->where(['aid'=>$articleID])->delete();
         }
-        foreach ($tagArrs as $tag){
+        foreach ($tagArrs as $tagval){
+            $tag = strtolower($tagval);
             $exits = $this->app->db->name('cms_tag')->where(['name'=>$tag])->find();
             if($exits){
                 $this->app->db->name('cms_tag')->where(['name'=>$tag])->inc('nums')->update();

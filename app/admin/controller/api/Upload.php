@@ -119,6 +119,7 @@ class Upload extends Controller
         }
         //写上传文件到附件表中
         $attachData = [
+            'module'=>input('module','content','trim'),
             'modelid'=>input('modelid',0,'intval'),
             'catid' => input('catid',0,'intval'),
             'filename' => $file->getOriginalName(),

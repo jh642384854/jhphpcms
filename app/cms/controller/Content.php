@@ -105,7 +105,20 @@ class Content extends Controller
             }
             $catdata = $cagetorys[$catid];
             $data['modelid'] = $catdata['modelid'];
-            $data['tags'] = str_replace('，', ',', $data['tags']);
+            if(isset($data['tags']) && $data['tags'] != ''){
+                //替换中文逗号
+                $tags = str_replace('，', ',', $data['tags']);
+                //过滤空值
+                $tagArrs = array_filter(explode(',',trim($tags)));
+                //将标签统一转小写.
+                $tagArrData = [];
+                foreach ($tagArrs as $key => $tag){
+                    $tagArrData[$key] = strtolower($tag);
+                }
+                //统一数据大小写后，在做去重处理
+                $tagArrData = array_unique($tagArrData);
+                $data['tags'] = implode(',',$tagArrData);
+            }
             $data['content'] = dealBadwords($data['content']);
             $data['create_at'] = strtotime($data['create_at']);
         }
