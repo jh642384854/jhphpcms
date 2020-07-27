@@ -12,6 +12,12 @@ module.exports = [
                     { text : 'Zend引擎', link: 'https://tinypng3.com/'}
                 ]
             },
+            {
+                text:"框架",
+                items:[
+                    { text : 'Swoft', link: '/php/framework/swoft/start/ksks_6'},
+                ]
+            },
         ]
     },
     {

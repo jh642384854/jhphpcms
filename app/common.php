@@ -7,6 +7,7 @@ use app\admin\service\ConfigService;
 use DfaFilter\SensitiveHelper;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+
 /**
  * 错误信息反馈共页面
  * @param $msg
@@ -67,19 +68,20 @@ function sendEmail($toUser, $content = '', $subject = 'test')
  * @throws \DfaFilter\Exceptions\PdsBusinessException
  * @throws \DfaFilter\Exceptions\PdsSystemException
  */
-function dealBadwords($content){
-    if(!empty($content)){
+function dealBadwords($content)
+{
+    if (!empty($content)) {
         $badwordConfig = ConfigService::instance()->getTypeConfigFromCache('badword');
         //系统默认的敏感词库
-        $badwordFile = trim(app()->getConfigPath(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'badword.txt';
+        $badwordFile = trim(app()->getConfigPath(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'badword.txt';
         $replaceStr = '';
-        if(count($badwordConfig)>0){
-            $configFile = explode('|',$badwordConfig['file']);
-            if(count($configFile)>0){
+        if (count($badwordConfig) > 0) {
+            $configFile = explode('|', $badwordConfig['file']);
+            if (count($configFile) > 0) {
                 //判断文件是否存在
                 $adapter = new Local(ROOT_PATH);
                 $filesystem = new Filesystem($adapter);
-                if($filesystem->has($configFile[2])){
+                if ($filesystem->has($configFile[2])) {
                     $badwordFile = $configFile[2];
                     $replaceStr = $badwordConfig['replace'];
                 }
@@ -88,7 +90,7 @@ function dealBadwords($content){
         $wordPool = file_get_contents($badwordFile);
         $wordData = explode(',', $wordPool);
         $handle = SensitiveHelper::init()->setTree($wordData);//setTreeByFile()这个方法没有生效
-        return $handle->replace($content,$replaceStr);
+        return $handle->replace($content, $replaceStr);
     }
 }
 
@@ -141,7 +143,8 @@ function rendFieldOptions($type, $default = '')
  * @param $filepath
  * @return array
  */
-function getFileInfoByFilepath($filepath){
+function getFileInfoByFilepath($filepath)
+{
     $fileData = [];
     if (is_string($filepath)) {
         $fileRes = new \SplFileInfo($filepath);
@@ -150,7 +153,7 @@ function getFileInfoByFilepath($filepath){
         $fileData = [
             'filename' => $fileRes->getFilename(),
             'filepath' => $filepath,
-            'filesize' =>  $fileRes->getSize(),
+            'filesize' => $fileRes->getSize(),
             'fileext' => $fileRes->getExtension(),
             'filemd5' => md5_file($fileRes),
         ];
@@ -170,21 +173,32 @@ function getFileInfoByFilepath($filepath){
  * @param string $suffix 截断显示字符
  * return string
  */
-function msubstr($str, $length, $start=0, $suffix=true, $charset="utf-8") {
-    if(function_exists("mb_substr"))
+function msubstr($str, $length, $start = 0, $suffix = true, $charset = "utf-8")
+{
+    if (function_exists("mb_substr"))
         $slice = mb_substr($str, $start, $length, $charset);
-    elseif(function_exists('iconv_substr')) {
-        $slice = iconv_substr($str,$start,$length,$charset);
-        if(false === $slice) {
+    elseif (function_exists('iconv_substr')) {
+        $slice = iconv_substr($str, $start, $length, $charset);
+        if (false === $slice) {
             $slice = '';
         }
-    }else{
-        $re['utf-8']   = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
+    } else {
+        $re['utf-8'] = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
         $re['gb2312'] = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
-        $re['gbk']    = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
-        $re['big5']   = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
+        $re['gbk'] = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
+        $re['big5'] = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
         preg_match_all($re[$charset], $str, $match);
-        $slice = join("",array_slice($match[0], $start, $length));
+        $slice = join("", array_slice($match[0], $start, $length));
     }
-    return $suffix ? $slice.'...' : $slice;
+    return $suffix ? $slice . '...' : $slice;
 }
+
+/**
+ * 判断是否为Linux环境
+ * @return bool
+ */
+function isLinuxEnv()
+{
+    return strtoupper(PHP_OS) === 'LINUX' ? true : false;
+}
+

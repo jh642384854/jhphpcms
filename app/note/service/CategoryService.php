@@ -138,6 +138,50 @@ class CategoryService extends Service
     }
 
     /**
+     * 根据栏目ID来获取栏目的目录结构信息
+     * @param $catid
+     * @return string
+     */
+    public function getCategoryPathByCatid($catid)
+    {
+        $category_arr = $this->getAllCategoryFromCache();
+        if (!isset($category_arr[$catid])) return '';
+        if ($category_arr[$catid]['parent_id'] > 0) {
+            $dirArr = [];
+            $arrparentid = array_filter(explode(',', $category_arr[$catid]['arrparentid'] . ',' . $catid));
+            foreach ($arrparentid as $catid) {
+                array_push($dirArr, $category_arr[$catid]['url_path']);
+            }
+            $url_path = implode('/', $dirArr) . '/';
+        } else {
+            $url_path = $category_arr[$catid]['url_path'] . '/';
+        }
+        return $url_path;
+    }
+
+    /**
+     * 根据栏目ID来获取栏目的层级关系栏目名称
+     * @param $catid
+     * @return array|string
+     */
+    public function getCategoryLevelNameByCatid($catid)
+    {
+        $category_arr = $this->getAllCategoryFromCache();
+        if (!isset($category_arr[$catid])) return '';
+        $catNames = [];
+        if ($category_arr[$catid]['parent_id'] > 0) {
+            $arrparentid = array_filter(explode(',', $category_arr[$catid]['arrparentid'] . ',' . $catid));
+            foreach ($arrparentid as $catid) {
+                array_push($catNames, $category_arr[$catid]['name']);
+            }
+        } else {
+            $catNames[] = $category_arr[$catid]['name'];
+        }
+        return $catNames;
+    }
+
+
+    /**
      * 更新栏目缓存
      */
     public function updateCategoryCache()

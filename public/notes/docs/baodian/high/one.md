@@ -1,17 +1,22 @@
 ---
-title: one
-date: 2020-07-20 14:44:08
-permalink: /pages/1b3186/
-categories: 
-  - baodian
-  - high
-tags: 
-  - 
+title: PhpStorm
+lang: zh-cn
+description: PhpStorm描述内容
+date: 2020-07-24 17:37:17
+comments: 1
+search: 1
+tags:
+ - phpStorm
+ - annotations
+
+categories:
+ - PHP
+ - 框架手册
+ - Swoft
+ - 开发工具
+
 ---
-# 标题1
-baodian high one page
+# Annotations 插件
+通过文本编辑器的环境进行 Swoft 开发，在使用 Swoft 便捷的注解时，仍需要 use 注解相对应的命名空间， 这显然不是一个高效的做法。
 
-## 标题2
-内容简介
-
-### 标题3
+我们推荐在 PHPStorm 环境下，并安装 Jetbrain 自带的 PHP Annotations 插件，可提供注解命名空间自动补全，注解属性代码提醒，注解类跳转等非常有助于提升开发效率的功能。

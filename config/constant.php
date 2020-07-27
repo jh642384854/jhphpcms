@@ -1,7 +1,11 @@
 <?php
 return [
-    //笔记文档根目录
-    'NoteRoot' => '/notes/docs/',
+    'Note' => [
+        'DocsRoot' => '/notes/docs/',//笔记文档根目录
+        'AutoFrontMatter' => true,//是否给每个笔记文档都添加Front Matter(具体可以查看https://www.vuepress.cn/guide/frontmatter.html)
+        'FileSuffix' => '.html',
+        'SiderbarJsName' => 'siderbar',
+    ],
     'DefaultImg' => '/static/theme/img/image.png',
     'WaterImg' => 'static/theme/img/water.png',
     'CryptionKey' => 'TKu*LRUK$&*F5#Bx', //加密的key
