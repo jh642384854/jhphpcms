@@ -59,19 +59,33 @@ class Content extends Controller
     public function jhtest()
     {
         $allCategorys = CategoryService::instance()->getAllCategoryTree(0);
+        $tabPrefix = "\t";
+        $adapter = new Local(ROOT_PATH);
+        $filesystem = new Filesystem($adapter);
         foreach ($allCategorys as $category){
-            if($category['_level'] != 3 || count($category['children']) > 0){
+            if(count($category['children']) > 0){
                 foreach ($category['children'] as $cat){
+                    $siderbarStr = 'module.exports = {'.PHP_EOL;
                     foreach ($cat['children'] as $category){
+                        $categoryPath = '/'.CategoryService::instance()->getCategoryPathByCatid($category['id']);
+                        $siderbarStr .= $tabPrefix.'"'.$categoryPath.'": require(\'..'.$categoryPath.'siderbar\'),'.PHP_EOL;
                         $this->generatevuepressnav($category['id']);
                     }
+                    $siderbarStr .= '}'.PHP_EOL;
+                    $docPath = config('constant.Note.DocsRoot').'.vuepress/';
+                    if (!isLinuxEnv()) {
+                        $docPath = '.' . $docPath;
+                    }
+                    //生成主要的侧边栏导航配置
+                    $fileName = $docPath . config('constant.Note.SiderbarJsName') . '.js';
+                    $filesystem->put($fileName,$siderbarStr);
                 }
             }
         }
     }
     
     /**
-     * 生成VuePress侧边栏导航文档
+     * 生成VuePress侧边栏导航和具体的文档页面
      * @auth true
      */
     public function generatevuepressnav($curcatid)
@@ -92,14 +106,14 @@ class Content extends Controller
         if (!isLinuxEnv()) {
             $parent_path = '.' . $parent_path;
         }
+        $adapter = new Local(ROOT_PATH);
+        $filesystem = new Filesystem($adapter);
         if (!is_dir($parent_path)) {
-            $adapter = new Local(ROOT_PATH);
-            $filesystem = new Filesystem($adapter);
             $filesystem->createDir($parent_path);
         }
         //子栏目数据
         foreach ($sonCategories as $catid) {
-            $notes = $this->app->db->name($this->table)->where(['catid' => $catid, 'is_deleted' => 0])->order('sort ASC,id DESC')->select()->toArray();
+            $notes = $this->app->db->name($this->table)->where(['catid' => $catid, 'is_deleted' => 0])->order('sort ASC,id ASC')->select()->toArray();
             $children = [];
             if(count($notes)>0){
                 $categoryPath = CategoryService::instance()->getCategoryPathByCatid($catid);
@@ -108,25 +122,18 @@ class Content extends Controller
                     $path = '.' . $path;
                 }
                 if (!is_dir($path)) {
-                    $adapter = new Local(ROOT_PATH);
-                    $filesystem = new Filesystem($adapter);
                     $filesystem->createDir($path);
                 }
-
                 foreach ($notes as $note){
                     $children[] = '/'. $categoryPath.$note['filename'];
-
                     //生成md文件内容
-                    $fileName = $path . $note['filename'] . '.md';
-                    $handle = fopen($fileName, "w");
+                    $markdownFileName = $path . $note['filename'] . '.md';
                     $content = $note['content'];
                     //Front Matter内容
                     if (config('constant.Note.AutoFrontMatter')) {
                         $content = $this->doFrontMatter($note, $catid) . PHP_EOL . $note['content'];
                     }
-                    fwrite($handle, $content);
-                    fclose($handle);
-
+                    $filesystem->put($markdownFileName,$content);
                 }
                 $noteNav[] = [
                     'title' => $category_arr[$catid]['name'],
@@ -136,62 +143,7 @@ class Content extends Controller
             }
         }
         $filename = $parent_path.config('constant.Note.SiderbarJsName').'.js';
-        $handle = fopen($filename, "w");
-        fwrite($handle, 'module.exports = '.json_encode($noteNav));
-        fclose($handle);
-    }
-
-    /**
-     * 将指定栏目的文档生成为.md文件
-     * @auth true
-     */
-    public function generatemd()
-    {
-        $catid = 34;
-        //获取当前栏目下面的所有子栏目
-        $category_arr = CategoryService::instance()->getAllCategoryFromCache();
-        $currentCat = $category_arr[$catid];
-        if ($currentCat['haschild']) {
-            $sonCategories = explode(',', $currentCat['childids']);
-            array_shift($sonCategories);
-            foreach ($sonCategories as $catid) {
-                $this->dogeneratemd($catid);
-            }
-        } else {
-            $this->dogeneratemd($catid);
-        }
-    }
-
-    private function dogeneratemd($catid)
-    {
-        //查询栏目下面的所有文档，并生成为.md文件
-        $notes = $this->app->db->name($this->table)->where(['catid' => $catid, 'is_deleted' => 0])->select()->toArray();
-        if (count($notes) > 0) {
-            //文档保存路径
-            $categoryPath = CategoryService::instance()->getCategoryPathByCatid($catid);
-            $path = config('constant.Note.DocsRoot') . $categoryPath;
-            if (!isLinuxEnv()) {
-                $path = '.' . $path;
-            }
-            if (!is_dir($path)) {
-                $adapter = new Local(ROOT_PATH);
-                $filesystem = new Filesystem($adapter);
-                $filesystem->createDir($path);
-            }
-
-            foreach ($notes as $note) {
-                $fileName = $path . $note['filename'] . '.md';
-                $handle = fopen($fileName, "w");
-                $content = $note['content'];
-                //Front Matter内容
-                if (config('constant.Note.AutoFrontMatter')) {
-                    $content = $this->doFrontMatter($note, $catid) . PHP_EOL . $note['content'];
-                }
-                fwrite($handle, $content);
-                fclose($handle);
-            }
-        }
-        return true;
+        $filesystem->put($filename,'module.exports = '.json_encode($noteNav));
     }
 
     /**
@@ -331,7 +283,8 @@ class Content extends Controller
         if ($this->request->isGet()) {
             $this->categorys = json_encode(CategoryService::instance()->getAllCategoryTree(0));
         } else if ($this->request->isPost()) {
-            unset($data['test-editormd-html-code']);
+            unset($data['table-align']);//这个是editormd在创建表格的时候会携带的参数
+            unset($data['test-editormd-html-code']);//这个是editormd生成的html文档内容
             if (strrpos($data['catpath'], ',') > 0) {
                 $catid = substr($data['catpath'], strrpos($data['catpath'], ',') + 1);
                 $data['catid'] = $catid;

@@ -1,6 +1,4 @@
 module.exports = {
-    '/guide/': require('../guide/sidebar'),
-    '/baodian/zero': require('../baodian/zero/sidebar'),
-    '/baodian/high': require('../baodian/high/sidebar'),
-    '/php/framework/swoft': require('../php/framework/swoft/siderbar')
+	"/php/framework/thinkphp6/": require('../php/framework/thinkphp6/siderbar'),
+	"/php/framework/swoft/": require('../php/framework/swoft/siderbar'),
 }

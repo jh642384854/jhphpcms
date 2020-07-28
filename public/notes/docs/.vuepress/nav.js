@@ -16,6 +16,7 @@ module.exports = [
                 text:"框架",
                 items:[
                     { text : 'Swoft', link: '/php/framework/swoft/start/ksks_6'},
+                    { text : 'thinkphp6', link: '/php/framework/thinkphp6/file1'},
                 ]
             },
         ]
