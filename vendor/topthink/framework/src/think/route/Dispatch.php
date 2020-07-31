@@ -112,7 +112,6 @@ abstract class Dispatch
             $status   = '' === $content && $this->request->isJson() ? 204 : 200;
             $response = Response::create($content, 'html', $status);
         }
-
         return $response;
     }
 

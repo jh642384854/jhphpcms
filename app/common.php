@@ -202,3 +202,10 @@ function isLinuxEnv()
     return strtoupper(PHP_OS) === 'LINUX' ? true : false;
 }
 
+/**
+ * 获取项目的public目录
+ * @return string
+ */
+function getPublicPath($public='public'){
+    return app()->getRootPath().$public.DIRECTORY_SEPARATOR;
+}

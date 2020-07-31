@@ -106,6 +106,7 @@ class Category extends Controller
             }
             if ($checkUrlpath) {
                 $map[] = ['url_path', '=', $url_path];
+                $map[] = ['parent_id', '=', $vo['parent_id']];
                 $exits = $this->app->db->name($this->table)->field('id')->where($map)->find();
                 if ($exits) {
                     $this->error('路径地址重复，请更换路径地址');

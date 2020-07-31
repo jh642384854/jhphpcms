@@ -8,4 +8,5 @@
 /public/upload
 /public/notes/node_modules
 /public/notes/docs
+/public/.notes/
 /composer.lock

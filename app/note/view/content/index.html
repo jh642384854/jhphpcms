@@ -1,7 +1,9 @@
 {extend name="../../admin/view/main"}
 
 {block name="button"}
-
+<!--{if auth("genVuepressMenu")}-->
+<button data-load='{:url("genVuepressMenu")}' data-title="一键生成vuepress导航" class='layui-btn layui-btn-sm  layui-btn-normal'>一键生成vuepress导航</button>
+<!--{/if}-->
 {/block}
 
 {block name="content"}
@@ -18,11 +20,8 @@
         <div class="layui-col-md10">
             <div class="article_list think-bg-white">
                 {include file='content/index_search'}
-                <div class="operator">
-                    {if isset($catid)}
-                    <button type="button" class="layui-btn layui-btn-sm layui-btn-primary"  data-area="['90%', '90%']" data-iframe='{:url("add",["catid"=>$catid])}' data-title="添加笔记" >添加</button>
-                    <button type="button" class="layui-btn layui-btn-sm">移动</button>
-                    {/if}
+                <div>
+                    <a href="http://www.jhphpcms.com/static/plugs/editormd/examples/" target="_blank">editormd快速开始</a>
                 </div>
                 <table class="layui-hide" id="articleTable" lay-filter="articleTable"></table>
 
@@ -70,12 +69,27 @@
 {block name='script'}
 <script>
     var tableIns;
-    layui.use(['tree', 'table','laytpl'], function(){
+    layui.use(['tree', 'table','form','laytpl'], function(){
         var tree = layui.tree,
             table = layui.table,
             laytpl = layui.laytpl,
+            form = layui.form,
             layer = layui.layer;
         var tableToolBar = '<button data-action=\'{:url("remove")}\' data-rule="id#{key}" data-csrf="{:systoken(\'remove\')}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</button>';
+
+        form.on('submit(searchData)', function (data) {
+            table.reload('articleTable', {
+                url: "{:url('index',['action'=>'getdata'])}",
+                where:{title: $('input[name="title"]').val(),create_at:$('input[name="create_at"]').val()},
+                page: {curr: 1},
+                toolbar:'<div class="layui-btn-container">'+tableToolBar+'</div>',
+                done: function(res, curr, count) {
+                    $('input[name="catid"]').val(res.catid);
+                }
+            });
+            return false;
+        })
+
         //栏目列表
         tree.render({
                 elem: '#categoryTree', //默认是点击节点可进行收缩

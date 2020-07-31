@@ -3,12 +3,14 @@
 namespace app\note\controller;
 
 use app\note\service\CategoryService;
+use app\note\service\ContentService;
 use think\admin\Controller;
 use think\admin\Storage;
 use think\admin\storage\LocalStorage;
 use app\module\service\AttachmentService;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use Think\Db;
 
 /**
  * 笔记内容管理
@@ -44,7 +46,7 @@ class Content extends Controller
                     $query->equal('catid');
                 }
             }
-            $query->dateBetween('create_at');
+            $query->timeBetween('create_at');
             $data = $query->order('id desc')->page(true, false);
             return json(['code' => 0, 'catid' => $catid, 'msg' => '获取数据成功', 'count' => $data['page']['total'], 'data' => $data['list']]);
         } else {
@@ -54,9 +56,10 @@ class Content extends Controller
     }
     /**
      * 生成VuePress侧边栏导航文档
+     * 运行vuepress命令 vuepress dev docs
      * @auth true
      */
-    public function jhtest()
+    public function genVuepressMenu()
     {
         $allCategorys = CategoryService::instance()->getAllCategoryTree(0);
         $tabPrefix = "\t";
@@ -64,31 +67,88 @@ class Content extends Controller
         $filesystem = new Filesystem($adapter);
         foreach ($allCategorys as $category){
             if(count($category['children']) > 0){
+                //生成vuepress的主侧边导航
                 foreach ($category['children'] as $cat){
                     $siderbarStr = 'module.exports = {'.PHP_EOL;
                     foreach ($cat['children'] as $category){
                         $categoryPath = '/'.CategoryService::instance()->getCategoryPathByCatid($category['id']);
                         $siderbarStr .= $tabPrefix.'"'.$categoryPath.'": require(\'..'.$categoryPath.'siderbar\'),'.PHP_EOL;
-                        $this->generatevuepressnav($category['id']);
+                        $this->genSonNav($category['id']);
                     }
                     $siderbarStr .= '}'.PHP_EOL;
-                    $docPath = config('constant.Note.DocsRoot').'.vuepress/';
-                    if (!isLinuxEnv()) {
-                        $docPath = '.' . $docPath;
-                    }
+                    $docPath = config('constant.Note.DocsRoot').'.vuepress'.DIRECTORY_SEPARATOR;
                     //生成主要的侧边栏导航配置
                     $fileName = $docPath . config('constant.Note.SiderbarJsName') . '.js';
                     $filesystem->put($fileName,$siderbarStr);
                 }
             }
         }
+        $this->genMainNav();
+        $this->success('恭喜, VuePress导航生成成功！');
+    }
+
+    /**
+     * 生成主要的nav.js文件导航(笔记头部导航)
+     */
+    private function genMainNav()
+    {
+        $allCategorys = CategoryService::instance()->getAllCategoryTree(0);
+        $nav = [];
+        foreach ($allCategorys as $key => $category){
+            //一级栏目
+            if(count($category['children'])>0){
+                //二级栏目
+                $secondNav = [];
+                foreach ($category['children'] as $secondChild){
+                    $thirdNav = [];
+                    if(count($secondChild['children'])>0){
+                        //三级栏目
+                        foreach ($secondChild['children'] as $thirdChid){
+                            if(count($thirdChid['children'])>0){
+                                //如果还有四级栏目，则获取第一个4级栏目的第一篇文章
+                                $firstUrl = ContentService::instance()->getFirstUrlByCatid($thirdChid['children'][0]['id']);
+                            }else{
+                                $firstUrl = ContentService::instance()->getFirstUrlByCatid($thirdChid['id']);
+                            }
+                            $thirdNav[] = [
+                                'text' => $thirdChid['title'],
+                                'link' => $firstUrl
+                            ];
+                        }
+                    }else{
+                        $thirdNav = [
+                            'text' => $secondChild['title'],
+                            'link' => ContentService::instance()->getFirstUrlByCatid($secondChild['id'])
+                        ];
+                    }
+                    $secondNav[] = [
+                        'text' => $secondChild['title'],
+                        'items' => $thirdNav
+                    ];
+                }
+                $nav[$key] = [
+                    'text' => $category['title'],
+                    'items' => $secondNav
+                ];
+            }else{
+                $nav[$key] = [
+                    'text' => $category['title'],
+                    'link' => ContentService::instance()->getFirstUrlByCatid($category['id'])
+                ];
+            }
+        }
+        $adapter = new Local(ROOT_PATH);
+        $filesystem = new Filesystem($adapter);
+        $docPath = config('constant.Note.DocsRoot').'.vuepress'.DIRECTORY_SEPARATOR;
+        $filename = $docPath.'nav.js';
+        $filesystem->put($filename,'module.exports = '.json_encode($nav));
     }
     
     /**
-     * 生成VuePress侧边栏导航和具体的文档页面
+     * 生成VuePress子页面的侧边栏导航和具体的文档页面
      * @auth true
      */
-    public function generatevuepressnav($curcatid)
+    public function genSonNav($curcatid)
     {
         //获取当前栏目下面的所有子栏目
         $category_arr = CategoryService::instance()->getAllCategoryFromCache();
@@ -103,9 +163,6 @@ class Content extends Controller
         //父栏目
         $categoryPath = CategoryService::instance()->getCategoryPathByCatid($curcatid);
         $parent_path = config('constant.Note.DocsRoot') . $categoryPath;
-        if (!isLinuxEnv()) {
-            $parent_path = '.' . $parent_path;
-        }
         $adapter = new Local(ROOT_PATH);
         $filesystem = new Filesystem($adapter);
         if (!is_dir($parent_path)) {
@@ -118,22 +175,19 @@ class Content extends Controller
             if(count($notes)>0){
                 $categoryPath = CategoryService::instance()->getCategoryPathByCatid($catid);
                 $path = config('constant.Note.DocsRoot') . $categoryPath;
-                if (!isLinuxEnv()) {
-                    $path = '.' . $path;
-                }
                 if (!is_dir($path)) {
                     $filesystem->createDir($path);
                 }
                 foreach ($notes as $note){
                     $children[] = '/'. $categoryPath.$note['filename'];
-                    //生成md文件内容
+                    /*//生成md文件内容
                     $markdownFileName = $path . $note['filename'] . '.md';
                     $content = $note['content'];
                     //Front Matter内容
                     if (config('constant.Note.AutoFrontMatter')) {
                         $content = $this->doFrontMatter($note, $catid) . PHP_EOL . $note['content'];
                     }
-                    $filesystem->put($markdownFileName,$content);
+                    $filesystem->put($markdownFileName,$content);*/
                 }
                 $noteNav[] = [
                     'title' => $category_arr[$catid]['name'],
@@ -159,10 +213,12 @@ class Content extends Controller
         $str = fread($fp, filesize($tpl));
         $str = str_replace("{title}", $note['title'], $str);
         $str = str_replace("{lang}", 'zh-cn', $str);
-        $str = str_replace("{description}", $note['description'], $str);
+        $str = str_replace("{description}", $note['seo_description'], $str);
         $str = str_replace("{seo_description}", $note['seo_description'], $str);
         $str = str_replace("{seo_keywords}", $note['seo_keywords'], $str);
-        $str = str_replace("{date}", date('Y-m-d H:i:s', $note['create_at']), $str);
+        if(isset($note['create_at'])){
+            $str = str_replace("{date}", date('Y-m-d H:i:s', $note['create_at']), $str);
+        }
         $str = str_replace("{comments}", $note['allow_comment'] ? true : false, $str);
         $str = str_replace("{search}", true, $str);
         $str = str_replace("{permalink}", CategoryService::instance()->getCategoryPathByCatid($catid) . $note['filename'] . config('constant.Note.FileSuffix'), $str);
@@ -314,15 +370,38 @@ class Content extends Controller
     }
 
 
+/**
+ * 添加或更新文档后自动生成md文件和自动设置文件名
+ * @param $result
+ * @param $data
+ */
     protected function _form_result($result, $data)
     {
         if ($result !== false) {
             if ($data['filename'] == '' && !isset($data['id'])) {
+                $filename = $this->app->pinyin->abbr($data['title']) . '_' . $result;
                 $updateData = [
-                    'filename' => $this->app->pinyin->abbr($data['title']) . '_' . $result
+                    'filename' => $filename
                 ];
                 $this->app->db->name($this->table)->where(['id' => $result])->update($updateData);
+            }else{
+                $filename = $data['filename'];
             }
+            //生成md文件内容
+            $adapter = new Local(ROOT_PATH);
+            $filesystem = new Filesystem($adapter);
+            $categoryPath = CategoryService::instance()->getCategoryPathByCatid($data['catid']);
+            $mdpath = config('constant.Note.DocsRoot') . $categoryPath;
+            if (!is_dir(getPublicPath().$mdpath)) {
+                $filesystem->createDir($mdpath);
+            }
+            $markdownFileName = $mdpath . $filename . '.md';
+            $content = $data['content'];
+            //Front Matter内容
+            if (config('constant.Note.AutoFrontMatter')) {
+                $content = $this->doFrontMatter($data, $data['catid']) . PHP_EOL . $data['content'];
+            }
+            $filesystem->put($markdownFileName,$content);
         }
     }
 

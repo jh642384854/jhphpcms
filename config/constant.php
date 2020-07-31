@@ -1,7 +1,7 @@
 <?php
 return [
     'Note' => [
-        'DocsRoot' => '/notes/docs/',//笔记文档根目录
+        'DocsRoot' => 'notes'.DIRECTORY_SEPARATOR.'docs'.DIRECTORY_SEPARATOR,//笔记文档根目录
         'AutoFrontMatter' => true,//是否给每个笔记文档都添加Front Matter(具体可以查看https://www.vuepress.cn/guide/frontmatter.html)
         'FileSuffix' => '.html',
         'SiderbarJsName' => 'siderbar',
