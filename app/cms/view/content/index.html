@@ -76,6 +76,19 @@
             laytpl = layui.laytpl,
             layer = layui.layer;
         var tableToolBar = '<button data-action=\'{:url("remove")}\' data-rule="id#{key}" data-csrf="{:systoken(\'remove\')}" class="layui-btn layui-btn-sm layui-btn-danger">批量删除</button>';
+        form.on('submit(searchData)', function (data) {
+            table.reload('articleTable', {
+                url: "{:url('index',['action'=>'getdata'])}",
+                where:{title: $('input[name="title"]').val(),create_at:$('input[name="create_at"]').val()},
+                page: {curr: 1},
+                toolbar:'<div class="layui-btn-container">'+tableToolBar+'</div>',
+                done: function(res, curr, count) {
+                    $('input[name="catid"]').val(res.catid);
+                }
+            });
+            return false;
+        })
+
         //栏目列表
         tree.render({
             elem: '#categoryTree', //默认是点击节点可进行收缩

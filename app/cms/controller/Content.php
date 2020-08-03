@@ -41,7 +41,7 @@ class Content extends Controller
                     $query->equal('catid');
                 }
             }
-            $query->dateBetween('create_at');
+            $query->timeBetween('create_at');
             $data = $query->order('id desc')->page(true, false);
             return json(['code' => 0,'catid'=>$catid, 'msg' => '获取数据成功', 'count' => $data['page']['total'], 'data' => $data['list']]);
         } else {
