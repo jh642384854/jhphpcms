@@ -8,7 +8,7 @@ Route::pattern([
 ]);
 
 //后台登录入口
-Route::get('admin','@admin/login')->ext('html');
+//Route::get('admin','@admin/login')->ext('html');
 
 //站点首页
 Route::get('/','Index/index')->ext('html');

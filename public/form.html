@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="https://www.layuicdn.com/layui/css/layui.css" />
+</head>
+<body>
+    <div class="container">
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>表单集合演示</legend>
+        </fieldset>
+
+        <form  class="layui-form" id="form" action="" method="post" enctype="multipart/form-data">
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="sitename" id="sitename" lay-verify="sitename" autocomplete="off" placeholder="请输入网站名称" class="layui-input" value="测试站点">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">网站地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="siteurl" id="siteurl" lay-verify="required" lay-reqtext="网站地址是必填项，岂能为空？" placeholder="请输入网站地址" autocomplete="off" class="layui-input" value="www.baidu.com">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="username" id="username" lay-verify="username" lay-reqtext="姓名是必填项，岂能为空？" placeholder="请输入姓名" autocomplete="off" class="layui-input" value="zhangsan">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机</label>
+                    <div class="layui-input-inline">
+                        <input type="tel" name="phone" id="phone" lay-verify="required|phone" autocomplete="off" class="layui-input" value="15232536254">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">QQ</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="qq" id="qq" lay-verify="qq" autocomplete="off" class="layui-input" value="qqnumber">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">微信</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="wechat" id="wechat" lay-verify="wechat" autocomplete="off" class="layui-input" value="wechat">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">附件</label>
+                <div class="layui-input-block">
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn" id="test2">多图片上传</button>
+                        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                            预览图：
+                            <div class="layui-upload-list" id="demo2"></div>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="http://demo.07d4fa.cn/api/jslicense/9fa3cc57a2179446"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
+    <script>
+        layui.use(['form', 'upload'], function(){
+            var form = layui.form
+                ,layer = layui.layer
+                ,upload = layui.upload;
+
+            var uploadFiles = [];
+            //多图片上传
+            upload.render({
+                elem: '#test2'
+                //,url: 'https://httpbin.org/post' //改成您自己的上传接口
+                ,auto: false
+                ,multiple: true
+                ,accept: 'file' //普通文件
+                ,exts: 'jpg|png|gif' //只允许上传压缩文件
+                ,choose: function(obj){
+                    //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                    obj.preview(function(index, file, result){
+                        //console.log(result); //得到文件base64编码，比如图片
+                        uploadFiles.push(file)
+                        $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" width="200" class="layui-upload-img">')
+                    });
+                }
+                ,done: function(res){
+                    //上传完毕
+                }
+            });
+
+            //监听提交
+            form.on('submit(demo1)', function(data){
+                var  myjson = {};
+                var myFormData = new FormData();
+                for(var i=0; i<uploadFiles.length;i++){
+                    myFormData.append('file[]', uploadFiles[i]);
+                }
+                myjson = {
+                    sitename: $("#sitename").val(),
+                    siteurl: $("#siteurl").val(),
+                    username: $("#username").val(),
+                    phone: $("#phone").val(),
+                    qq: $("#qq").val(),
+                    wechat: $("#wechat").val(),
+                };
+                for(var x in myjson){
+                    myFormData.append(x, myjson[x]);
+                }
+                $.ajax({
+                    url: "http://jh.legend-release.com/cms/licenseActivist?token=123",
+                    type: "post",
+                    dataType: "json",
+                    data: myFormData,
+                    cache: false,//上传文件不需要缓存
+                    contentType: false,//告诉jQuery不要去设置ContentType请求头
+                    processData: false,//告诉jQuery不要去处理发送的数据
+                    beforeSend: function(){
+                        //showLoad(true);显示加载动画
+                    },success: function(res){
+                        console.log(res)
+                        //showLoad(false);隐藏加载动画
+                    },error: function(){
+                        //showLoad(false);隐藏加载动画
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</body>
+</html>

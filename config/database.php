@@ -40,7 +40,7 @@ return [
             // 服务器地址
             'hostname' => '192.168.20.226',
             // 数据库名
-            'database' => 'jhphpcms',
+            'database' => 'jhphpcms',//  //yousu_admin
             // 用户名
             'username' => 'root',
             // 密码

@@ -14,7 +14,7 @@ module.exports = {
     themeConfig: {
         nav: require('./nav'),
         sidebar: require('./siderbar'),
-        sidebarDepth: 2,
+        sidebarDepth: 4,
         lastUpdated: 'Last Updated',
         searchMaxSuggestoins: 10,
         serviceWorker: {
