@@ -130,7 +130,7 @@ class CategoryService extends Service
         if ($excludePage) {
             array_push($map, ['modelid', '<>', 0]);
         }
-        $categories = $this->model->field('id,name,parent_id')->order('sort ASC')->where($map)->select();
+        $categories = $this->model->field('id,name,parent_id')->order('sort ASC,id ASC')->where($map)->select();
         $tree = new Tree();
         $newCategories = [];
         foreach ($categories as &$item) {
@@ -200,18 +200,20 @@ class CategoryService extends Service
         //①、获取数据表中最新的数据
         $fields = ['id', 'parent_id', 'name', 'sort', 'description', 'modelid', 'status', 'arrparentid', 'haschild', 'childids'];
         $categories = $this->app->db->name('CmsCategory')->field($fields)->order('sort ASC')->select();
-        foreach ($categories as $cate) {
-            $this->categorys[$cate['id']] = $cate;
-        }
-        //②、逐条记录处理
-        foreach ($this->categorys as $category) {
-            $catid = $category['id'];
-            $arrparentid = $this->get_arrparentid($catid);
-            $arrchildid = $this->get_arrchildid($catid);
-            $child = is_numeric($arrchildid) ? 0 : 1;
-            if ($this->categorys[$catid]['arrparentid'] != $arrparentid || $this->categorys[$catid]['childids'] != $arrchildid || $this->categorys[$catid]['haschild'] != $child) {
-                $updata = ['arrparentid' => $arrparentid, 'childids' => $arrchildid, 'haschild' => $child];
-                $this->app->db->name('CmsCategory')->where(['id' => $catid])->update($updata);
+        if($categories->count()>0){
+            foreach ($categories as $cate) {
+                $this->categorys[$cate['id']] = $cate;
+            }
+            //②、逐条记录处理
+            foreach ($this->categorys as $category) {
+                $catid = $category['id'];
+                $arrparentid = $this->get_arrparentid($catid);
+                $arrchildid = $this->get_arrchildid($catid);
+                $child = is_numeric($arrchildid) ? 0 : 1;
+                if ($this->categorys[$catid]['arrparentid'] != $arrparentid || $this->categorys[$catid]['childids'] != $arrchildid || $this->categorys[$catid]['haschild'] != $child) {
+                    $updata = ['arrparentid' => $arrparentid, 'childids' => $arrchildid, 'haschild' => $child];
+                    $this->app->db->name('CmsCategory')->where(['id' => $catid])->update($updata);
+                }
             }
         }
         //③、重新更新栏目缓存

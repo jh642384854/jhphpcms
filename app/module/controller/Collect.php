@@ -134,7 +134,8 @@ class Collect extends Controller
                     $this->error('参数错误');
                 }
             } else if ($type == 'content') {
-                $url = input('url', '', 'trim');
+                //这里对采集的URL进行了base64编码，就是因为有些采集的URL地址会带上请求参数，如果不进行编码处理，在获取该url参数的时候，会漏掉一些关键的原站请求参数
+                $url = base64_decode(input('url', '', 'trim'));
                 if ($url != '') {
                     $contentRules = [
                         'content' => $rules['content']
@@ -202,7 +203,7 @@ class Collect extends Controller
                 return json(['code' => 0, 'msg' => '数据采集成功', 'count' => count($articles), 'data' => $articles]);
             } else if ($action == 'content') {
                 //详情页URL地址
-                $url = input('url', '', 'trim');
+                $url = base64_decode(input('url', '', 'trim'));
                 //采集内容
                 $updateContent = $this->collectContent($url, $collectConfig);
                 $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => $id, 'url' => $url])->column('thumb,description');
@@ -284,8 +285,12 @@ class Collect extends Controller
             if (!strpos($item['url'], 'http')) {
                 //使用帮助函数单独转换某个链接
                 $item['url'] = $ql->absoluteUrlHelper($parseUrlInfo['scheme'] . '://' . $parseUrlInfo['host'] . '/', $item['url']);
-                return $item;
             }
+            //采集的文章时间设置默认的当前日期
+            if(!isset($item['time']) || $item['time'] == ''){
+                $item['time'] = date('Y-m-d H:i:s');
+            }
+            return $item;
         })->all();
         $ql->destruct();
         return $articles;
@@ -412,6 +417,7 @@ class Collect extends Controller
                                 }
                                 $collectData = $this->app->db->name('module_collect_data')->field(['title','seo_keywords','seo_description', 'description', 'thumb', 'author', 'comefrom', 'content', 'UNIX_TIMESTAMP(`time`)' => 'create_at'])
                                     ->fieldRaw("'" . $jobdata["catid"] . "' as 'catid','" . $modelid . "' as 'modelid'")->where($collect_map)->limit($jobdata['records'], $limit)->select()->all();
+
                                 $imports = count($collectData);
                                 if ($limit > $count) {
                                     $hasFinish = true;
@@ -526,9 +532,4 @@ class Collect extends Controller
         $this->_delete($this->table);
     }
 
-    public function jhtest()
-    {
-        $cjdata = $this->app->db->table('module_collect_data')->where(['collect_id' => 1, 'url' => 'https://www.php.cn/toutiao-453216.html'])->column('thumb,description');
-        dump($cjdata);
-    }
 }

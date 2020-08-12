@@ -6,6 +6,8 @@ use app\cms\service\CategoryService;
 use app\cms\service\PosidService;
 use app\cms\service\TagService;
 use think\admin\Controller;
+use QL\QueryList;
+use think\admin\storage\LocalStorage;
 
 /**
  * 内容管理
@@ -119,9 +121,45 @@ class Content extends Controller
                 $tagArrData = array_unique($tagArrData);
                 $data['tags'] = implode(',',$tagArrData);
             }
+            //自动提取文章内容里面的缩略图
+            if($data['thumb'] == ''){
+                $ql = QueryList::html($data['content']);
+                $thumb = $ql->find('img:eq(0)')->src;
+                if($thumb != ''){
+                    $data['thumb'] = $thumb;
+                }
+            }
+            //文章内容敏感词过滤处理
             $data['content'] = dealBadwords($data['content']);
+            //自动提取描述内容
+            if($data['seo_description'] == ''){
+                $ql = QueryList::html($data['content']);
+                $firstParagraph = strip_tags($ql->find('p:eq(0)')->html());
+                if(mb_strlen($firstParagraph)>200){
+                    $firstParagraph = msubstr($firstParagraph,200);
+                }
+                $data['seo_description'] =  $firstParagraph;
+            }
             $data['create_at'] = strtotime($data['create_at']);
         }
+    }
+
+    public function jhtest()
+    {
+        $local = LocalStorage::instance();
+        $newFileInfo = $local::down('https://www.qfgolang.com/wp-content/uploads/2019/08/duorenwu1_meitu_1.jpg',true);
+        dump($newFileInfo);
+
+        $path = 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png';
+        sys_download_file($path,'duorenwu1_meitu_1.jpg',true,true);
+
+        /*$client = new \GuzzleHttp\Client();
+        $response = $client->request('get', 'https://www.qfgolang.com/wp-content/uploads/2019/08/duorenwu1_meitu_1.jpg', ['save_to' => './2222222.jpg']);
+        if ($response->getStatusCode() == 200) {
+            echo '111';
+        }else{
+            echo '222';
+        }*/
     }
 
     /**

@@ -19,6 +19,7 @@
 </div>
 
 {block name='script'}
+<script src="__ROOT__/static/encode.js"></script>
 <script>
     layui.use('table', function () {
         var table = layui.table;
@@ -42,7 +43,7 @@
                 res.data.forEach((ele, index) => {
                     $('tr[data-index=' + index + ']').find('td:eq(2)>div').html('文章内容待采集.....');
                     $.ajax({
-                        url: '{:url("dojob")}?action=content&id={$id}&url=' + ele.url,
+                        url: '{:url("dojob")}?action=content&id={$id}&url=' + base64encode(ele.url),
                         method: 'GET',
                         success: function (res) {
                             $('tr[data-index=' + index + ']').find('td:eq(2)>div').html('<span style="color: green">文章内容采集完成</span>');

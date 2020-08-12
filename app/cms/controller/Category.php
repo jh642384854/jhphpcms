@@ -136,6 +136,10 @@ class Category extends Controller
                 $url_path = $this->app->pinyin->abbr($vo['name']);
                 $vo['url_path'] = $url_path;
             }
+            //替换中文逗号
+            if($vo['seo_keywords'] != ''){
+                $vo['seo_keywords'] = str_replace('，', ',', $vo['seo_keywords']);
+            }
             $checkUrlpath = false;
             if ($url_path != '') {
                 $checkUrlpath = true;
@@ -146,6 +150,7 @@ class Category extends Controller
                 $map[] = ['id', '<>', $vo['id']];
             }
             if ($checkUrlpath) {
+                $map[] = ['parent_id', '=', $vo['parent_id']];
                 $map[] = ['url_path', '=', $url_path];
                 $exits = $this->app->db->name($this->table)->field('id')->where($map)->find();
                 if ($exits) {

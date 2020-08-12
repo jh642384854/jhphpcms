@@ -194,6 +194,75 @@ function msubstr($str, $length, $start = 0, $suffix = true, $charset = "utf-8")
 }
 
 /**
+ * sys_download_file('web服务器中的文件地址', 'test.jpg');
+ * sys_download_file('远程文件地址', 'test.jpg', true);
+ *
+ * @param $path  件地址：针对当前服务器环境的相对或绝对地址
+ * @param null $name 下载后的文件名（包含扩展名）
+ * @param bool $isRemote 是否是远程文件（通过 url 无法获取文件扩展名的必传参数 name）
+ * @param bool $isSSL 是否是HTTPS协议
+ * @param string $proxy
+ * @return bool true|false
+ */
+function sys_download_file($path, $name = null, $isRemote = false, $isSSL = false, $proxy = '') {
+
+    $fileRelativePath = $path;
+    $savedFileName = $name;
+    if (!$savedFileName) {
+        $file = pathinfo($path);
+        if (!empty($file['extension'])) {
+            $savedFileName = $file['basename'];
+        } else {
+            echo 'Extension get failed, parameter \'name\' is required!';
+            return false;
+        }
+    }
+
+    // 如果是远程文件，先下载到本地
+    if ($isRemote) {
+        $file = empty('') ? pathinfo($path,PATHINFO_BASENAME) : '';
+        $dir = pathinfo($file,PATHINFO_DIRNAME);
+        !is_dir($dir) && @mkdir($dir,0755,true);
+        $url = str_replace(" ","%20",$path);
+
+        if(function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 对认证证书来源的检查
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // 从证书中检查SSL加密算法是否存在
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $temp = curl_exec($ch);
+            if (@file_put_contents($file, $temp) && !curl_error($ch)) {
+                $fileRelativePath = './'.$file;
+            } else {
+                return false;
+            }
+        }
+    }
+    // 执行下载
+    echo $fileRelativePath;
+    /*if (is_file($fileRelativePath)) {
+        //header('Content-Description: File Transfer');
+        header('Content-type: application/octet-stream');
+        header('Content-Length:' . filesize($fileRelativePath));
+        if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) { // for IE
+            header('Content-Disposition: attachment; filename="' . rawurlencode($savedFileName) . '"');
+        } else {
+            header('Content-Disposition: attachment; filename="' . $savedFileName . '"');
+        }
+        readfile($fileRelativePath);
+        if ($isRemote) {
+            unlink($fileRelativePath); // 删除下载远程文件时对应的临时文件
+        }
+        return true;
+    } else {
+        echo 'Invalid file: ' . $fileRelativePath;
+        return false;
+    }*/
+}
+
+/**
  * 判断是否为Linux环境
  * @return bool
  */

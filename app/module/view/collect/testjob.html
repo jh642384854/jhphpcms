@@ -20,7 +20,7 @@
                 </td>
                 <td class='text-left nowrap'>
                     <!--{if auth("testjob")}-->
-                    <a class="layui-btn layui-btn-sm layui-btn-normal" href='{:url("testjob")}?id={$id}&url={$vo.url}&type=content' target="_blank">查看采集内容</a>
+                    <a class="layui-btn layui-btn-sm layui-btn-normal" href='{:url("testjob")}?id={$id}&url={$vo.url|base64_encode}&type=content' target="_blank">查看采集内容</a>
                     <!--{/if}-->
                 </td>
             </tr>
