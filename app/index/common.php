@@ -1,9 +1,9 @@
 <?php
 
 use app\cms\service\CategoryService;
+use think\facade\Db;
 
 /**
- * 当前路径
  * 返回指定栏目路径层级
  * @param $catid 栏目id
  * @param $symbol 栏目间隔符
@@ -21,6 +21,22 @@ function catpos($catid, $symbol=' > '){
     }
     return $pos;
 }
+
+/**
+ * 返回指定栏目的层级目录，用来生成目录的url地址
+ * @param $catid
+ * @return string
+ */
+function getCatPath($catid){
+    $category_arr = CategoryService::instance()->getAllCategoryFromCache();
+    $pos = '';
+    $arrparentid = array_filter(explode(',', $category_arr[$catid]['arrparentid'].','.$catid));
+    foreach($arrparentid as $catid) {
+        $pos .= $category_arr[$catid]['url_path'].'_';
+    }
+    return rtrim($pos,'_');
+}
+
 /**
  * 组合多维数组
  * @param $cate
@@ -120,7 +136,7 @@ function get_url_list($v)
 {
     //判断是否直接跳转
     if (trim($v['link_url']) == '') {
-        $v['url'] = substr(url('index', ['name' => $v['url_path']]), 6);
+        $v['url'] = substr(url('index', ['name' => getCatPath($v['id'])]), 6);
     }
     return $v['url'];
 }
@@ -129,9 +145,7 @@ function get_url_list($v)
 function get_url_show($v)
 {
     if ($v) {
-        $categoryData = CategoryService::instance()->getAllCategoryFromCache();
-        $cate = $categoryData[$v['catid']];
-        $url = substr(url('show', ['name' => $cate['url_path'], 'id' => $v['id']]), 6);//这里截取了/index前缀。
+        $url = substr(url('show', ['name' => getCatPath($v['catid']), 'id' => $v['id']]), 6);//这里截取了/index前缀。
     }
     return $url;
 }
@@ -206,4 +220,24 @@ function get_block_content($data)
         }
     }
     return $content;
+}
+
+function getNewsTagsLink($tags){
+    if($tags != ''){
+        $tags = explode(',', $tags);
+        $newTag = [];
+        foreach ($tags as $tag) {
+            $exits = Db::name('cms_tag')->where(['name' => $tag])->field('id')->find();
+            if ($exits) {
+                $newTag[] = [
+                    'id' => $exits['id'],
+                    'name' => $tag,
+                    'url' => get_url_tag($exits)
+                ];
+            }
+        }
+        return $newTag;
+    }else{
+        return '';
+    }
 }

@@ -227,9 +227,9 @@ class Collect extends Controller
                 }else{
                     //将缩略图片下载到本地(采集获取的缩略图并没有下载到本地)
                     if($collectConfig['is_download_img']) {
-                        $local = LocalStorage::instance();
-                        $newFileInfo = $local::down($cjdata[0]['thumb']);
-                        $imgurl = ltrim($newFileInfo['url'],'/');
+                        $newFileInfo = downRemoteImg($cjdata[0]['thumb']);
+                        //$imgurl = ltrim($newFileInfo['url'],'/');
+                        $imgurl = $newFileInfo['url'];
                         //给图片加水印
                         if($collectConfig['is_watermark_img']) {
                             try {

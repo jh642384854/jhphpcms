@@ -1,70 +1,57 @@
 {extend name="base"}
 
 {block name="body"}
-    <h1>jhphpcms index</h1>
-    <h1>闭合标签</h1>
-    {jhcms:close time='$demo_time'/}
-    <ul>
-        {jhcms:list catid='1' name='list' limit='5'}
-        <li><a href="{$list['url']}">{$list['title']}</a></li>
-        {/jhcms:list}
-    </ul>
-
-    <div class="block">
-        {jhcms:block name='Index_aboutus' /}
-    </div>
-
-    <div class="link">
-        <ul>
-            {jhcms:link name='link' limit='5' order='sort DESC'}
-            <li>
-                <a href="{$link.url}">{$link.name}</a>
-                <img src="{$link.thumb|getImage}" alt="">
-            </li>
-            {/jhcms:link}
-        </ul>
-    </div>
-
-    <div class="adv">
-        <ul>
-            {jhcms:adv name='advs' cid='1' limit='5' order='sort DESC'}
-            <li>
-                <a href="{$advs.url}">{$advs.name}</a>
-                <img src="{$advs.thumb|thumb=250,160}" alt="">
-            </li>
-            {/jhcms:adv}
-        </ul>
-    </div>
-
-    <div class="recommend">
-        <ul>
-        {jhcms:recommend posid='2' name='list' limit='5'}
-        <li><a href="{$list['url']}">{$list['title']}</a></li>
-        {/jhcms:recommend}
-        </ul>
-    </div>
-
-    <div class="menu">
-        <ul>
-        {jhcms:menu name='list'}
-            <li>
-                <a href="{$list['url']}">{$list['name']}</a>
-                <ul>
-                {volist name="list['sub']" id="sub"}
-                    <li><a href="{$sub['url']}">{$sub['name']}</a></li>
+    <div class="loop-list-1">
+        {jhcms:recommend posid='3' name='list' limit='5'}
+        <article class="first-child">
+            {if $list['tags'] neq ''}
+            <div class="entry-meta meta-0 mb-10 text-uppercase font-heading">
+                {volist name="list['tags']" id="tag"}
+                <a href="{$tag.url}"><span class="post-in">{$tag.name}</span></a>
                 {/volist}
-                </ul>
-            </li>
-        {/jhcms:menu}
-        </ul>
+            </div>
+            {/if}
+            <h2 class="post-title"><a href="{$list['url']}">{$list['title']}</a></h2>
+            <div class="entry-meta meta-1 font-medium color-grey mt-15 mb-30">
+                <span class="post-on">{$list['create_at']|date="Y-m-d H:i:s"}</span>
+                <span class="hit-count"><i class="ti-bolt"></i>{$list['views']}</span>
+            </div>
+            <div class="post-exerpt">
+                <p>{$list['description']}</p>
+            </div>
+            <figure class="post-thumb d-flex mb-30 border-radius-5 img-hover-scale animate-conner-box">
+                <a href="{$list['url']}"><img class="border-radius-5" src="{$list['thumb']}" alt="{$list['title']}"></a>
+                <span class="top-right-icon white-bg"><i class="mdi mdi-camera-alt"></i></span>
+            </figure>
+        </article>
+        {/jhcms:recommend}
     </div>
-
-    <div class="tag">
-        <ul>
-            {jhcms:tag name='tags'}
-            <li><a href="{$tags['url']}">{$tags['name']}</a></li>
-            {/jhcms:tag}
-        </ul>
+    <!--Loop list 1-->
+    <div class="loop-list-2">
+        {jhcms:recommend posid='5' name='list' limit='5'}
+        <article class="row mb-50 wow fadeInUp animated">
+            <figure class="col-md-4">
+                <div class="pr-md-20">
+                    <div class="post-thumb d-flex border-radius-5 img-hover-scale">
+                        <a href="{$list['url']}">
+                            <img class="border-radius-5" src="{$list['thumb']}" alt="{$list['title']}">
+                        </a>
+                    </div>
+                </div>
+            </figure>
+            <div class="col-md-8">
+                <div class="post-content">
+                    <h3><a href="{$list['url']}">{$list['title']}</a></h3>
+                    <div class="entry-meta meta-1 font-small color-grey mt-15 mb-30">
+                        <span class="post-on">{$list['create_at']|date="Y-m-d H:i:s"}</span>
+                        <span class="hit-count has-dot">{$list['views']}</span>
+                    </div>
+                    <div class="post-exerpt">
+                        <p>{$list['description']}</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {/jhcms:recommend}
     </div>
-
 {/block}

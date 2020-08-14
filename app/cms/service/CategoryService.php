@@ -88,11 +88,11 @@ class CategoryService extends Service
     }
 
     /**
-     * 缓存所有的栏目信息
+     * 缓存所有的栏目信息。缓存的key是栏目的id，方便直接通过栏目id来定位是哪个栏目
      */
     public function cacheAllCategory()
     {
-        $fields = ['id', 'parent_id', 'name', 'url_path', 'link_url', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids','create_at'];
+        $fields = ['id', 'parent_id', 'name', 'url_path', 'link_url', 'sort', 'description', 'modelid', 'status', 'path', 'arrparentid', 'haschild', 'childids','create_at','seo_title','seo_keywords','seo_description','category_template','list_template','show_template'];
         $categories = $this->app->db->name('CmsCategory')->field($fields)->order('sort ASC')->select();
         $newCategories = [];
         if (count($categories) > 0) {
@@ -113,6 +113,28 @@ class CategoryService extends Service
         $data = cache(config('cache.usekey.category.key', 'AllCategory'));
         if (empty($data)) {
             $data = $this->cacheAllCategory();
+        }
+        return $data;
+    }
+
+    /**
+     * 从缓存中获取所有栏目数据，只不过这个数组的key是用栏目的url_path来构建。这个方便在前台页面通过这个url来定位是哪个栏目
+     * @return array|\Illuminate\Cache\CacheManager|mixed
+     */
+    public function getAllCategoryWithPathFromCache()
+    {
+        $data = cache('AllCategoryWithPth');
+        if (empty($data)) {
+            $allCategories = $this->getAllCategoryFromCache();
+            $newCategoriesWithPath = [];
+            if (count($allCategories) > 0) {
+                foreach ($allCategories as $cate) {
+                    $path = getCatPath($cate['id']);
+                    $newCategoriesWithPath[$path] = $cate;
+                }
+            }
+            cache('AllCategoryWithPth', $newCategoriesWithPath);
+            $data = $newCategoriesWithPath;
         }
         return $data;
     }

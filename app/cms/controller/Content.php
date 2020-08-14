@@ -7,7 +7,7 @@ use app\cms\service\PosidService;
 use app\cms\service\TagService;
 use think\admin\Controller;
 use QL\QueryList;
-use think\admin\storage\LocalStorage;
+use phpQuery;
 
 /**
  * 内容管理
@@ -66,6 +66,9 @@ class Content extends Controller
             if ($vo['posids'] != '') {
                 $vo['title'] = $vo['title'] . ' <span class="layui-badge">推荐</span>';
             }
+            if ($vo['thumb'] != '') {
+                $vo['title'] = $vo['title'] . ' <span class="layui-badge layui-bg-blue">图文</span>';
+            }
         }
     }
 
@@ -121,6 +124,20 @@ class Content extends Controller
                 $tagArrData = array_unique($tagArrData);
                 $data['tags'] = implode(',',$tagArrData);
             }
+
+            //自动下载远程图片
+            $doc = phpQuery::newDocumentHTML($data['content']);
+            $imgs = pq($doc)->find('img');
+            foreach ($imgs as $img) {
+                $originSrc = pq($img)->attr('src');
+                //只会处理绝对路径的图片资源
+                if(strpos($originSrc,'http') === 0){
+                    $newFileInfo = downRemoteImg($originSrc);
+                    $imgurl = $newFileInfo['url'];
+                    pq($img)->attr('src', $imgurl);
+                }
+            }
+            $data['content'] = $doc->htmlOuter();
             //自动提取文章内容里面的缩略图
             if($data['thumb'] == ''){
                 $ql = QueryList::html($data['content']);
@@ -134,32 +151,16 @@ class Content extends Controller
             //自动提取描述内容
             if($data['seo_description'] == ''){
                 $ql = QueryList::html($data['content']);
+                //提取第一个段落为自动摘要内容
                 $firstParagraph = strip_tags($ql->find('p:eq(0)')->html());
                 if(mb_strlen($firstParagraph)>200){
                     $firstParagraph = msubstr($firstParagraph,200);
                 }
                 $data['seo_description'] =  $firstParagraph;
             }
+
             $data['create_at'] = strtotime($data['create_at']);
         }
-    }
-
-    public function jhtest()
-    {
-        $local = LocalStorage::instance();
-        $newFileInfo = $local::down('https://www.qfgolang.com/wp-content/uploads/2019/08/duorenwu1_meitu_1.jpg',true);
-        dump($newFileInfo);
-
-        $path = 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png';
-        sys_download_file($path,'duorenwu1_meitu_1.jpg',true,true);
-
-        /*$client = new \GuzzleHttp\Client();
-        $response = $client->request('get', 'https://www.qfgolang.com/wp-content/uploads/2019/08/duorenwu1_meitu_1.jpg', ['save_to' => './2222222.jpg']);
-        if ($response->getStatusCode() == 200) {
-            echo '111';
-        }else{
-            echo '222';
-        }*/
     }
 
     /**

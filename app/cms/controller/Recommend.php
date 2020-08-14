@@ -1,6 +1,7 @@
 <?php
 namespace app\cms\controller;
 
+use app\cms\service\RecommendService;
 use think\admin\Controller;
 use app\cms\service\CategoryService;
 use app\cms\service\ModelService;
@@ -101,5 +102,15 @@ class Recommend extends Controller
                 $this->error('当前推荐位已经存在，请更换新的名称');
             }
         }
+    }
+
+    /**
+     * 更新栏目缓存
+     * @auth true
+     */
+    public function upcache()
+    {
+        RecommendService::instance()->cacheAllRecommends();
+        $this->success('恭喜, 栏目缓存更新成功！');
     }
 }

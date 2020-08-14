@@ -1,7 +1,129 @@
 {extend name="base"}
 
 {block name="body"}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
+    <div class="single-content">
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="single-header">
+                    <div class="entry-meta meta-0 mb-10 text-uppercase font-heading">
+                        {$data['catid']|catpos|raw}
+                    </div>
+                    <h2 class="post-title">{$data['title']}</h2>
+                    <div class="mt-15 mb-50">
+                        <div class="entry-meta meta-1 font-medium color-grey">
+                            <span>
+                                <span>字体大小</span>
+                                <i class="fonts-size-zoom-in ti-zoom-in mr-10 "></i>
+                                <i class="fonts-size-zoom-out ti-zoom-out"></i>
+                            </span>
+                            <div class="vline-space d-inline-block"></div><a class="single-print"><span><i class="ti-printer mr-5"></i>Print</span></a>
+                            <div class="vline-space d-inline-block"></div><span><i class="ti-timer mr-5"></i>{$data['create_at']|format_datetime}</span>
+                            <div class="vline-space d-inline-block"></div><span><i class="ti-eye mr-5"></i>{$data['views']}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="single-excerpt post-exerpt">
+                    {$data['description']}
+                </div>
+                <div class="entry-main-content">
+                    {$data['content']|raw}
+                </div>
+                {if $data['tags'] neq ''}
+                <div class="entry-bottom mt-50 mb-30">
+                    <div class="tags">
+                        {volist name="$data['tags']" id="tag"}
+                        <a href="{$tag.url}" rel="tag">{$tag.name}</a>
+                        {/volist}
+                    </div>
+                </div>
+                {/if}
+                <div class="divider-1 mb-30"></div>
+                <div class="single-social-share clearfix ">
+                    <p class="text-uppercase">Share this post</p>
+                    <ul class="d-inline-block list-inline">
+                        <li class="list-inline-item">
+                            <a class="social-icon facebook-icon text-xs-center color-white" target="_blank" href="#"><i class="ti-facebook"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="social-icon twitter-icon text-xs-center color-white" target="_blank" href="#"><i class="ti-twitter-alt"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="social-icon pinterest-icon text-xs-center color-white" target="_blank" href="#"><i class="ti-pinterest"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="social-icon instagram-icon text-xs-center color-white" target="_blank" href="#"><i class="ti-instagram"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <!--Comments-->
+                <!--<div class="comments-area">
+                    <h3 class="mb-30">03 Comments</h3>
+                    <div class="comment-list">
+                        <div class="single-comment justify-content-between d-flex">
+                            <div class="user justify-content-between d-flex">
+                                <div class="thumb">
+                                    <img src="assets/imgs/author.jpg" alt="">
+                                </div>
+                                <div class="desc">
+                                    <p class="comment">Vestibulum euismod,leo eget varius gravida,eros enim interdum urna,non rutrum enim ante quis metus. Duis porta ornare nulla ut bibendum</p>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <h5><a href="#">Robert</a></h5>
+                                            <p class="date">December 4,2020 at 3:12 pm</p>
+                                        </div>
+                                        <div class="reply-btn"><a href="#" class="btn-reply text-uppercase">reply</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <!--comment form-->
+                <div class="comment-form">
+                    <h3 class="mb-30">Leave a Reply</h3>
+                    <form class="form-contact comment_form" action="#" id="commentForm">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Write Comment"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <input class="form-control" name="name" id="name" type="text" placeholder="Name">
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <input class="form-control" name="email" id="email" type="email" placeholder="Email">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input class="form-control" name="website" id="website" type="text" placeholder="Website">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="button button-contactForm">Post Comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}
 
-内容页
-
+{block name="script"}
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
 {/block}

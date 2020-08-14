@@ -3,6 +3,9 @@
 <!--{if auth("add")}-->
 <button data-modal='{:url("add")}' data-title="添加推荐位" class='layui-btn layui-btn-sm layui-btn-primary'>添加推荐位</button>
 <!--{/if}-->
+<!--{if auth("upcache")}-->
+<button data-load='{:url("upcache")}' data-title="更新推荐位缓存" class='layui-btn layui-btn-sm layui-btn-normal'>更新推荐位缓存</button>
+<!--{/if}-->
 {/block}
 
 {block name="content"}

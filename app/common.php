@@ -7,6 +7,7 @@ use app\admin\service\ConfigService;
 use DfaFilter\SensitiveHelper;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use think\admin\storage\LocalStorage;
 
 /**
  * 错误信息反馈共页面
@@ -193,6 +194,40 @@ function msubstr($str, $length, $start = 0, $suffix = true, $charset = "utf-8")
     return $suffix ? $slice . '...' : $slice;
 }
 
+function downRemoteImg($path){
+    //判断是否是https协议的资源
+    if(strpos($path,'https') === 0){
+        $pathmd5 = md5($path);
+        $prefix = './upload/down/'.substr($pathmd5,0,2).'/';
+        $file = $prefix.substr($pathmd5,2).'.'.pathinfo($path,PATHINFO_EXTENSION);
+        $dir = pathinfo($file,PATHINFO_DIRNAME);
+        !is_dir($dir) && @mkdir($dir,0755,true);
+        $url = str_replace(" ","%20",$path);
+
+        if(function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 对认证证书来源的检查
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // 从证书中检查SSL加密算法是否存在
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            $temp = curl_exec($ch);
+            if (@file_put_contents($file, $temp) && !curl_error($ch)) {
+                $newFileInfo = [
+                    'url' => substr($file,1),
+                    'key' => $file,
+                    'file' => getPublicPath().$file
+                ];
+            }
+        }
+    }else{
+        $local = LocalStorage::instance();
+        $newFileInfo = $local::down($path);
+    }
+    return $newFileInfo;
+}
+
+
 /**
  * sys_download_file('web服务器中的文件地址', 'test.jpg');
  * sys_download_file('远程文件地址', 'test.jpg', true);
@@ -220,7 +255,9 @@ function sys_download_file($path, $name = null, $isRemote = false, $isSSL = fals
 
     // 如果是远程文件，先下载到本地
     if ($isRemote) {
-        $file = empty('') ? pathinfo($path,PATHINFO_BASENAME) : '';
+        $pathmd5 = md5($path);
+        $prefix = './upload/down/'.substr($pathmd5,0,2).'/';
+        $file = $prefix.substr($pathmd5,2).'.'.pathinfo($path,PATHINFO_EXTENSION);
         $dir = pathinfo($file,PATHINFO_DIRNAME);
         !is_dir($dir) && @mkdir($dir,0755,true);
         $url = str_replace(" ","%20",$path);
@@ -234,7 +271,7 @@ function sys_download_file($path, $name = null, $isRemote = false, $isSSL = fals
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             $temp = curl_exec($ch);
             if (@file_put_contents($file, $temp) && !curl_error($ch)) {
-                $fileRelativePath = './'.$file;
+                $fileRelativePath = $file;
             } else {
                 return false;
             }

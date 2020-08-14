@@ -14,6 +14,8 @@ class Jhcms extends TagLib
     protected $tags = [
         // 标签定义： [attr：属性列表，close：是否闭合（0 或者1 默认1）， alias：标签别名，level 嵌套层次]
         'list' => ['attr' => 'name,limit,order,fields,where,catid', 'close' => 1],
+        'latest' => ['attr' => 'name,limit,order,fields,where', 'close' => 1],  //最新资讯
+        'hit' => ['attr' => 'name,limit,fields,where', 'close' => 1],     //浏览量最高
         'close' => ['attr' => 'time,format', 'close' => 0],
         'block' => ['attr' => 'name', 'close' => 0],
         'link' => ['attr' => 'name,limit,order,fields,where', 'close' => 1],
@@ -64,6 +66,89 @@ class Jhcms extends TagLib
         $parse .= '?>';
         $parse .= '{volist name="__LIST__" id="' . $name . '"}';
         $parse .= '<?php $' . $name . '["url"] = get_url_show($' . $name . '); ?>';
+        $parse .= '<?php $' . $name . '["thumb"] = getImage($' . $name . '["thumb"]); ?>';
+        $parse .= '<?php $' . $name . '["tags"] = getNewsTagsLink($' . $name . '["tags"]); ?>';
+        $parse .= $content;
+        $parse .= '{/volist}';
+        return $parse;
+    }
+
+    /**
+     * 获取最新资讯
+     * @param $tag
+     * @param $content
+     * @return string
+     */
+    public function tagLatest($tag, $content)
+    {
+        $name = isset($tag['name']) ? $tag['name'] : "list";
+        $limit = isset($tag['limit']) ? intval($tag['limit']) : 10; //查询条数
+        $order = isset($tag['order']) ? $tag['order'] : 'id DESC'; //排序
+        $fields = isset($tag['fields']) ? $tag['fields'] : '*';  //查询字段
+        $where = isset($tag['where']) ? $tag['where'] . ' and status = 1 ' : 'status = 1';    //查询条件
+
+        $parse = '<?php ';
+        $parse .= '$__LIST__ = think\facade\Db::table("cms_article")->where("' . $where . '")->field("' . $fields . '")->limit(' . $limit . ')->order("' . $order . '")->select();';
+        $parse .= '?>';
+        $parse .= '{volist name="__LIST__" id="' . $name . '"}';
+        $parse .= '<?php $' . $name . '["url"] = get_url_show($' . $name . '); ?>';
+        $parse .= '<?php $' . $name . '["thumb"] = getImage($' . $name . '["thumb"]); ?>';
+        $parse .= '<?php $' . $name . '["tags"] = getNewsTagsLink($' . $name . '["tags"]); ?>';
+        $parse .= $content;
+        $parse .= '{/volist}';
+        return $parse;
+    }
+
+    /**
+     * 获取点击量最高数据
+     * @param $tag
+     * @param $content
+     * @return string
+     */
+    public function tagHit($tag, $content)
+    {
+        $name = isset($tag['name']) ? $tag['name'] : "list";
+        $limit = isset($tag['limit']) ? intval($tag['limit']) : 10; //查询条数
+        $order = 'views DESC,id DESC'; //排序
+        $fields = isset($tag['fields']) ? $tag['fields'] : '*';  //查询字段
+        $where = isset($tag['where']) ? $tag['where'] . ' and status = 1 ' : 'status = 1';    //查询条件
+
+        $parse = '<?php ';
+        $parse .= '$__LIST__ = think\facade\Db::table("cms_article")->where("' . $where . '")->field("' . $fields . '")->limit(' . $limit . ')->order("' . $order . '")->select();';
+        $parse .= '?>';
+        $parse .= '{volist name="__LIST__" id="' . $name . '"}';
+        $parse .= '<?php $' . $name . '["url"] = get_url_show($' . $name . '); ?>';
+        $parse .= '<?php $' . $name . '["thumb"] = getImage($' . $name . '["thumb"]); ?>';
+        $parse .= '<?php $' . $name . '["tags"] = getNewsTagsLink($' . $name . '["tags"]); ?>';
+        $parse .= $content;
+        $parse .= '{/volist}';
+        return $parse;
+    }
+
+    /**
+     * 推荐位列表
+     * @param $tag
+     * @param $content
+     * @return string
+     */
+    public function tagRecommend($tag, $content)
+    {
+        $posid = isset($tag['posid']) ? intval($tag['posid']) : 1; //查询条数
+        $limit = isset($tag['limit']) ? intval($tag['limit']) : 10; //查询条数
+        $order = isset($tag['order']) ? $tag['order'] : 'b.id DESC'; //排序
+        $fields = isset($tag['fields']) ? $tag['fields'] : 'b.*';  //查询字段
+        $where = isset($tag['where']) ? $tag['where'] . ' and b.is_deleted = 0 ' : 'b.is_deleted = 0';    //查询条件
+        $name = isset($tag['name']) ? $tag['name'] : "list";
+
+        $where .= ' AND a.posid = ' . $posid;
+
+        $parse = '<?php ';
+        $parse .= '$__LIST__ = \think\facade\Db::table("cms_recommend_data")->alias("a")->leftJoin("cms_article b","a.aid = b.id")->where("' . $where . '")->field("' . $fields . '")->limit(' . $limit . ')->order("' . $order . '")->select();';
+        $parse .= '?>';
+        $parse .= '{volist name="__LIST__" id="' . $name . '"}';
+        $parse .= '<?php $' . $name . '["url"] = get_url_show($' . $name . '); ?>';
+        $parse .= '<?php $' . $name . '["thumb"] = getImage($' . $name . '["thumb"]); ?>';
+        $parse .= '<?php $' . $name . '["tags"] = getNewsTagsLink($' . $name . '["tags"]); ?>';
         $parse .= $content;
         $parse .= '{/volist}';
         return $parse;
@@ -148,32 +233,7 @@ class Jhcms extends TagLib
         return $parse;
     }
 
-    /**
-     * 推荐位列表
-     * @param $tag
-     * @param $content
-     * @return string
-     */
-    public function tagRecommend($tag, $content)
-    {
-        $posid = isset($tag['posid']) ? intval($tag['posid']) : 1; //查询条数
-        $limit = isset($tag['limit']) ? intval($tag['limit']) : 10; //查询条数
-        $order = isset($tag['order']) ? $tag['order'] : 'b.id DESC'; //排序
-        $fields = isset($tag['fields']) ? $tag['fields'] : 'b.*';  //查询字段
-        $where = isset($tag['where']) ? $tag['where'] . ' and b.is_deleted = 0 ' : 'b.is_deleted = 0';    //查询条件
-        $name = isset($tag['name']) ? $tag['name'] : "list";
 
-        $where .= ' AND a.posid = ' . $posid;
-
-        $parse = '<?php ';
-        $parse .= '$__LIST__ = \think\facade\Db::table("cms_recommend_data")->alias("a")->leftJoin("cms_article b","a.aid = b.id")->where("' . $where . '")->field("' . $fields . '")->limit(' . $limit . ')->order("' . $order . '")->select();';
-        $parse .= '?>';
-        $parse .= '{volist name="__LIST__" id="' . $name . '"}';
-        $parse .= '<?php $' . $name . '["url"] = get_url_show($' . $name . '); ?>';
-        $parse .= $content;
-        $parse .= '{/volist}';
-        return $parse;
-    }
 
     /**
      * 菜单列表
@@ -184,7 +244,7 @@ class Jhcms extends TagLib
     {
         $pid = isset($tag['pid']) ? intval($tag['pid']) : 0; //查询条数
         $limit = isset($tag['limit']) ? intval($tag['limit']) : 10; //查询条数
-        $order = isset($tag['order']) ? $tag['order'] : 'sort ASC,id DESC'; //排序
+        $order = isset($tag['order']) ? $tag['order'] : 'sort ASC,id ASC'; //排序
         $name = isset($tag['name']) ? $tag['name'] : "list";
 
         if (!empty($pid)) {

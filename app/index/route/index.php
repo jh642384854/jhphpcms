@@ -5,6 +5,7 @@ use think\facade\Route;
 Route::pattern([
     'name' => '\w+',
     'id'   => '\d+',
+    'page' => '\d+',
 ]);
 
 //后台登录入口
@@ -24,9 +25,9 @@ Route::get('page/<name>$','Content/page')->ext('html')->name('page');
 Route::get('tag/<id>$','Content/tag')->ext('html')->name('tag');
 
 //栏目列表页
-Route::get('/<name>$','Content/index')->ext('html')->name('index');
+Route::get('list/<name>/<page?>','Content/index')->ext('html')->name('index');
 //内容页
-Route::get('/<name>/<id>$','Content/show')->ext('html')->name('show');
+Route::get('show/<name>/<id>$','Content/show')->ext('html')->name('show');
 
 //定义全局MISS路由
 Route::miss('index/miss');

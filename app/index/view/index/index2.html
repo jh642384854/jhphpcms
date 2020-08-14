@@ -1,0 +1,70 @@
+{extend name="base"}
+
+{block name="body"}
+    <h1>jhphpcms index</h1>
+    <h1>闭合标签</h1>
+    {jhcms:close time='$demo_time'/}
+    <ul>
+        {jhcms:list catid='1' name='list' limit='5'}
+        <li><a href="{$list['url']}">{$list['title']}</a></li>
+        {/jhcms:list}
+    </ul>
+
+    <div class="block">
+        {jhcms:block name='Index_aboutus' /}
+    </div>
+
+    <div class="link">
+        <ul>
+            {jhcms:link name='link' limit='5' order='sort DESC'}
+            <li>
+                <a href="{$link.url}">{$link.name}</a>
+                <img src="{$link.thumb|getImage}" alt="">
+            </li>
+            {/jhcms:link}
+        </ul>
+    </div>
+
+    <div class="adv">
+        <ul>
+            {jhcms:adv name='advs' cid='1' limit='5' order='sort DESC'}
+            <li>
+                <a href="{$advs.url}">{$advs.name}</a>
+                <img src="{$advs.thumb|thumb=250,160}" alt="">
+            </li>
+            {/jhcms:adv}
+        </ul>
+    </div>
+
+    <div class="recommend">
+        <ul>
+        {jhcms:recommend posid='2' name='list' limit='5'}
+        <li><a href="{$list['url']}">{$list['title']}</a></li>
+        {/jhcms:recommend}
+        </ul>
+    </div>
+
+    <div class="menu">
+        <ul>
+        {jhcms:menu name='list'}
+            <li>
+                <a href="{$list['url']}">{$list['name']}</a>
+                <ul>
+                {volist name="list['sub']" id="sub"}
+                    <li><a href="{$sub['url']}">{$sub['name']}</a></li>
+                {/volist}
+                </ul>
+            </li>
+        {/jhcms:menu}
+        </ul>
+    </div>
+
+    <div class="tag">
+        <ul>
+            {jhcms:tag name='tags'}
+            <li><a href="{$tags['url']}">{$tags['name']}</a></li>
+            {/jhcms:tag}
+        </ul>
+    </div>
+
+{/block}
