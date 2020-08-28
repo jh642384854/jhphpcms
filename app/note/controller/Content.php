@@ -65,24 +65,24 @@ class Content extends Controller
         $tabPrefix = "\t";
         $adapter = new Local(ROOT_PATH);
         $filesystem = new Filesystem($adapter);
+        $siderbarStr = 'module.exports = {'.PHP_EOL;
+        $substr = '';
         foreach ($allCategorys as $category){
             if(count($category['children']) > 0){
                 //生成vuepress的主侧边导航
                 foreach ($category['children'] as $cat){
-                    $siderbarStr = 'module.exports = {'.PHP_EOL;
-                    foreach ($cat['children'] as $category){
-                        $categoryPath = '/'.CategoryService::instance()->getCategoryPathByCatid($category['id']);
-                        $siderbarStr .= $tabPrefix.'"'.$categoryPath.'": require(\'..'.$categoryPath.'siderbar\'),'.PHP_EOL;
-                        $this->genSonNav($category['id']);
-                    }
-                    $siderbarStr .= '}'.PHP_EOL;
-                    $docPath = config('constant.Note.DocsRoot').'.vuepress'.DIRECTORY_SEPARATOR;
-                    //生成主要的侧边栏导航配置
-                    $fileName = $docPath . config('constant.Note.SiderbarJsName') . '.js';
-                    $filesystem->put($fileName,$siderbarStr);
+                    $categoryPath = '/'.CategoryService::instance()->getCategoryPathByCatid($cat['id']);
+                    $substr .= $tabPrefix.'"'.$categoryPath.'": require(\'..'.$categoryPath.'siderbar\'),'.PHP_EOL;
+                    $this->genSonNav($cat['id']);
                 }
             }
         }
+        $siderbarStr .= $substr;
+        $siderbarStr .= '}'.PHP_EOL;
+        $docPath = config('constant.Note.DocsRoot').'.vuepress'.DIRECTORY_SEPARATOR;
+        //生成主要的侧边栏导航配置
+        $fileName = $docPath . config('constant.Note.SiderbarJsName') . '.js';
+        $filesystem->put($fileName,$siderbarStr);
         $this->genMainNav();
         $this->success('恭喜, VuePress导航生成成功！');
     }
@@ -100,30 +100,20 @@ class Content extends Controller
                 //二级栏目
                 $secondNav = [];
                 foreach ($category['children'] as $secondChild){
-                    $thirdNav = [];
                     if(count($secondChild['children'])>0){
-                        //三级栏目
                         foreach ($secondChild['children'] as $thirdChid){
                             if(count($thirdChid['children'])>0){
-                                //如果还有四级栏目，则获取第一个4级栏目的第一篇文章
                                 $firstUrl = ContentService::instance()->getFirstUrlByCatid($thirdChid['children'][0]['id']);
                             }else{
-                                $firstUrl = ContentService::instance()->getFirstUrlByCatid($thirdChid['id']);
+                                $firstUrl = ContentService::instance()->getFirstUrlByCatid($secondChild['children'][0]['id']);
                             }
-                            $thirdNav[] = [
-                                'text' => $thirdChid['title'],
-                                'link' => $firstUrl
-                            ];
                         }
                     }else{
-                        $thirdNav = [
-                            'text' => $secondChild['title'],
-                            'link' => ContentService::instance()->getFirstUrlByCatid($secondChild['id'])
-                        ];
+                        $firstUrl = ContentService::instance()->getFirstUrlByCatid($secondChild['id']);
                     }
                     $secondNav[] = [
                         'text' => $secondChild['title'],
-                        'items' => $thirdNav
+                        'link' => $firstUrl,
                     ];
                 }
                 $nav[$key] = [

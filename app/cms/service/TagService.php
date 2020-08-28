@@ -44,6 +44,36 @@ class TagService extends Service
             ];
 
         }
+        $this->updateTagCache();
         return $this->app->db->name('cms_tag_data')->insertAll($tagData);
+    }
+
+    /**
+     * 更新tag缓存数据
+     */
+    public function updateTagCache()
+    {
+        $allTags = $this->app->db->name('cms_tag_data')->select();
+        $results = [];
+        if($allTags){
+            foreach ($allTags as $tag){
+                $results[$tag['name']] = $tag;
+            }
+            cache(config('cache.usekey.tags.key', 'AllTags'), $results);
+        }
+        return $results;
+    }
+
+    /**
+     * 从缓存中获取所有的标签数据
+     * @return array|\Illuminate\Cache\CacheManager|mixed
+     */
+    public function getAllTagsFromCache()
+    {
+        $data = cache(config('cache.usekey.tags.key', 'AllTags'));
+        if (empty($data)) {
+            $data = $this->updateTagCache();
+        }
+        return $data;
     }
 }

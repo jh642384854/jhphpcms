@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Webscoket Test</title>
+</head>
+<body>
+<script>
+
+    WebSocketTest();
+
+    function WebSocketTest() {
+        if ("WebSocket" in window) {
+            console.log("您的浏览器支持 WebSocket!");
+            var num = 0
+
+            // 打开一个 web socket
+            var ws = new WebSocket("ws://192.168.20.168:9502");
+
+            ws.onopen = function () {
+                // Web Socket 已连接上，使用 send() 方法发送数据
+                //alert("数据发送中...");
+                //ws.send("发送数据");
+            };
+
+            window.setInterval(function () { //每隔5秒钟发送一次心跳，避免websocket连接因超时而自动断开
+                var ping = {"type": "ping"};
+                ws.send(JSON.stringify(ping));
+            }, 5000);
+
+            ws.onmessage = function (evt) {
+                var d = JSON.parse(evt.data);
+                console.log(d);
+                if (d.code == 300) {
+                    $(".address").text(d.address)
+                }
+                if (d.code == 200) {
+                    var v = d.data
+                    console.log(v);
+                    num++
+                    var str = `<div class="item">
+                                    <p>${v.recordOutTime}</p>
+                                    <p>${v.userOutName}</p>
+                                    <p>${v.userOutNum}</p>
+                                    <p>${v.doorOutName}</p>
+                                </div>`
+                    $(".tableHead").after(str)
+                    if (num > 7) {
+                        num--
+                        $(".table .item:nth-last-child(1)").remove()
+                    }
+                }
+            };
+
+            ws.error = function (e) {
+                console.log(e)
+                alert(e)
+            }
+            ws.onclose = function () {
+                // 关闭 websocket
+                alert("连接已关闭...");
+            };
+        } else {
+            alert("您的浏览器不支持 WebSocket!");
+        }
+    }
+</script>
+</body>
+</html>

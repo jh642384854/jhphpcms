@@ -48,6 +48,45 @@ class Bootstrap extends Paginator
     }
 
     /**
+     * 获取页码对应的链接
+     *
+     * @access protected
+     * @param int $page
+     * @return string
+     */
+    protected function url(int $page): string
+    {
+        if ($page <= 0) {
+            $page = 1;
+        }
+
+        if (strpos($this->options['path'], '[PAGE]') === false) {
+
+            //$parameters = [$this->options['var_page'] => $page];
+            $path       = $this->options['path'];
+        } else {
+            $parameters = [];
+            $path       = str_replace('[PAGE]', $page, $this->options['path']);
+        }
+
+        if (count($this->options['query']) > 0) {
+            $parameters = array_merge($this->options['query'], $parameters);
+        }
+
+        if(substr_count($path,'/')>2){
+            $url = pathinfo($path,PATHINFO_DIRNAME).'/'.$page.'.'.pathinfo($path,PATHINFO_EXTENSION);
+        }else{
+            $url = pathinfo($path,PATHINFO_DIRNAME).'/'.pathinfo($path,PATHINFO_FILENAME).'/'.$page.'.'.pathinfo($path,PATHINFO_EXTENSION);
+        }
+
+        if (!empty($parameters)) {
+            $url .= '?' . http_build_query($parameters, '', '&');
+        }
+
+        return $url . $this->buildFragment();
+    }
+
+    /**
      * 页码按钮
      * @return string
      */

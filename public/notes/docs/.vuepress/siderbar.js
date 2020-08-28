@@ -1,6 +1,9 @@
 module.exports = {
-	"/php/framework/thinkphp6/": require('../php/framework/thinkphp6/siderbar'),
-	"/php/framework/swoft/": require('../php/framework/swoft/siderbar'),
-	"/php/framework/hyperf2/": require('../php/framework/hyperf2/siderbar'),
-	"/php/framework/swoole/": require('../php/framework/swoole/siderbar'),
+	"/socketio/start/": require('../socketio/start/siderbar'),
+	"/socketio/serverapi/": require('../socketio/serverapi/siderbar'),
+	"/socketio/clientapi/": require('../socketio/clientapi/siderbar'),
+	"/php/thinkphp6/": require('../php/thinkphp6/siderbar'),
+	"/php/swoft/": require('../php/swoft/siderbar'),
+	"/php/hyperf2/": require('../php/hyperf2/siderbar'),
+	"/php/swoole/": require('../php/swoole/siderbar'),
 }

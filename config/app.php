@@ -42,6 +42,7 @@ return [
     'show_error_msg'   => false,//app()->isDebug(),
     // 当前应用版本号
     'thinkadmin_ver'   => 'v6',
+    'page_limit_size'  => 10,
     //异常处理
     'http_exception_template' => [
         404 => app()->getAppPath() . 'common/view/error/404.html',

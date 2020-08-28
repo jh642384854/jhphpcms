@@ -2,6 +2,7 @@
 
 namespace app\cms\controller;
 
+use app\cms\service\TagService;
 use think\admin\Controller;
 
 /**
@@ -56,6 +57,17 @@ class Tag extends Controller
     }
 
     /**
+     * 更新tag数据
+     * @param $result
+     * @param $data
+     */
+    protected function _form_result($result, $data){
+        if($result){
+            TagService::instance()->updateTagCache();
+        }
+    }
+
+    /**
      * 删除标签
      * @auth true
      * @throws \think\db\exception\DbException
@@ -67,6 +79,18 @@ class Tag extends Controller
         $id = $this->app->request->post('id', 0, 'intval');
         $this->app->db->name($this->tableData)->where(['tagid' => $id])->delete();
         $this->_delete($this->table);
+    }
+
+    /**
+     * 在执行完删除操作之后的操作
+     * @param $result
+     */
+    protected function _delete_result($result)
+    {
+        //更新tag缓存
+        if($result){
+            TagService::instance()->updateTagCache();
+        }
     }
 
     /**

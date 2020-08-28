@@ -22,7 +22,7 @@ Route::rule('message/add$','Message/add','GET|POST')->ext('html')->name('message
 Route::get('page/<name>$','Content/page')->ext('html')->name('page');
 
 //标签页面
-Route::get('tag/<id>$','Content/tag')->ext('html')->name('tag');
+Route::get('tag/<id?>','Content/tag')->ext('html')->name('tag');
 
 //栏目列表页
 Route::get('list/<name>/<page?>','Content/index')->ext('html')->name('index');

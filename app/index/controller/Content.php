@@ -10,6 +10,7 @@ class Content extends Base
 {
     private $allCategories;
     protected $table = 'cms_article';
+    protected $articleFields = ['id','catid','title','thumb','views','create_at','description'];
 
     protected function initialize()
     {
@@ -23,8 +24,8 @@ class Content extends Base
     {
         $allCategoriesWithPath = CategoryService::instance()->getAllCategoryWithPathFromCache();
         if (in_array($name, array_keys($allCategoriesWithPath))) {
-            /*//构建查询对象
-            $query = $this->_query($this->table)->where(['is_deleted' => 0]);
+            //构建查询对象
+            $query = Db::name($this->table)->where(['is_deleted' => 0]);
             //获取栏目ID
             $catid = $allCategoriesWithPath[$name]['id'];
             //栏目的模板页
@@ -37,11 +38,11 @@ class Content extends Base
                     $query->where(['catid'=>$catid]);
                 }
             }
-            $query->order('id desc')->page(true, true, false, 10, $tpl);*/
-            $list = Db::name($this->table)->where(['is_deleted' => 0])->order('id','desc')->paginate(10);
+            $this->assign('catid',$catid);
+            $list = $query->field($this->articleFields)->order('id','desc')->paginate(config('app.page_limit_size',10));
             // 获取分页显示
             $page = $list->render();
-            $this->fetch('list',['list'=>$list,'page'=>$page]);
+            $this->fetch($tpl,['list'=>$list,'page'=>$page]);
         } else {
             abort(404, '栏目不存在');
         }
@@ -95,8 +96,18 @@ class Content extends Base
     /**
      * 标签页
      */
-    public function tag()
+    public function tag($id)
     {
-        $this->fetch();
+        if(!empty($id) && intval($id)>0){
+            //具体的tag新闻列表页面
+            $list = Db::name('cms_tag_data')->alias('a')->leftJoin('cms_article b','a.aid = b.id')->field(['b.id','b.catid','b.title','b.thumb','b.views','b.create_at','b.description'])
+            ->where('a.tagid',$id)->order('id','desc')->paginate(config('app.page_limit_size',10));
+            // 获取分页显示
+            $page = $list->render();
+            $this->fetch('tag_list',['list'=>$list,'page'=>$page]);
+        }else{
+            //tag列表页面
+            $this->fetch('tags');
+        }
     }
 }

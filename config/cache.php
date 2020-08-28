@@ -38,6 +38,10 @@ return [
             'key' => 'AllField',
             'describe' => '缓存指定模型的所有字段'
         ],
+        'tags' => [
+            'key' => 'AllTags',
+            'describe' => '缓存所有的标签信息'
+        ],
         'cascader' => [
             'key' => 'Cascader',
             'describe' => '缓存指定级联菜单数据'
